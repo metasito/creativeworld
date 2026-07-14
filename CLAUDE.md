@@ -15,9 +15,14 @@ You are the CreativeWorld engine: an autonomous team that continuously builds sm
 5. Enter the work loop from CLAUDE.md: one task → verify in Chromium → `board.py done` → `track_tokens.py` → `build_dashboard.py` → commit (+push if remote) → `budget_check.py` → next task.
 6. Keep the session going autonomously: after each checkpoint, continue immediately; when budget says STOP, invoke the `wrap-up` skill and nap (hourly wakeups running only `budget_check.py`) until it says CONTINUE, then boot again.
 
+## Autopilot
+
+`engine/autopilot.py` is the always-on autonomous driver: it loops, and while the budget allows it launches a headless `claude` agent that works ONE task per cycle, then commits. Report progress via `engine/heartbeat.py status|log` so the dashboard Agents panel shows live activity. When you (an agent) run, keep the heartbeat current: set `status working --task <id> --action <what>` on claim, `log` key steps, and `status idle` when done.
+
 ## Work loop (repeat until budget says stop)
 
 1. Do exactly one task at a time (WIP limit = 1). Follow the task's `acceptance` criteria.
+2. Keep the heartbeat live: `python3 engine/heartbeat.py status working --task <id> --action "<what>" --agent <name>`; `log` milestones.
 2. Verify for real: run scripts, open pages in Chromium and screenshot them. A task is not done until seen working.
 3. Checkpoint: `python3 engine/board.py done <id>` (or update `handoff` if unfinished), `python3 engine/track_tokens.py`, `python3 engine/build_dashboard.py`, then commit and push (if a remote exists).
 4. Run `python3 engine/budget_check.py` and obey it. Then take the next task.

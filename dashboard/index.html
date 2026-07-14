@@ -68,6 +68,13 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
   background: var(--page); border: 1px solid var(--border); border-radius: 7px; padding: 7px 10px; }
 #addform button { background: var(--accent); color: #fff; border: 0; cursor: pointer; font-weight: 600; }
 #addform button:hover { filter: brightness(1.1); }
+/* agent activity */
+@keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.4; transform:scale(1.5); } }
+#a-pulse.live { background: var(--good); animation: pulse 1.2s ease-in-out infinite; }
+#a-pulse.nap { background: var(--warn); }
+#a-log li { font-size: 12px; color: var(--ink-2); padding: 3px 0; border-bottom: 1px solid var(--grid); display:flex; gap:8px; }
+#a-log .t { color: var(--muted); flex: none; font-variant-numeric: tabular-nums; }
+#a-log .ag { color: var(--accent); flex: none; }
 </style>
 </head>
 <body>
@@ -88,6 +95,17 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
     <div class="bar"><div class="fill" id="fill"></div><div class="mark" id="m85"></div><div class="mark" id="m95"></div></div>
     <div class="labels"><span>0</span><span id="blabel"></span></div>
   </div>
+</div>
+
+<div class="card" id="agentcard" style="margin-top:14px">
+  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+    <span id="a-pulse" style="width:10px; height:10px; border-radius:50%; background:var(--muted); flex:none"></span>
+    <b id="a-status">IDLE</b>
+    <span id="a-task" style="color:var(--ink-2)"></span>
+    <span id="a-action" style="color:var(--muted); font-size:13px"></span>
+    <span id="a-when" style="margin-left:auto; color:var(--muted); font-size:12px"></span>
+  </div>
+  <ul id="a-log" style="margin-top:10px; list-style:none; max-height:150px; overflow:auto"></ul>
 </div>
 
 <h2>Board</h2>
@@ -144,6 +162,8 @@ function render(d) {
   $("fill").style.background = b.pct >= b.stop_pct ? "var(--crit)" : b.pct >= b.wrap_up_pct ? "var(--warn)" : "var(--accent)";
   $("m85").style.left = b.wrap_up_pct + "%"; $("m95").style.left = b.stop_pct + "%";
   $("blabel").textContent = "budget " + fmt(b.budget) + " (⚑" + b.wrap_up_pct + "% wrap · ⚑" + b.stop_pct + "% stop)";
+
+  renderAgent(d.activity, b);
 
   const working = b.verdict === "CONTINUE" && d.queue.in_progress;
   const st = $("status");
@@ -207,6 +227,28 @@ $("addform").addEventListener("submit", async e => {
   $("f-msg").textContent = j.ok ? `✓ ${j.task} queued` : `✗ ${j.error}`;
   if (j.ok) { $("f-title").value = ""; $("f-accept").value = ""; $("f-newtitle").value = ""; $("f-newslug").value = ""; }
 });
+
+function renderAgent(a, b) {
+  a = a || {engine_status: "idle", log: []};
+  const upd = a.updated ? new Date(a.updated) : null;
+  const ageSec = upd ? (Date.now() - upd) / 1000 : Infinity;
+  // "live" only if a heartbeat landed in the last 90s; otherwise fall back to budget verdict
+  let status = a.engine_status || "idle";
+  if (status === "working" && ageSec > 90) status = "stale";
+  const pulse = $("a-pulse");
+  pulse.className = status === "working" ? "live" : status === "napping" ? "nap" : "";
+  $("a-status").textContent = status === "working" ? "● WORKING"
+    : status === "napping" ? "◌ NAPPING"
+    : status === "stale" ? "○ IDLE (no agent)" : "○ IDLE";
+  $("a-status").style.color = status === "working" ? "var(--good)" : status === "napping" ? "var(--warn)" : "var(--muted)";
+  $("a-task").textContent = a.current_task ? `on ${a.current_task}` : "";
+  $("a-action").textContent = a.current_action || (status === "stale" || status === "idle" ? "no autopilot running — launch: python engine/autopilot.py" : "");
+  $("a-when").textContent = upd ? "heartbeat " + timeago(ageSec) : "no heartbeat yet";
+  $("a-log").innerHTML = (a.log || []).slice().reverse().map(e =>
+    `<li><span class="t">${e.at ? new Date(e.at).toLocaleTimeString() : ""}</span>
+     <span class="ag">${e.agent || "engine"}</span><span>${e.msg}</span></li>`).join("");
+}
+const timeago = s => s === Infinity ? "never" : s < 60 ? Math.round(s)+"s ago" : Math.round(s/60)+"m ago";
 
 function tickReset() {
   $("reset").textContent = resetsAt ? hms((resetsAt - Date.now()) / 1000) : "–";

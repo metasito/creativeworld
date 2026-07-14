@@ -13,6 +13,11 @@ def compose(live=False):
     queue = lib.load("queue.json")
     sessions = lib.load("sessions.json")["sessions"]
     learnings = (lib.STATE / "learnings.md").read_text(encoding="utf-8").strip().splitlines()
+    try:
+        activity = lib.load("activity.json")
+    except Exception:
+        activity = {"engine_status": "idle", "current_task": None, "current_action": None,
+                    "agent": None, "updated": None, "log": []}
 
     projects = []
     for e in backlog["epics"]:
@@ -36,6 +41,7 @@ def compose(live=False):
         "projects": projects,
         "sessions": sessions[-10:],
         "learnings": [l[2:] for l in learnings if l.startswith("- ")][:8],
+        "activity": {**activity, "log": activity.get("log", [])[-12:]},
     }
 
 

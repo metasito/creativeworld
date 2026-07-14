@@ -31,7 +31,19 @@ Start a Claude Code session in this repo and say **"go"** (or `/boot`): the engi
 
 The plan's real limits aren't queryable, so the engine estimates: weighted tokens (`output×5 + input + cache_write×1.25 + cache_read×0.1`) against `budget_per_window` in `state/tokens.json` (5h rolling window). When a real rate-limit hits, `track_tokens.py --limit-hit` calibrates the budget down to actual usage — the estimate improves every day.
 
-## Full autonomy (GitHub Actions) — one-time setup
+## Autonomy — the autopilot (runs on your PC)
+
+This is the "agents work by themselves" layer. One command and it runs forever:
+
+```bash
+python engine/autopilot.py            # loops: budget check -> launch a headless agent -> commit -> repeat
+python engine/autopilot.py --once     # a single task cycle (good for a first look)
+python engine/autopilot.py --dry-run  # simulate without spending tokens
+```
+
+Each cycle checks the budget (free); if tokens are available it launches a **headless Claude agent** that boots, claims one task, builds and verifies it, then commits and pushes. When the budget is spent it naps until the window resets, then resumes on its own — investing all available tokens into new tasks, self-improvement, and new projects. It writes a live heartbeat (`state/activity.json`) that the dashboard's **Agents panel** shows in real time, so you can watch it work. Requires the `claude` CLI on PATH.
+
+## Full autonomy (GitHub Actions) — cloud fallback, one-time setup
 
 `.github/workflows/engine.yml` runs hourly: a free preflight gate exits instantly if the budget is spent; otherwise Claude boots and works the queue. To activate:
 

@@ -169,10 +169,30 @@
       "status": "done",
       "handoff": "POST /api/task verified both paths (existing epic top-of-queue, new epic); form screenshot-verified in Chrome",
       "updated": "2026-07-14T18:18:20Z"
+    },
+    {
+      "id": "T14",
+      "epic": "E2",
+      "title": "dashboard imporvement",
+      "acceptance": "should allow me to drag tasks, open them, check the status. If not me, you should by yourself priorityse most important things.  also it should allow me to show the status, the merge request if one done etc",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T18:22:42Z"
+    },
+    {
+      "id": "T15",
+      "epic": "E1",
+      "title": "engine is not working auotmosly",
+      "acceptance": "when tokens available, app should invest all the token for new tasks, on self imporvement and on new projects",
+      "size": "M",
+      "status": "done",
+      "handoff": "autopilot.py (headless-agent loop, budget-gated, naps to reset) + heartbeat.py + dashboard Agents panel; dry-run + panel verified",
+      "updated": "2026-07-14T18:56:31Z"
     }
   ],
   "next_ids": {
     "epic": 6,
-    "task": 14
+    "task": 16
   }
 }

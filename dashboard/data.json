@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-07-14T18:18:20Z",
+  "generated_at": "2026-07-14T18:56:31Z",
   "budget": {
-    "used": 267469,
+    "used": 1270433,
     "budget": 4670000,
-    "pct": 5.7,
+    "pct": 27.2,
     "window_started_at": "2026-07-14T18:10:00Z",
     "resets_at": "2026-07-14T23:10:00Z",
-    "seconds_to_reset": 17499,
+    "seconds_to_reset": 15208,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -188,11 +188,32 @@
       "status": "done",
       "handoff": "POST /api/task verified both paths (existing epic top-of-queue, new epic); form screenshot-verified in Chrome",
       "updated": "2026-07-14T18:18:20Z"
+    },
+    {
+      "id": "T14",
+      "epic": "E2",
+      "title": "dashboard imporvement",
+      "acceptance": "should allow me to drag tasks, open them, check the status. If not me, you should by yourself priorityse most important things.  also it should allow me to show the status, the merge request if one done etc",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T18:22:42Z"
+    },
+    {
+      "id": "T15",
+      "epic": "E1",
+      "title": "engine is not working auotmosly",
+      "acceptance": "when tokens available, app should invest all the token for new tasks, on self imporvement and on new projects",
+      "size": "M",
+      "status": "done",
+      "handoff": "autopilot.py (headless-agent loop, budget-gated, naps to reset) + heartbeat.py + dashboard Agents panel; dry-run + panel verified",
+      "updated": "2026-07-14T18:56:31Z"
     }
   ],
   "queue": {
     "in_progress": null,
     "next": [
+      "T14",
       "T12",
       "T5",
       "T8"
@@ -263,5 +284,34 @@
     "2026-07-14: URL test hooks are gold: `?p=` (pin scroll progress), `?demo=1` (autopilot + state mirrored into document.title), `?seed=` (deterministic art) make every project verifiable headlessly for pennies.",
     "2026-07-14: Cost calibration \u2014 full bootstrap (engine + dashboard + 3 shipped projects) \u2248 1.23M weighted tokens; one M-sized single-file project \u2248 150\u2013250k; an S task \u2248 40\u201380k.",
     "2026-07-14 (bootstrap): Transcript JSONL at `~/.claude/projects/<proj>/<session>.jsonl` carries per-turn `usage`; weighted formula in tokens.json config approximates plan units \u2014 calibrate, don't trust."
-  ]
+  ],
+  "activity": {
+    "engine_status": "idle",
+    "current_task": null,
+    "current_action": null,
+    "agent": "autopilot",
+    "updated": "2026-07-14T18:56:31Z",
+    "log": [
+      {
+        "at": "2026-07-14T18:53:17Z",
+        "agent": "autopilot",
+        "msg": "claimed T15"
+      },
+      {
+        "at": "2026-07-14T18:53:18Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-14T18:54:56Z",
+        "agent": "autopilot",
+        "msg": "activity panel added to dashboard"
+      },
+      {
+        "at": "2026-07-14T18:56:31Z",
+        "agent": "autopilot",
+        "msg": "T15 shipped: autopilot + heartbeat + live agent panel"
+      }
+    ]
+  }
 }
