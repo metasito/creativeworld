@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gravity Well Sandbox</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #04060e; }
+  canvas { display: block; cursor: crosshair; touch-action: none; }
+  #hud {
+    position: fixed; top: 12px; left: 14px; color: #8fa3c8;
+    font: 12px/1.6 'Segoe UI', system-ui, sans-serif;
+    pointer-events: none; user-select: none; text-shadow: 0 1px 4px #000;
+  }
+  #hud b { color: #e8f0ff; font-weight: 600; }
+  #stats { position: fixed; bottom: 10px; left: 14px; color: #4a5b7a;
+    font: 11px 'Segoe UI', system-ui, sans-serif; pointer-events: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud"><b>Gravity Well Sandbox</b><br>
+click — drop a star &nbsp;·&nbsp; drag — fling it with velocity<br>
+double-click — clear stars</div>
+<div id="stats"></div>
+<script>
+'use strict';
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const stats = document.getElementById('stats');
+let W, H;
+function resize() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
+addEventListener('resize', resize); resize();
+
+const G = 2200;            // gravity constant
+const SOFT = 400;          // softening (px^2) to avoid singularities
+const N = 700;             // particle count
+const bodies = [];         // massive stars
+const parts = new Float32Array(N * 4);  // x, y, vx, vy
+const hue = new Float32Array(N);
+
+function spawnParticle(i, cx, cy) {
+  // ring around (cx,cy) with tangential orbital velocity
+  const a = Math.random() * Math.PI * 2;
+  const r = 60 + Math.random() * Math.min(W, H) * 0.38;
+  const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+  const m = bodies.length ? bodies[0].m : 900;
+  const v = Math.sqrt(G * m / r) * (0.85 + Math.random() * 0.3);
+  parts[i*4] = x; parts[i*4+1] = y;
+  parts[i*4+2] = -Math.sin(a) * v; parts[i*4+3] = Math.cos(a) * v;
+  hue[i] = 190 + Math.random() * 120; // cyan → violet
+}
+
+function reset() {
+  bodies.length = 0;
+  bodies.push({ x: W/2, y: H/2, vx: 0, vy: 0, m: 900 });
+  for (let i = 0; i < N; i++) spawnParticle(i, W/2, H/2);
+}
+reset();
+
+// --- input: click drops a body, drag sets its initial velocity ---
+let drag = null;
+cv.addEventListener('pointerdown', e => {
+  drag = { x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY };
+  cv.setPointerCapture(e.pointerId);
+});
+cv.addEventListener('pointermove', e => {
+  if (drag) { drag.cx = e.clientX; drag.cy = e.clientY; }
+});
+cv.addEventListener('pointerup', e => {
+  if (!drag) return;
+  const vx = (drag.cx - drag.x) * 2.2, vy = (drag.cy - drag.y) * 2.2;
+  bodies.push({ x: drag.x, y: drag.y, vx, vy, m: 350 + Math.random() * 550 });
+  if (bodies.length > 12) bodies.shift();
+  drag = null;
+});
+cv.addEventListener('dblclick', () => reset());
+
+// --- simulation ---
+const DT = 1 / 60;
+function step() {
+  const nb = bodies.length;
+  // bodies attract each other (N-body)
+  for (let a = 0; a < nb; a++) {
+    let ax = 0, ay = 0;
+    const A = bodies[a];
+    for (let b = 0; b < nb; b++) {
+      if (a === b) continue;
+      const B = bodies[b];
+      const dx = B.x - A.x, dy = B.y - A.y;
+      const d2 = dx*dx + dy*dy + SOFT;
+      const f = G * B.m / (d2 * Math.sqrt(d2));
+      ax += dx * f; ay += dy * f;
+    }
+    A.vx += ax * DT; A.vy += ay * DT;
+  }
+  for (const b of bodies) { b.x += b.vx * DT; b.y += b.vy * DT; }
+
+  // particles under all bodies' gravity
+  for (let i = 0; i < N; i++) {
+    let x = parts[i*4], y = parts[i*4+1], vx = parts[i*4+2], vy = parts[i*4+3];
+    let ax = 0, ay = 0;
+    for (let b = 0; b < nb; b++) {
+      const B = bodies[b];
+      const dx = B.x - x, dy = B.y - y;
+      const d2 = dx*dx + dy*dy + SOFT;
+      const f = G * B.m / (d2 * Math.sqrt(d2));
+      ax += dx * f; ay += dy * f;
+    }
+    vx += ax * DT; vy += ay * DT;
+    x += vx * DT; y += vy * DT;
+    // recycle particles flung far off-screen
+    if (x < -300 || x > W + 300 || y < -300 || y > H + 300) {
+      const b = bodies[(Math.random() * nb) | 0] || { x: W/2, y: H/2 };
+      spawnParticle(i, b.x, b.y);
+    } else {
+      parts[i*4] = x; parts[i*4+1] = y; parts[i*4+2] = vx; parts[i*4+3] = vy;
+    }
+  }
+}
+
+// --- render with glowing trails ---
+let last = performance.now(), fps = 60, frames = 0, tAcc = 0;
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = now - last; last = now;
+  frames++; tAcc += dt;
+  if (tAcc > 500) { fps = Math.round(frames * 1000 / tAcc); frames = 0; tAcc = 0; }
+
+  step();
+
+  // fade previous frame → motion trails
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = 'rgba(4,6,14,0.16)';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.globalCompositeOperation = 'lighter';
+  // particles (speed-tinted glow)
+  for (let i = 0; i < N; i++) {
+    const vx = parts[i*4+2], vy = parts[i*4+3];
+    const sp = Math.min(1, Math.hypot(vx, vy) / 320);
+    ctx.fillStyle = `hsla(${hue[i] - sp*60},95%,${55 + sp*25}%,0.85)`;
+    ctx.fillRect(parts[i*4] - 0.8, parts[i*4+1] - 0.8, 1.6, 1.6);
+  }
+  // stars: layered radial glow
+  for (const b of bodies) {
+    const r = 4 + Math.sqrt(b.m) * 0.35;
+    const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, r * 5);
+    g.addColorStop(0, 'rgba(255,250,225,0.95)');
+    g.addColorStop(0.15, 'rgba(255,205,120,0.55)');
+    g.addColorStop(0.5, 'rgba(255,120,60,0.12)');
+    g.addColorStop(1, 'rgba(255,80,40,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(b.x, b.y, r * 5, 0, 7); ctx.fill();
+  }
+  // drag preview: launch vector
+  if (drag) {
+    ctx.strokeStyle = 'rgba(140,200,255,0.9)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(drag.x, drag.y); ctx.lineTo(drag.cx, drag.cy); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,250,225,0.9)';
+    ctx.beginPath(); ctx.arc(drag.x, drag.y, 5, 0, 7); ctx.fill();
+  }
+
+  stats.textContent = `${fps} fps · ${bodies.length} stars · ${N} particles`;
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

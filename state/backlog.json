@@ -50,7 +50,7 @@
       "id": "E7",
       "title": "Gravity Well Sandbox",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Drop massive bodies and watch glowing particles orbit under N-body gravity; a physics toy",
       "slug": "gravity-well"
     },
@@ -251,9 +251,9 @@
       "title": "Gravity well sandbox v1",
       "acceptance": "projects/gravity-well/index.html: click drops a massive body; particles orbit under N-body gravity with glowing motion trails; drag sets initial velocity; single file; 60fps; screenshot saved.",
       "size": "M",
-      "status": "in_progress",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-14T23:45:00Z"
+      "updated": "2026-07-14T23:54:05Z"
     },
     {
       "id": "T20",

@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-14T23:52:00Z",
+  "generated_at": "2026-07-14T23:54:31Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 1776554,
+    "used": 1902891,
     "budget": 4670000,
-    "pct": 38.0,
+    "pct": 40.7,
     "window_started_at": "2026-07-14T23:10:00Z",
     "resets_at": "2026-07-15T04:10:00Z",
-    "seconds_to_reset": 15479,
+    "seconds_to_reset": 15328,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -75,7 +75,7 @@
       "id": "E7",
       "title": "Gravity Well Sandbox",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Drop massive bodies and watch glowing particles orbit under N-body gravity; a physics toy",
       "slug": "gravity-well"
     },
@@ -286,7 +286,7 @@
       "status": "done",
       "handoff": "",
       "updated": "2026-07-14T23:52:00Z",
-      "commit": null
+      "commit": "0134777"
     },
     {
       "id": "T19",
@@ -294,9 +294,9 @@
       "title": "Gravity well sandbox v1",
       "acceptance": "projects/gravity-well/index.html: click drops a massive body; particles orbit under N-body gravity with glowing motion trails; drag sets initial velocity; single file; 60fps; screenshot saved.",
       "size": "M",
-      "status": "in_progress",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-14T23:45:00Z",
+      "updated": "2026-07-14T23:54:05Z",
       "commit": null
     },
     {
@@ -392,7 +392,7 @@
     }
   ],
   "queue": {
-    "in_progress": "T19",
+    "in_progress": "T20",
     "next": [
       "T25",
       "T12",
@@ -451,12 +451,12 @@
       "id": "E7",
       "title": "Gravity Well Sandbox",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Drop massive bodies and watch glowing particles orbit under N-body gravity; a physics toy",
       "slug": "gravity-well",
-      "built": false,
-      "shot": false,
-      "url": null
+      "built": true,
+      "shot": true,
+      "url": "/projects/gravity-well/"
     },
     {
       "id": "E8",
@@ -502,21 +502,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T18",
-    "current_action": "color-shift reflections + touch support",
+    "current_task": "T19",
+    "current_action": "building gravity well sandbox v1",
     "agent": "autopilot",
-    "updated": "2026-07-14T23:51:40Z",
+    "updated": "2026-07-14T23:54:05Z",
     "log": [
-      {
-        "at": "2026-07-14T21:19:48Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-14T21:19:59Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-14T21:20:05Z",
         "agent": "autopilot",
@@ -566,6 +556,16 @@
         "at": "2026-07-14T23:51:40Z",
         "agent": "autopilot",
         "msg": "T18: tint+touch coded, verifying in Chromium"
+      },
+      {
+        "at": "2026-07-14T23:52:29Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-14T23:54:05Z",
+        "agent": "autopilot",
+        "msg": "T19 built + verified 60fps, checkpointing"
       }
     ]
   }
