@@ -2,6 +2,7 @@
 import json
 import os
 import re
+import subprocess
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -30,6 +31,31 @@ def project_transcript_dir():
         if d.is_dir() and d.name.lower() == low:
             return d
     return None
+
+
+_REPO_URL = None
+
+
+def repo_url():
+    """Base GitHub URL for this repo (e.g. https://github.com/owner/name), or None.
+
+    Parsed once from `git remote get-url origin`, handling both SSH
+    (git@github.com:owner/name.git) and HTTPS remotes. Enables the board to link
+    tasks to their GitHub issue/PR like a real team workflow.
+    """
+    global _REPO_URL
+    if _REPO_URL is not None:
+        return _REPO_URL or None
+    _REPO_URL = ""
+    try:
+        url = subprocess.run(["git", "remote", "get-url", "origin"], cwd=ROOT,
+                             capture_output=True, text=True, timeout=5).stdout.strip()
+    except Exception:
+        return None
+    m = re.search(r"github\.com[:/]+([^/]+)/(.+?)(?:\.git)?/?$", url)
+    if m:
+        _REPO_URL = f"https://github.com/{m.group(1)}/{m.group(2)}"
+    return _REPO_URL or None
 
 
 def load(name):
@@ -166,3 +192,66 @@ def verdict(summary):
     if summary["pct"] >= summary["wrap_up_pct"]:
         return "WRAP_UP", 3
     return "CONTINUE", 0
+
+
+# --- Real usage-limit detection -------------------------------------------
+# The authoritative "tokens are out" signal is the Claude CLI itself: when the
+# 5h subscription cap is hit it prints a limit message, usually with the exact
+# Unix reset time (e.g. "Claude AI usage limit reached|1752604200"). We react to
+# THAT instead of guessing from a weighted count vs. an estimated budget.
+LIMIT_EPOCH_RE = re.compile(r"usage limit reached[^\d]{0,4}(\d{10,13})", re.I)
+LIMIT_ISO_RE = re.compile(r"resets?(?:\s+at)?\s+(\d{4}-\d{2}-\d{2}T[\d:]+Z)", re.I)
+LIMIT_HINT_RE = re.compile(
+    r"usage limit reached|rate[_\s-]?limit|\b429\b|too many requests|overloaded", re.I)
+
+
+def looks_like_limit(text):
+    """True if agent output shows a real usage/rate limit was hit."""
+    return bool(text and LIMIT_HINT_RE.search(text))
+
+
+def parse_reset_time(text):
+    """Extract the exact limit-reset datetime (UTC) from agent output, or None."""
+    if not text:
+        return None
+    m = LIMIT_EPOCH_RE.search(text)
+    if m:
+        ts = int(m.group(1))
+        if ts > 10_000_000_000:  # milliseconds -> seconds
+            ts //= 1000
+        return datetime.fromtimestamp(ts, tz=timezone.utc)
+    m = LIMIT_ISO_RE.search(text)
+    if m:
+        try:
+            return parse_iso(m.group(1))
+        except ValueError:
+            return None
+    return None
+
+
+def record_limit_hit(tokens, reset_dt):
+    """A real usage limit was hit: calibrate the budget estimate down to what we
+    actually spent, close the current window, and refuse to resume before
+    reset_dt (stored as window.not_before so even a fresh boot waits)."""
+    summary = budget_summary(tokens)
+    cfg = tokens["config"]
+    tokens.setdefault("calibration", {}).setdefault("limit_hits", []).append({
+        "at": iso(now()),
+        "window_used": summary["used"],
+        "old_budget": cfg["budget_per_window"],
+        "reset_at": iso(reset_dt) if reset_dt else None,
+    })
+    if summary["used"] > 0:
+        cfg["budget_per_window"] = summary["used"]  # the real ceiling is what we spent
+    win = tokens["window"]
+    used = round(sum(win.get("by_session", {}).values()))
+    tokens.setdefault("history", []).append({
+        "started_at": win.get("started_at"),
+        "used": used,
+        "budget": cfg["budget_per_window"],
+        "limit_hit": True,
+    })
+    tokens["history"] = tokens["history"][-50:]
+    tokens["window"] = {"started_at": None, "by_session": {},
+                        "not_before": iso(reset_dt) if reset_dt else None}
+    return tokens

@@ -79,8 +79,10 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
 .task.draggable { cursor: grab; }
 .task.dragging { opacity: .45; }
 .col.dropzone { outline: 2px dashed var(--accent); outline-offset: 2px; border-radius: 8px; background: var(--accent-soft); }
-.task .pr { display: inline-block; margin-top: 4px; font-size: 11px; color: var(--accent); text-decoration: none; }
-.task .pr:hover { text-decoration: underline; }
+.task .links { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 5px; }
+.task .pr, .task .gh { font-size: 11px; color: var(--accent); text-decoration: none; }
+.task .pr:hover, .task .gh:hover { text-decoration: underline; }
+.task .gh.new { color: var(--muted); }
 /* task modal */
 #modal { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; place-items: center; z-index: 50; padding: 20px; }
 #modal.open { display: grid; }
@@ -166,9 +168,12 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
       </select>
       <label>Handoff / notes</label>
       <textarea id="m-handoff"></textarea>
+      <label>GitHub issue #</label>
+      <input id="m-issue" placeholder="e.g. 42">
       <label>Merge request / PR link</label>
       <input id="m-pr" placeholder="https://github.com/…/pull/…">
     </div>
+    <div id="m-trace" class="ro" style="margin-top:8px"></div>
     <a id="m-open" href="#" target="_blank" style="display:none">open merge request ↗</a>
     <div class="row">
       <button id="m-save">Save</button>
@@ -193,6 +198,16 @@ const fmt = n => n >= 1e6 ? (n/1e6).toFixed(2)+"M" : n >= 1e3 ? Math.round(n/1e3
 const hms = s => s == null ? "–" : s <= 0 ? "now" : `${Math.floor(s/3600)}h ${Math.floor(s%3600/60)}m`;
 let resetsAt = null, live = true;
 let tasksById = {}, epicsById = {}, dragging = false, dragId = null, currentId = null;
+let repoUrl = null;
+function newIssueUrl(t) {
+  const body = `Task ${t.id} (${t.size}) · epic ${epicsById[t.epic] || t.epic}\n\nAcceptance: ${t.acceptance || "—"}`;
+  return `${repoUrl}/issues/new?title=${encodeURIComponent("[" + t.id + "] " + t.title)}&body=${encodeURIComponent(body)}`;
+}
+function issueLink(t) {
+  if (!repoUrl) return "";
+  if (t.issue) return `<a class="gh" href="${repoUrl}/issues/${t.issue}" target="_blank" rel="noopener">● #${t.issue}</a>`;
+  return `<a class="gh new" href="${newIssueUrl(t)}" target="_blank" rel="noopener">＋ open issue</a>`;
+}
 
 async function fetchState() {
   try {
@@ -205,6 +220,7 @@ async function fetchState() {
 
 function render(d) {
   const b = d.budget;
+  repoUrl = d.repo_url || null;
   $("pct").textContent = b.pct.toFixed(1) + "%";
   $("used").textContent = fmt(b.used);
   resetsAt = b.resets_at ? new Date(b.resets_at) : null;
@@ -238,7 +254,7 @@ function render(d) {
         <div class="t">${t.title}</div>
         <div class="m">${t.id} · ${t.size} · ${epicsById[t.epic] || t.epic}</div>
         ${t.handoff && s !== "done" ? `<div class="h">${t.handoff}</div>` : ""}
-        ${t.pr ? `<a class="pr" href="${t.pr}" target="_blank" rel="noopener">↗ merge request</a>` : ""}</div>`).join("") + "</div>";
+        <div class="links">${issueLink(t)}${t.pr ? `<a class="pr" href="${t.pr}" target="_blank" rel="noopener">↗ merge request</a>` : ""}</div></div>`).join("") + "</div>";
   }).join("");
 
   $("gallery").innerHTML = d.projects.map(p => `<div class="card proj">
@@ -363,7 +379,16 @@ function openModal(t) {
   $("m-accept").textContent = t.acceptance || "—";
   $("m-status").value = t.status;
   $("m-handoff").value = t.handoff || "";
+  $("m-issue").value = t.issue || "";
   $("m-pr").value = t.pr || "";
+  const trace = $("m-trace");
+  if (repoUrl) {
+    const iss = t.issue
+      ? `<a href="${repoUrl}/issues/${t.issue}" target="_blank" rel="noopener">issue #${t.issue}</a>`
+      : `<a href="${newIssueUrl(t)}" target="_blank" rel="noopener">＋ open a GitHub issue for this task</a>`;
+    const pr = t.pr ? ` → <a href="${t.pr}" target="_blank" rel="noopener">merge request ↗</a>` : "";
+    trace.innerHTML = "GitHub: " + iss + pr;
+  } else trace.textContent = "";
   const link = $("m-open");
   if (t.pr) { link.href = t.pr; link.style.display = ""; } else link.style.display = "none";
   $("m-edit").style.display = live ? "" : "none";
@@ -374,7 +399,7 @@ function openModal(t) {
 $("m-save").onclick = async () => {
   const r = await fetch("/api/task/update", { method: "POST", body: JSON.stringify({
     id: currentId, status: $("m-status").value,
-    handoff: $("m-handoff").value, pr: $("m-pr").value }) });
+    handoff: $("m-handoff").value, pr: $("m-pr").value, issue: $("m-issue").value }) });
   const j = await r.json();
   $("m-msg").textContent = j.ok ? "✓ saved" : "✗ " + j.error;
   if (j.ok) { render(await fetchState()); setTimeout(() => $("modal").classList.remove("open"), 400); }

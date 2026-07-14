@@ -8,6 +8,7 @@ Usage:
   board.py done <id> [note...]
   board.py move <id> <status>             # backlog|next|in_progress|review|done
   board.py handoff <id> <text...>
+  board.py link <id> [--issue N] [--pr URL]   # tie a task to its GitHub issue/PR
   board.py add <epic> <size> <title> -- <acceptance>
   board.py add-epic <kind> <title> -- <description> [--slug SLUG]
   board.py epic-status <id> <status>
@@ -46,8 +47,8 @@ def get_task(b, tid):
     raise KeyError(tid)
 
 
-def update_task(b, tid, status=None, handoff=None, pr=None, order=None):
-    """Edit a task from the dashboard: status/handoff/pr + optional next-queue reorder.
+def update_task(b, tid, status=None, handoff=None, pr=None, issue=None, order=None):
+    """Edit a task from the dashboard: status/handoff/pr/issue + optional reorder.
 
     Importable — used by server.py's POST /api/task/update.
     """
@@ -59,6 +60,8 @@ def update_task(b, tid, status=None, handoff=None, pr=None, order=None):
         t["handoff"] = handoff.strip()
     if pr is not None:
         t["pr"] = pr.strip()
+    if issue is not None:
+        t["issue"] = str(issue).strip().lstrip("#")
     touch(t)
     lib.save("backlog.json", b)
     q = sync_queue(b)
@@ -71,6 +74,20 @@ def update_task(b, tid, status=None, handoff=None, pr=None, order=None):
 
 def touch(t):
     t["updated"] = lib.iso(lib.now())
+
+
+def issue_line(t):
+    """Human-readable GitHub traceability for a task: issue link + PR link."""
+    base = lib.repo_url()
+    iss = str(t.get("issue") or "").strip()
+    if iss and base:
+        left = f"issue: {base}/issues/{iss}"
+    elif base:
+        left = f"issue: none yet — open at {base}/issues/new"
+    else:
+        left = "issue: (no github remote)"
+    pr = t.get("pr")
+    return f"{left}" + (f" · pr: {pr}" if pr else "")
 
 
 def create_task(b, epic, size, title, acceptance, status="backlog", top=False):
@@ -157,6 +174,7 @@ def main():
         t["status"] = "in_progress"
         touch(t)
         print(f"claimed {t['id']}: {t['title']}\nacceptance: {t['acceptance']}")
+        print(f"  {issue_line(t)}")
 
     elif cmd == "done":
         t = find(b, args[1])
@@ -177,6 +195,16 @@ def main():
         t["handoff"] = " ".join(args[2:])
         touch(t)
         print(f"handoff saved on {t['id']}")
+
+    elif cmd == "link":
+        t = find(b, args[1])
+        rest = args[2:]
+        if "--issue" in rest:
+            t["issue"] = rest[rest.index("--issue") + 1].strip().lstrip("#")
+        if "--pr" in rest:
+            t["pr"] = rest[rest.index("--pr") + 1].strip()
+        touch(t)
+        print(f"{t['id']} linked · {issue_line(t)}")
 
     elif cmd == "add":
         epic, size = args[1], args[2]

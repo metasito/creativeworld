@@ -32,7 +32,7 @@ class Handler(SimpleHTTPRequestHandler):
             if route == "/api/task/update":
                 t = board.update_task(b, body["id"], status=body.get("status"),
                                       handoff=body.get("handoff"), pr=body.get("pr"),
-                                      order=body.get("order"))
+                                      issue=body.get("issue"), order=body.get("order"))
                 out, code = {"ok": True, "task": t["id"], "status": t["status"]}, 200
             else:
                 title = body["title"].strip()

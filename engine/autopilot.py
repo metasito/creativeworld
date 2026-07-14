@@ -18,6 +18,7 @@ import shutil
 import subprocess
 import sys
 import time
+from datetime import timedelta
 
 import heartbeat
 import lib
@@ -35,28 +36,42 @@ PROMPT = (
 )
 
 
-def budget_state():
-    tokens = lib.load("tokens.json")
-    lib.update_from_transcripts(tokens)
-    lib.save("tokens.json", tokens)
-    s = lib.budget_summary(tokens)
-    name, _ = lib.verdict(s)
-    return name, s
-
-
 def run_agent(dry):
+    """Launch one headless agent cycle. Returns (returncode, output_tail).
+
+    The output is captured (and echoed live) so we can detect the real usage
+    limit the Claude CLI prints when the subscription window is exhausted.
+    """
     if dry:
-        heartbeat.main_noargs = None
         print("[dry-run] would launch:", CLAUDE, "-p <prompt>")
         time.sleep(1)
-        return 0
+        return 0, ""
     # headless + unattended: the loop needs git/python/chrome with no prompts, so it
     # runs with skipped permissions inside this repo. Only run autopilot on a repo you trust.
     cmd = [CLAUDE, "-p", PROMPT, "--dangerously-skip-permissions", "--max-turns", "120"]
     try:
-        return subprocess.run(cmd, cwd=str(lib.ROOT)).returncode
+        proc = subprocess.Popen(cmd, cwd=str(lib.ROOT), stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT, text=True, bufsize=1)
     except FileNotFoundError:
         sys.exit("claude CLI not found on PATH — install it or add to PATH")
+    lines = []
+    for line in proc.stdout:  # tee: keep it visible AND scannable for a limit message
+        sys.stdout.write(line)
+        sys.stdout.flush()
+        lines.append(line)
+    proc.wait()
+    return proc.returncode, "".join(lines[-500:])
+
+
+def nap(until_dt, label, once):
+    """Sleep until until_dt (re-checking at most hourly). Returns False if --once."""
+    secs = max(60, int((until_dt - lib.now()).total_seconds()) + 60)  # +60s safety buffer
+    set_status("napping", f"{label} — waking {lib.iso(until_dt)} (~{secs // 60}m)")
+    print(f"napping {secs}s until {lib.iso(until_dt)} — {label}")
+    if once:
+        return False
+    time.sleep(min(secs, 3600))
+    return True
 
 
 def set_status(status, action=None):
@@ -82,20 +97,54 @@ def main():
     dry = "--dry-run" in sys.argv
     print(f"autopilot up · claude={CLAUDE} · once={once} dry={dry}")
     while True:
-        name, s = budget_state()
-        if name == "CONTINUE":
-            set_status("working", f"budget {s['pct']}% — launching agent")
-            print(f"budget CONTINUE {s['pct']}% — launching agent")
-            run_agent(dry)
-            _run_heartbeat(["log", "agent cycle finished"])
-        else:
-            secs = (s.get("seconds_to_reset") or 300) + 30
-            set_status("napping", f"budget {name} {s['pct']}% — napping ~{secs//60}m until reset")
-            print(f"budget {name} {s['pct']}% — napping {secs}s until reset {s['resets_at']}")
+        tokens = lib.load("tokens.json")
+        lib.update_from_transcripts(tokens)
+        lib.save("tokens.json", tokens)
+        s = lib.budget_summary(tokens)
+
+        # 1. Hard gate: a real limit hit set not_before — never resume before it.
+        nb = tokens["window"].get("not_before")
+        if nb and lib.now() < lib.parse_iso(nb):
+            if not nap(lib.parse_iso(nb), f"limit cooldown {s['pct']}%", once):
+                break
+            continue
+
+        # 2. Soft gate: the (estimated) budget says wrap up / stop for this window.
+        name, _ = lib.verdict(s)
+        if name != "CONTINUE":
+            reset = lib.parse_iso(s["resets_at"]) if s["resets_at"] else lib.now() + timedelta(hours=1)
+            if not nap(reset, f"budget {name} {s['pct']}%", once):
+                break
+            continue
+
+        # 3. Work one cycle, then let the REAL CLI limit be authoritative.
+        set_status("working", f"budget {s['pct']}% — launching agent")
+        print(f"budget CONTINUE {s['pct']}% — launching agent")
+        rc, out = run_agent(dry)
+        _run_heartbeat(["log", "agent cycle finished"])
+
+        reset = lib.parse_reset_time(out)
+        if lib.looks_like_limit(out) or (rc != 0 and reset):
+            tokens = lib.load("tokens.json")
+            lib.update_from_transcripts(tokens)
+            if reset is None:  # limit hit but no timestamp — over-nap one window, re-check
+                reset = lib.now() + timedelta(hours=tokens["config"]["window_hours"])
+            lib.record_limit_hit(tokens, reset)
+            lib.save("tokens.json", tokens)
+            _run_heartbeat(["log", f"REAL usage limit hit — napping until {lib.iso(reset)}"])
+            print(f"LIMIT HIT — napping until {lib.iso(reset)}")
+            if not nap(reset, "real usage limit", once):
+                break
+            continue
+
+        if rc != 0:  # non-limit failure: brief backoff so we don't hot-loop
+            print(f"agent exited {rc} (no limit detected) — backing off 120s")
+            _run_heartbeat(["log", f"agent error rc={rc} — 120s backoff"])
             if once:
                 break
-            time.sleep(min(secs, 1800))
+            time.sleep(120)
             continue
+
         if once:
             break
     set_status("idle")

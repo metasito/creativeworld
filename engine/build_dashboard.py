@@ -33,6 +33,7 @@ def compose(live=False):
     name, _ = lib.verdict(summary)
     return {
         "generated_at": lib.iso(lib.now()),
+        "repo_url": lib.repo_url(),
         "budget": {**summary, "verdict": name,
                    "history": tokens.get("history", [])[-20:]},
         "epics": backlog["epics"],

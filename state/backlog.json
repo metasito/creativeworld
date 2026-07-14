@@ -301,13 +301,36 @@
       "title": "Dashebord taks cannot be followed in the git merge request ore in the task in github. a task is an issue in github, when you work on it then you tag it and also when close show the github pull request",
       "acceptance": "everything is conform as it shoul be in a professioanl team setup",
       "size": "M",
+      "status": "done",
+      "handoff": "GitHub traceability shipped: board.py link cmd + issue/pr fields, server passes issue, dashboard shows per-task open-issue/issue# + merge-request links, repo_url exposed. Verified in Chrome.",
+      "updated": "2026-07-14T23:33:19Z",
+      "issue": "",
+      "pr": ""
+    },
+    {
+      "id": "T25",
+      "epic": "E1",
+      "title": "optimizazion token consume. also if the budget is used, try to call claud to see if it still works, and when a task is working and it doesnt work anymore, (app is live and the task gets blocked, it just stores the information so the next time can start the task from the same state, and the buged it better esitmated",
+      "acceptance": "get a better estimation of the token budget. last time was false",
+      "size": "M",
       "status": "next",
+      "handoff": "DONE so far (this session): autopilot now reacts to the REAL Claude CLI usage-limit (lib.looks_like_limit/parse_reset_time), records it (lib.record_limit_hit: calibrates budget down to real spend + sets window.not_before), and naps to the exact reset then auto-resumes with no manual restart. REMAINING: switch per-run counting from the weighted-transcript heuristic to real usage/cost from 'claude -p --output-format json'; and resume-a-blocked-task-from-saved-state.",
+      "updated": "2026-07-14T23:33:19Z",
+      "issue": ""
+    },
+    {
+      "id": "T26",
+      "epic": "E2",
+      "title": "dashboard improvement. at the moment nothing is really linked, it just look like that but is fake links",
+      "acceptance": "### Phase 1: Task Initialization * **Trigger:** A new task is assigned to you on the Dashboard. * **Action:**    1. Read the task details (title, description, initial tags).   2. Open a corresponding **GitHub Issue** in the repository.   3. Map the Dashboard tags to the appropriate **GitHub Labels (tags)** and apply them to the GitHub issue.   4. Update the Dashboard task with a link to the newly created GitHub Issue so they are linked.  ### Phase 2: Tag Synchronization * **Trigger:** A tag/label is added or removed on either the Dashboard or GitHub. * **Action:** Instantly sync the change. If a tag is added on GitHub, update the Dashboard task with that tag, and vice versa.  ### Phase 3: Task Completion & Merging * **Trigger:** You finish the work and are ready to close the task. * **Action:**   1. Create a **Pull Request / Merge Request (PR/MR)** for your branch.   2. Link the PR/MR to the GitHub Issue using close keywords (e.g., \"Closes #IssueNumber\").   3. Once the PR/MR is approved and successfully merged, ensure the GitHub Issue is closed.  ### Phase 4: Final Dashboard Update * **Trigger:** The GitHub Issue is closed and the PR/MR is merged. * **Action:**   1. Mark the Dashboard task as \"Completed\" / \"Done\".   2. Retrieve the merged **MR/PR Link** from GitHub.   3. Write/attach this MR/PR Link directly into the finished Dashboard task's designated field (e.g., description, comments, or custom link field).",
+      "size": "M",
+      "status": "in_progress",
       "handoff": "",
-      "updated": "2026-07-14T19:14:39Z"
+      "updated": "2026-07-14T23:33:36Z"
     }
   ],
   "next_ids": {
     "epic": 9,
-    "task": 25
+    "task": 27
   }
 }
