@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-07-14T19:09:38Z",
+  "generated_at": "2026-07-14T19:20:18Z",
   "budget": {
-    "used": 2612399,
+    "used": 3186038,
     "budget": 4670000,
-    "pct": 55.9,
+    "pct": 68.2,
     "window_started_at": "2026-07-14T18:10:00Z",
     "resets_at": "2026-07-14T23:10:00Z",
-    "seconds_to_reset": 14421,
+    "seconds_to_reset": 13781,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -56,6 +56,30 @@
       "slug": "genart-01",
       "status": "shipped",
       "description": "Interactive canvas artwork producing a unique composition every visit; seeded randomness, exportable as PNG."
+    },
+    {
+      "id": "E6",
+      "title": "Liquid Chrome Blob",
+      "kind": "project",
+      "status": "planned",
+      "description": "A reflective liquid-metal metaball that chases the cursor, merging and splitting like mercury",
+      "slug": "liquid-chrome"
+    },
+    {
+      "id": "E7",
+      "title": "Gravity Well Sandbox",
+      "kind": "project",
+      "status": "planned",
+      "description": "Drop massive bodies and watch glowing particles orbit under N-body gravity; a physics toy",
+      "slug": "gravity-well"
+    },
+    {
+      "id": "E8",
+      "title": "CRT Terminal OS",
+      "kind": "project",
+      "status": "planned",
+      "description": "A bootable fake retro OS with a working command prompt, scanlines, and hidden mini-commands",
+      "slug": "crt-os"
     }
   ],
   "tasks": [
@@ -105,9 +129,9 @@
       "title": "Phone page v2: polish (lighting, copy, mobile)",
       "acceptance": "Layer shading/gradients feel 3D; annotation copy is fun; works at 390px width.",
       "size": "S",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-14T19:01:41Z"
+      "updated": "2026-07-14T19:20:18Z"
     },
     {
       "id": "T6",
@@ -216,17 +240,104 @@
       "title": "Think about imporvements in dashboard. still not being correct.",
       "acceptance": "",
       "size": "M",
-      "status": "in_progress",
+      "status": "done",
+      "handoff": "Budget correctness fix: scoped transcript scan to this project only (was summing all Claude projects on the machine, inflating usage and risking false STOP)",
+      "updated": "2026-07-14T19:09:45Z"
+    },
+    {
+      "id": "T17",
+      "epic": "E6",
+      "title": "Liquid chrome blob v1",
+      "acceptance": "projects/liquid-chrome/index.html: a reflective metaball blob follows the cursor with smooth lag, merges/splits from smaller blobs, chrome shading via gradients; 60fps on Chromium; screenshot saved.",
+      "size": "M",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-14T19:05:32Z"
+      "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T18",
+      "epic": "E6",
+      "title": "Liquid chrome: color-shift reflections + touch",
+      "acceptance": "Environment reflection tint shifts with velocity; works with touch/drag at 390px width.",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T19",
+      "epic": "E7",
+      "title": "Gravity well sandbox v1",
+      "acceptance": "projects/gravity-well/index.html: click drops a massive body; particles orbit under N-body gravity with glowing motion trails; drag sets initial velocity; single file; 60fps; screenshot saved.",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T20",
+      "epic": "E7",
+      "title": "Gravity well: presets + mobile",
+      "acceptance": "Add binary-star and solar-system presets, trail-fade tuning, touch support at 390px.",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T21",
+      "epic": "E8",
+      "title": "CRT terminal OS v1",
+      "acceptance": "projects/crt-os/index.html: fake boot sequence then interactive prompt with help/ls/clear + one hidden mini-command; CRT scanline/glow aesthetic; single file; screenshot saved.",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T22",
+      "epic": "E1",
+      "title": "board.py brief: show next-queue depth + WARN when under 5",
+      "acceptance": "brief prints count of next tasks and a WARN line when fewer than 5 so grooming triggers reliably; verified.",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T23",
+      "epic": "E2",
+      "title": "Dashboard: gallery cards link live + show last-updated",
+      "acceptance": "Each shipped-project gallery card links to its live index.html and shows a last-updated timestamp; verified in browser.",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T24",
+      "epic": "E1",
+      "title": "Dashebord taks cannot be followed in the git merge request ore in the task in github. a task is an issue in github, when you work on it then you tag it and also when close show the github pull request",
+      "acceptance": "everything is conform as it shoul be in a professioanl team setup",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:14:39Z"
     }
   ],
   "queue": {
-    "in_progress": "T16",
+    "in_progress": null,
     "next": [
-      "T5",
+      "T24",
       "T12",
-      "T8"
+      "T8",
+      "T17",
+      "T19",
+      "T21",
+      "T18",
+      "T20",
+      "T22",
+      "T23"
     ],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
   },
@@ -263,6 +374,39 @@
       "built": true,
       "shot": true,
       "url": "/projects/genart-01/"
+    },
+    {
+      "id": "E6",
+      "title": "Liquid Chrome Blob",
+      "kind": "project",
+      "status": "planned",
+      "description": "A reflective liquid-metal metaball that chases the cursor, merging and splitting like mercury",
+      "slug": "liquid-chrome",
+      "built": false,
+      "shot": false,
+      "url": null
+    },
+    {
+      "id": "E7",
+      "title": "Gravity Well Sandbox",
+      "kind": "project",
+      "status": "planned",
+      "description": "Drop massive bodies and watch glowing particles orbit under N-body gravity; a physics toy",
+      "slug": "gravity-well",
+      "built": false,
+      "shot": false,
+      "url": null
+    },
+    {
+      "id": "E8",
+      "title": "CRT Terminal OS",
+      "kind": "project",
+      "status": "planned",
+      "description": "A bootable fake retro OS with a working command prompt, scanlines, and hidden mini-commands",
+      "slug": "crt-os",
+      "built": false,
+      "shot": false,
+      "url": null
     }
   ],
   "sessions": [
@@ -297,10 +441,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T16",
-    "current_action": "Auditing dashboard correctness",
+    "current_task": "T5",
+    "current_action": "Phone page v2 polish",
     "agent": "autopilot",
-    "updated": "2026-07-14T19:09:38Z",
+    "updated": "2026-07-14T19:20:18Z",
     "log": [
       {
         "at": "2026-07-14T18:53:17Z",
@@ -346,6 +490,21 @@
         "at": "2026-07-14T19:09:38Z",
         "agent": "autopilot",
         "msg": "Fixed budget bug: scan_transcripts now scoped to this project's transcript dir (was counting all Claude projects on the machine)"
+      },
+      {
+        "at": "2026-07-14T19:10:17Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-14T19:12:12Z",
+        "agent": "autopilot",
+        "msg": "pm groomed backlog; starting T5 phone v2 polish"
+      },
+      {
+        "at": "2026-07-14T19:20:18Z",
+        "agent": "autopilot",
+        "msg": "T5 verified: 3D bevel lighting + cast shadows, sharpened copy, clean 390px mobile layout"
       }
     ]
   }

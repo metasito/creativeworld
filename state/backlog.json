@@ -110,9 +110,9 @@
       "title": "Phone page v2: polish (lighting, copy, mobile)",
       "acceptance": "Layer shading/gradients feel 3D; annotation copy is fun; works at 390px width.",
       "size": "S",
-      "status": "in_progress",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-14T19:10:34Z"
+      "updated": "2026-07-14T19:20:18Z"
     },
     {
       "id": "T6",
@@ -294,10 +294,20 @@
       "status": "next",
       "handoff": "",
       "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T24",
+      "epic": "E1",
+      "title": "Dashebord taks cannot be followed in the git merge request ore in the task in github. a task is an issue in github, when you work on it then you tag it and also when close show the github pull request",
+      "acceptance": "everything is conform as it shoul be in a professioanl team setup",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:14:39Z"
     }
   ],
   "next_ids": {
     "epic": 9,
-    "task": 24
+    "task": 25
   }
 }

@@ -1,6 +1,7 @@
 {
-  "in_progress": "T5",
+  "in_progress": null,
   "next": [
+    "T24",
     "T12",
     "T8",
     "T17",

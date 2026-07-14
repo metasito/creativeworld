@@ -18,11 +18,11 @@ body { color: var(--ink);
 .phone { position: absolute; left: 50%; top: 50%; width: 260px; height: 540px; margin: -270px 0 0 -130px;
   transform-style: preserve-3d; }
 .layer { position: absolute; inset: 0; border-radius: 38px; transform-style: preserve-3d;
-  box-shadow: 0 30px 60px rgba(0,0,0,.45); backface-visibility: visible; }
+  box-shadow: inset 0 2px 1px rgba(255,255,255,.14), inset 0 -5px 12px rgba(0,0,0,.5); backface-visibility: visible; }
 
 /* glass */
 .glass { background: linear-gradient(115deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.05) 30%, rgba(160,190,255,.10) 55%, rgba(255,255,255,.03) 80%);
-  border: 1px solid rgba(255,255,255,.35); box-shadow: 0 30px 60px rgba(0,0,0,.35), inset 0 0 30px rgba(255,255,255,.06); }
+  border: 1px solid rgba(255,255,255,.35); box-shadow: inset 0 2px 1px rgba(255,255,255,.3), inset 0 0 30px rgba(255,255,255,.08); }
 .glass::after { content: ""; position: absolute; left: 12%; top: 4%; width: 30%; height: 55%;
   background: linear-gradient(105deg, rgba(255,255,255,.35), transparent 70%); border-radius: 40px; filter: blur(2px); }
 
@@ -107,7 +107,17 @@ body { color: var(--ink);
 
 @media (max-width: 700px) {
   .phone { width: 190px; height: 396px; margin: -198px 0 0 -95px; }
-  .note span { max-width: 130px; } .note .line { width: 26px; }
+  /* stack every annotation down the left edge so nothing clips on narrow screens */
+  .note, .note.left { left: 16px; right: auto; gap: 8px; flex-direction: row; text-align: left; }
+  .note span { max-width: 46vw; } .note .line { width: 20px; }
+  .title { text-align: left; padding-left: 18px; }
+  .title h1 { font-size: 26px; } .title p { padding: 4px 18px 0 0; }
+}
+@media (max-width: 430px) {
+  .phone { width: 168px; height: 350px; margin: -175px 0 0 -84px; }
+  .note { gap: 7px; } .note b { font-size: 13px; }
+  .note span { font-size: 11px; } .note .line { width: 14px; }
+  .title h1 { font-size: 25px; } .title p { font-size: 12px; }
 }
 </style>
 </head>
@@ -128,11 +138,11 @@ body { color: var(--ink);
   </div>
 </div>
 
-<div class="title" id="title"><h1>Anatomy of a Phone</h1><p>Six layers of everyday magic, pulled apart.</p></div>
+<div class="title" id="title"><h1>Anatomy of a Phone</h1><p>Six layers of everyday magic — pulled apart, one scroll at a time.</p></div>
 <div class="hint" id="hint">scroll to disassemble</div>
 
 <div class="note" data-at=".18" style="top:22%"><div class="dot"></div><div class="line"></div><div><b>Ion-glass</b><span>Chemically strengthened. Survives pockets, mostly survives gravity.</span></div></div>
-<div class="note left" data-at=".30" style="top:34%"><div class="dot"></div><div class="line"></div><div><b>OLED display</b><span>3.5 million pixels that switch themselves off to make true black.</span></div></div>
+<div class="note left" data-at=".30" style="top:34%"><div class="dot"></div><div class="line"></div><div><b>OLED display</b><span>3.5 million pixels, each politely switching itself off to manufacture true black.</span></div></div>
 <div class="note" data-at=".42" style="top:47%"><div class="dot"></div><div class="line"></div><div><b>Haptics & audio</b><span>A tiny motor forging the illusion of a click that never happened.</span></div></div>
 <div class="note left" data-at=".54" style="top:58%"><div class="dot"></div><div class="line"></div><div><b>Battery</b><span>4,441 mAh of impatience management.</span></div></div>
 <div class="note" data-at=".66" style="top:70%"><div class="dot"></div><div class="line"></div><div><b>Logic board</b><span>A rainforest of silicon; the camera alone has three eyes.</span></div></div>
@@ -158,14 +168,18 @@ function frame() {
   const target = forced !== null ? +forced : max > 0 ? clamp01(scrollY / max) : 0;
   cur = lerp(cur, target, 0.09);                    // smoothing
   const p = cur, ex = ease(clamp01((p - .12) / .68)); // explosion 12%..80% of scroll
-  const spread = 95;                                 // px per layer step at full explosion
-  const ry = lerp(16, 44, ex) + Math.sin(p * 6) * 2;
+  const mobile = innerWidth < 700;
+  const spread = mobile ? 66 : 95;                   // px per layer step at full explosion
+  const ry = lerp(16, mobile ? 34 : 44, ex) + Math.sin(p * 6) * 2;
   const rx = lerp(6, 14, ex);
-  const scale = innerWidth < 700 ? 1 : lerp(1, .92, ex);
+  const scale = mobile ? 1 : lerp(1, .92, ex);
   phone.style.transform = `scale(${scale}) rotateX(${rx}deg) rotateY(${ry}deg)`;
   for (const l of layers) {
     const z = parseFloat(l.dataset.z);
-    l.style.transform = `translateZ(${lerp(z * 7, z * spread, ex)}px)`;
+    const sep = lerp(z * 7, z * spread, ex);
+    l.style.transform = `translateZ(${sep}px)`;
+    const lift = Math.abs(sep) / spread;             // how far this layer floated out
+    l.style.filter = `drop-shadow(0 ${(6 + lift * 10).toFixed(0)}px ${(12 + lift * 16).toFixed(0)}px rgba(0,0,0,${(0.35 + lift * 0.12).toFixed(2)}))`;
   }
   title.style.opacity = p < .08 ? 1 : Math.max(0, 1 - (p - .08) / .06);
   hint.style.opacity = p < .05 ? 1 : Math.max(0, 1 - (p - .05) / .05);
