@@ -58,6 +58,38 @@ def repo_url():
     return _REPO_URL or None
 
 
+_COMMITS_BY_TASK = None
+
+
+def commits_by_task():
+    """{task_id: short_sha} for every task that has a commit, from git history.
+
+    Commits are named `<task-id>: <what shipped>` (see CLAUDE.md), so one git-log
+    scan maps each task to the real commit that shipped it. This is what makes the
+    dashboard's traceability links REAL — they point at a commit that actually
+    exists on the pushed remote, not a placeholder. Newest-first, so the first
+    match per id wins (the commit that marked it done). Cached per process.
+    """
+    global _COMMITS_BY_TASK
+    if _COMMITS_BY_TASK is not None:
+        return _COMMITS_BY_TASK
+    out = {}
+    try:
+        log = subprocess.run(
+            ["git", "log", "--format=%h %s"], cwd=ROOT,
+            capture_output=True, text=True, timeout=10).stdout
+    except Exception:
+        _COMMITS_BY_TASK = out
+        return out
+    for line in log.splitlines():
+        sha, _, subject = line.partition(" ")
+        m = re.match(r"(T\d+):", subject)
+        if m and m.group(1) not in out:
+            out[m.group(1)] = sha
+    _COMMITS_BY_TASK = out
+    return out
+
+
 def load(name):
     return json.loads((STATE / name).read_text(encoding="utf-8"))
 

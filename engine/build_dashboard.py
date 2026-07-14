@@ -29,6 +29,10 @@ def compose(live=False):
         projects.append({**e, "built": built, "shot": shot,
                          "url": f"/projects/{slug}/" if built else None})
 
+    # Wire each task to the real commit that shipped it (named "<id>: ...").
+    commits = lib.commits_by_task()
+    tasks = [{**t, "commit": commits.get(t["id"])} for t in backlog["tasks"]]
+
     summary = lib.budget_summary(tokens)
     name, _ = lib.verdict(summary)
     return {
@@ -37,7 +41,7 @@ def compose(live=False):
         "budget": {**summary, "verdict": name,
                    "history": tokens.get("history", [])[-20:]},
         "epics": backlog["epics"],
-        "tasks": backlog["tasks"],
+        "tasks": tasks,
         "queue": queue,
         "projects": projects,
         "sessions": sessions[-10:],

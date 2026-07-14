@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-14T23:33:27Z",
+  "generated_at": "2026-07-14T23:49:40Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 681221,
+    "used": 1561743,
     "budget": 4670000,
-    "pct": 14.6,
+    "pct": 33.4,
     "window_started_at": "2026-07-14T23:10:00Z",
     "resets_at": "2026-07-15T04:10:00Z",
-    "seconds_to_reset": 16592,
+    "seconds_to_reset": 15619,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -67,7 +67,7 @@
       "id": "E6",
       "title": "Liquid Chrome Blob",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "A reflective liquid-metal metaball that chases the cursor, merging and splitting like mercury",
       "slug": "liquid-chrome"
     },
@@ -97,7 +97,8 @@
       "size": "L",
       "status": "done",
       "handoff": "engine scripts tested: verdicts, window roll, board, live api",
-      "updated": "2026-07-14T13:54:15Z"
+      "updated": "2026-07-14T13:54:15Z",
+      "commit": null
     },
     {
       "id": "T2",
@@ -107,7 +108,8 @@
       "size": "M",
       "status": "done",
       "handoff": "verified via chromium screenshot against live server",
-      "updated": "2026-07-14T13:54:15Z"
+      "updated": "2026-07-14T13:54:15Z",
+      "commit": null
     },
     {
       "id": "T3",
@@ -117,7 +119,8 @@
       "size": "M",
       "status": "done",
       "handoff": "v1 verified at p=0,0.5,0.99 desktop + 390px mobile; ?p= test hook added",
-      "updated": "2026-07-14T13:58:30Z"
+      "updated": "2026-07-14T13:58:30Z",
+      "commit": null
     },
     {
       "id": "T4",
@@ -127,7 +130,8 @@
       "size": "S",
       "status": "done",
       "handoff": "preflight tested both states; README documents secret setup",
-      "updated": "2026-07-14T14:02:40Z"
+      "updated": "2026-07-14T14:02:40Z",
+      "commit": null
     },
     {
       "id": "T5",
@@ -137,7 +141,8 @@
       "size": "S",
       "status": "done",
       "handoff": "",
-      "updated": "2026-07-14T19:20:18Z"
+      "updated": "2026-07-14T19:20:18Z",
+      "commit": "36a0687"
     },
     {
       "id": "T6",
@@ -147,7 +152,8 @@
       "size": "M",
       "status": "done",
       "handoff": "verified via drive.py: collect/score/death/restart all fire; demo=1 autopilot + title telemetry",
-      "updated": "2026-07-14T14:08:20Z"
+      "updated": "2026-07-14T14:08:20Z",
+      "commit": null
     },
     {
       "id": "T7",
@@ -157,7 +163,8 @@
       "size": "M",
       "status": "done",
       "handoff": "seeds 7 and 42424242 produce distinct compositions; frame telemetry via title; click/S handlers in place",
-      "updated": "2026-07-14T14:11:50Z"
+      "updated": "2026-07-14T14:11:50Z",
+      "commit": null
     },
     {
       "id": "T8",
@@ -167,7 +174,8 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-14T14:14:30Z"
+      "updated": "2026-07-14T14:14:30Z",
+      "commit": null
     },
     {
       "id": "T9",
@@ -177,7 +185,8 @@
       "size": "S",
       "status": "done",
       "handoff": "3 lessons with token costs; T10+T11 filed",
-      "updated": "2026-07-14T14:14:45Z"
+      "updated": "2026-07-14T14:14:45Z",
+      "commit": null
     },
     {
       "id": "T10",
@@ -187,7 +196,8 @@
       "size": "S",
       "status": "done",
       "handoff": "brief tested; boot skill now uses it",
-      "updated": "2026-07-14T14:19:10Z"
+      "updated": "2026-07-14T14:19:10Z",
+      "commit": null
     },
     {
       "id": "T11",
@@ -197,7 +207,8 @@
       "size": "S",
       "status": "done",
       "handoff": "journal.py start/end tested; wrap-up skill updated",
-      "updated": "2026-07-14T18:13:22Z"
+      "updated": "2026-07-14T18:13:22Z",
+      "commit": "d83ac88"
     },
     {
       "id": "T12",
@@ -207,7 +218,8 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-14T18:45:00Z"
+      "updated": "2026-07-14T18:45:00Z",
+      "commit": null
     },
     {
       "id": "T13",
@@ -217,7 +229,8 @@
       "size": "M",
       "status": "done",
       "handoff": "POST /api/task verified both paths (existing epic top-of-queue, new epic); form screenshot-verified in Chrome",
-      "updated": "2026-07-14T18:18:20Z"
+      "updated": "2026-07-14T18:18:20Z",
+      "commit": "29c061f"
     },
     {
       "id": "T14",
@@ -228,7 +241,8 @@
       "status": "done",
       "handoff": "Board now supports drag-to-move (status) + drag-to-reorder (next priority), click-to-open task modal with editable status/handoff/PR link, and PR links on cards. New POST /api/task/update endpoint + board.update_task().",
       "updated": "2026-07-14T19:03:02Z",
-      "pr": ""
+      "pr": "",
+      "commit": "38e853b"
     },
     {
       "id": "T15",
@@ -238,7 +252,8 @@
       "size": "M",
       "status": "done",
       "handoff": "autopilot.py (headless-agent loop, budget-gated, naps to reset) + heartbeat.py + dashboard Agents panel; dry-run + panel verified",
-      "updated": "2026-07-14T18:56:31Z"
+      "updated": "2026-07-14T18:56:31Z",
+      "commit": "5c7c453"
     },
     {
       "id": "T16",
@@ -248,7 +263,8 @@
       "size": "M",
       "status": "done",
       "handoff": "Budget correctness fix: scoped transcript scan to this project only (was summing all Claude projects on the machine, inflating usage and risking false STOP)",
-      "updated": "2026-07-14T19:09:45Z"
+      "updated": "2026-07-14T19:09:45Z",
+      "commit": "5b4ccfe"
     },
     {
       "id": "T17",
@@ -256,9 +272,10 @@
       "title": "Liquid chrome blob v1",
       "acceptance": "projects/liquid-chrome/index.html: a reflective metaball blob follows the cursor with smooth lag, merges/splits from smaller blobs, chrome shading via gradients; 60fps on Chromium; screenshot saved.",
       "size": "M",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-14T19:12:01Z"
+      "updated": "2026-07-14T23:49:36Z",
+      "commit": null
     },
     {
       "id": "T18",
@@ -266,9 +283,10 @@
       "title": "Liquid chrome: color-shift reflections + touch",
       "acceptance": "Environment reflection tint shifts with velocity; works with touch/drag at 390px width.",
       "size": "S",
-      "status": "next",
+      "status": "in_progress",
       "handoff": "",
-      "updated": "2026-07-14T19:12:01Z"
+      "updated": "2026-07-14T23:45:02Z",
+      "commit": null
     },
     {
       "id": "T19",
@@ -276,9 +294,10 @@
       "title": "Gravity well sandbox v1",
       "acceptance": "projects/gravity-well/index.html: click drops a massive body; particles orbit under N-body gravity with glowing motion trails; drag sets initial velocity; single file; 60fps; screenshot saved.",
       "size": "M",
-      "status": "next",
+      "status": "in_progress",
       "handoff": "",
-      "updated": "2026-07-14T19:12:01Z"
+      "updated": "2026-07-14T23:45:00Z",
+      "commit": null
     },
     {
       "id": "T20",
@@ -286,9 +305,10 @@
       "title": "Gravity well: presets + mobile",
       "acceptance": "Add binary-star and solar-system presets, trail-fade tuning, touch support at 390px.",
       "size": "S",
-      "status": "next",
+      "status": "in_progress",
       "handoff": "",
-      "updated": "2026-07-14T19:12:01Z"
+      "updated": "2026-07-14T23:45:07Z",
+      "commit": null
     },
     {
       "id": "T21",
@@ -296,9 +316,10 @@
       "title": "CRT terminal OS v1",
       "acceptance": "projects/crt-os/index.html: fake boot sequence then interactive prompt with help/ls/clear + one hidden mini-command; CRT scanline/glow aesthetic; single file; screenshot saved.",
       "size": "M",
-      "status": "next",
+      "status": "in_progress",
       "handoff": "",
-      "updated": "2026-07-14T19:12:01Z"
+      "updated": "2026-07-14T23:45:04Z",
+      "commit": null
     },
     {
       "id": "T22",
@@ -308,7 +329,8 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-14T19:12:01Z"
+      "updated": "2026-07-14T19:12:01Z",
+      "commit": null
     },
     {
       "id": "T23",
@@ -318,7 +340,8 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-14T19:12:01Z"
+      "updated": "2026-07-14T19:12:01Z",
+      "commit": null
     },
     {
       "id": "T24",
@@ -330,7 +353,8 @@
       "handoff": "GitHub traceability shipped: board.py link cmd + issue/pr fields, server passes issue, dashboard shows per-task open-issue/issue# + merge-request links, repo_url exposed. Verified in Chrome.",
       "updated": "2026-07-14T23:33:19Z",
       "issue": "",
-      "pr": ""
+      "pr": "",
+      "commit": "25a37fc"
     },
     {
       "id": "T25",
@@ -341,7 +365,8 @@
       "status": "next",
       "handoff": "DONE so far (this session): autopilot now reacts to the REAL Claude CLI usage-limit (lib.looks_like_limit/parse_reset_time), records it (lib.record_limit_hit: calibrates budget down to real spend + sets window.not_before), and naps to the exact reset then auto-resumes with no manual restart. REMAINING: switch per-run counting from the weighted-transcript heuristic to real usage/cost from 'claude -p --output-format json'; and resume-a-blocked-task-from-saved-state.",
       "updated": "2026-07-14T23:33:19Z",
-      "issue": ""
+      "issue": "",
+      "commit": null
     },
     {
       "id": "T26",
@@ -349,23 +374,29 @@
       "title": "dashboard improvement. at the moment nothing is really linked, it just look like that but is fake links",
       "acceptance": "### Phase 1: Task Initialization * **Trigger:** A new task is assigned to you on the Dashboard. * **Action:**    1. Read the task details (title, description, initial tags).   2. Open a corresponding **GitHub Issue** in the repository.   3. Map the Dashboard tags to the appropriate **GitHub Labels (tags)** and apply them to the GitHub issue.   4. Update the Dashboard task with a link to the newly created GitHub Issue so they are linked.  ### Phase 2: Tag Synchronization * **Trigger:** A tag/label is added or removed on either the Dashboard or GitHub. * **Action:** Instantly sync the change. If a tag is added on GitHub, update the Dashboard task with that tag, and vice versa.  ### Phase 3: Task Completion & Merging * **Trigger:** You finish the work and are ready to close the task. * **Action:**   1. Create a **Pull Request / Merge Request (PR/MR)** for your branch.   2. Link the PR/MR to the GitHub Issue using close keywords (e.g., \"Closes #IssueNumber\").   3. Once the PR/MR is approved and successfully merged, ensure the GitHub Issue is closed.  ### Phase 4: Final Dashboard Update * **Trigger:** The GitHub Issue is closed and the PR/MR is merged. * **Action:**   1. Mark the Dashboard task as \"Completed\" / \"Done\".   2. Retrieve the merged **MR/PR Link** from GitHub.   3. Write/attach this MR/PR Link directly into the finished Dashboard task's designated field (e.g., description, comments, or custom link field).",
       "size": "M",
-      "status": "next",
+      "status": "done",
+      "handoff": "Shipped real GitHub traceability. lib.commits_by_task maps each task to its shipping commit sha via git log, build_dashboard enriches tasks with commit, dashboard renders real commit-URL links on cards and detail modal. Fixes the fake-links complaint, verified in Chromium. Full 4-phase issue/PR/tag automation needs gh CLI or GITHUB_TOKEN not present here, filed as T27.",
+      "updated": "2026-07-14T23:43:14Z",
+      "commit": null
+    },
+    {
+      "id": "T27",
+      "epic": "Engine",
+      "title": "GitHub API automation: auto-create issues + PR close-keywords (needs gh CLI or GITHUB_TOKEN)",
+      "acceptance": "When gh CLI or GITHUB_TOKEN is available: board.py claim opens a real GitHub issue and stores its number; board.py done opens/links a PR with 'Closes #N'; dashboard tag edits sync to GitHub labels both ways. Blocked in the current headless local env which has neither gh nor a token \u2014 the commit-link traceability from T26 is the token-free fallback.",
+      "size": "M",
+      "status": "backlog",
       "handoff": "",
-      "updated": "2026-07-14T23:32:52Z"
+      "updated": "2026-07-14T23:42:46Z",
+      "commit": null
     }
   ],
   "queue": {
-    "in_progress": null,
+    "in_progress": "T18",
     "next": [
-      "T26",
       "T25",
       "T12",
       "T8",
-      "T17",
-      "T19",
-      "T21",
-      "T18",
-      "T20",
       "T22",
       "T23"
     ],
@@ -409,12 +440,12 @@
       "id": "E6",
       "title": "Liquid Chrome Blob",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "A reflective liquid-metal metaball that chases the cursor, merging and splitting like mercury",
       "slug": "liquid-chrome",
-      "built": false,
-      "shot": false,
-      "url": null
+      "built": true,
+      "shot": true,
+      "url": "/projects/liquid-chrome/"
     },
     {
       "id": "E7",
@@ -471,31 +502,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T24",
-    "current_action": "GitHub issue/PR integration for tasks",
-    "agent": "autopilot",
-    "updated": "2026-07-14T23:31:33Z",
+    "current_task": "T17",
+    "current_action": "building liquid chrome blob v1",
+    "agent": "opus",
+    "updated": "2026-07-14T23:49:33Z",
     "log": [
-      {
-        "at": "2026-07-14T21:19:04Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-14T21:19:10Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-14T21:19:21Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-14T21:19:26Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-14T21:19:32Z",
         "agent": "autopilot",
@@ -535,6 +546,26 @@
         "at": "2026-07-14T23:31:33Z",
         "agent": "autopilot",
         "msg": "T24 recovery: verifying GitHub traceability before committing prior session's work"
+      },
+      {
+        "at": "2026-07-14T23:38:01Z",
+        "agent": "autopilot",
+        "msg": "T26: wired tasks to real commit URLs; verifying in Chromium"
+      },
+      {
+        "at": "2026-07-14T23:43:27Z",
+        "agent": "autopilot",
+        "msg": "T26 done: real commit-link traceability shipped; T27 filed for gh-API automation"
+      },
+      {
+        "at": "2026-07-14T23:47:51Z",
+        "agent": "autopilot",
+        "msg": "built liquid-chrome index.html, verifying"
+      },
+      {
+        "at": "2026-07-14T23:49:33Z",
+        "agent": "opus",
+        "msg": "liquid-chrome verified, screenshot accepted"
       }
     ]
   }

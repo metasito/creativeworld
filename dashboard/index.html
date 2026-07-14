@@ -208,6 +208,10 @@ function issueLink(t) {
   if (t.issue) return `<a class="gh" href="${repoUrl}/issues/${t.issue}" target="_blank" rel="noopener">● #${t.issue}</a>`;
   return `<a class="gh new" href="${newIssueUrl(t)}" target="_blank" rel="noopener">＋ open issue</a>`;
 }
+function commitLink(t) {
+  if (!repoUrl || !t.commit) return "";
+  return `<a class="pr commit" href="${repoUrl}/commit/${t.commit}" target="_blank" rel="noopener" title="commit ${t.commit}">⎇ ${t.commit}</a>`;
+}
 
 async function fetchState() {
   try {
@@ -254,7 +258,7 @@ function render(d) {
         <div class="t">${t.title}</div>
         <div class="m">${t.id} · ${t.size} · ${epicsById[t.epic] || t.epic}</div>
         ${t.handoff && s !== "done" ? `<div class="h">${t.handoff}</div>` : ""}
-        <div class="links">${issueLink(t)}${t.pr ? `<a class="pr" href="${t.pr}" target="_blank" rel="noopener">↗ merge request</a>` : ""}</div></div>`).join("") + "</div>";
+        <div class="links">${issueLink(t)}${commitLink(t)}${t.pr ? `<a class="pr" href="${t.pr}" target="_blank" rel="noopener">↗ merge request</a>` : ""}</div></div>`).join("") + "</div>";
   }).join("");
 
   $("gallery").innerHTML = d.projects.map(p => `<div class="card proj">
@@ -387,7 +391,8 @@ function openModal(t) {
       ? `<a href="${repoUrl}/issues/${t.issue}" target="_blank" rel="noopener">issue #${t.issue}</a>`
       : `<a href="${newIssueUrl(t)}" target="_blank" rel="noopener">＋ open a GitHub issue for this task</a>`;
     const pr = t.pr ? ` → <a href="${t.pr}" target="_blank" rel="noopener">merge request ↗</a>` : "";
-    trace.innerHTML = "GitHub: " + iss + pr;
+    const commit = t.commit ? ` · shipped in <a href="${repoUrl}/commit/${t.commit}" target="_blank" rel="noopener">${t.commit} ⎇</a>` : "";
+    trace.innerHTML = "GitHub: " + iss + pr + commit;
   } else trace.textContent = "";
   const link = $("m-open");
   if (t.pr) { link.href = t.pr; link.style.display = ""; } else link.style.display = "none";
