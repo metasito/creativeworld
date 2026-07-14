@@ -1,6 +1,7 @@
 """Shared helpers for the CreativeWorld engine. Stdlib only."""
 import json
 import os
+import re
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -8,6 +9,27 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 STATE = ROOT / "state"
 TRANSCRIPTS = Path(os.environ.get("CLAUDE_TRANSCRIPTS_DIR", Path.home() / ".claude" / "projects"))
+
+
+def project_transcript_dir():
+    """Transcript folder for THIS project only, or None to scan all (fallback).
+
+    Claude Code names each project's transcript dir after its cwd with every
+    non-alphanumeric char turned into '-' (e.g. C:\\Users\\me\\creativeworld ->
+    C--Users-me-creativeworld). Scoping to it stops OTHER projects' sessions on
+    the same machine from being counted against this engine's budget.
+    """
+    if not TRANSCRIPTS.exists():
+        return None
+    enc = re.sub(r"[^A-Za-z0-9]", "-", str(ROOT))
+    exact = TRANSCRIPTS / enc
+    if exact.is_dir():
+        return exact
+    low = enc.lower()  # drive-letter / cwd casing can differ from when dir was made
+    for d in TRANSCRIPTS.iterdir():
+        if d.is_dir() and d.name.lower() == low:
+            return d
+    return None
 
 
 def load(name):
@@ -47,7 +69,9 @@ def scan_transcripts(weights, since=None):
     """
     per_session = {}
     earliest = None
-    for f in TRANSCRIPTS.glob("*/*.jsonl"):
+    root = project_transcript_dir()
+    files = root.glob("*.jsonl") if root else TRANSCRIPTS.glob("*/*.jsonl")
+    for f in files:
         by_msg = {}
         for line in f.open(encoding="utf-8"):
             try:

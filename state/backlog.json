@@ -197,9 +197,9 @@
       "title": "Think about imporvements in dashboard. still not being correct.",
       "acceptance": "",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-14T19:04:03Z"
+      "status": "done",
+      "handoff": "Budget correctness fix: scoped transcript scan to this project only (was summing all Claude projects on the machine, inflating usage and risking false STOP)",
+      "updated": "2026-07-14T19:09:45Z"
     }
   ],
   "next_ids": {
