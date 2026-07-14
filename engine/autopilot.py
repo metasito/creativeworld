@@ -50,8 +50,9 @@ def run_agent(dry):
         print("[dry-run] would launch:", CLAUDE, "-p <prompt>")
         time.sleep(1)
         return 0
-    # headless, unattended: skip interactive permission prompts so it can run alone
-    cmd = [CLAUDE, "-p", PROMPT, "--permission-mode", "acceptEdits", "--max-turns", "120"]
+    # headless + unattended: the loop needs git/python/chrome with no prompts, so it
+    # runs with skipped permissions inside this repo. Only run autopilot on a repo you trust.
+    cmd = [CLAUDE, "-p", PROMPT, "--dangerously-skip-permissions", "--max-turns", "120"]
     try:
         return subprocess.run(cmd, cwd=str(lib.ROOT)).returncode
     except FileNotFoundError:
