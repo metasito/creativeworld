@@ -37,6 +37,30 @@
       "slug": "genart-01",
       "status": "shipped",
       "description": "Interactive canvas artwork producing a unique composition every visit; seeded randomness, exportable as PNG."
+    },
+    {
+      "id": "E6",
+      "title": "Liquid Chrome Blob",
+      "kind": "project",
+      "status": "planned",
+      "description": "A reflective liquid-metal metaball that chases the cursor, merging and splitting like mercury",
+      "slug": "liquid-chrome"
+    },
+    {
+      "id": "E7",
+      "title": "Gravity Well Sandbox",
+      "kind": "project",
+      "status": "planned",
+      "description": "Drop massive bodies and watch glowing particles orbit under N-body gravity; a physics toy",
+      "slug": "gravity-well"
+    },
+    {
+      "id": "E8",
+      "title": "CRT Terminal OS",
+      "kind": "project",
+      "status": "planned",
+      "description": "A bootable fake retro OS with a working command prompt, scanlines, and hidden mini-commands",
+      "slug": "crt-os"
     }
   ],
   "tasks": [
@@ -86,9 +110,9 @@
       "title": "Phone page v2: polish (lighting, copy, mobile)",
       "acceptance": "Layer shading/gradients feel 3D; annotation copy is fun; works at 390px width.",
       "size": "S",
-      "status": "next",
+      "status": "in_progress",
       "handoff": "",
-      "updated": "2026-07-14T19:01:41Z"
+      "updated": "2026-07-14T19:10:34Z"
     },
     {
       "id": "T6",
@@ -200,10 +224,80 @@
       "status": "done",
       "handoff": "Budget correctness fix: scoped transcript scan to this project only (was summing all Claude projects on the machine, inflating usage and risking false STOP)",
       "updated": "2026-07-14T19:09:45Z"
+    },
+    {
+      "id": "T17",
+      "epic": "E6",
+      "title": "Liquid chrome blob v1",
+      "acceptance": "projects/liquid-chrome/index.html: a reflective metaball blob follows the cursor with smooth lag, merges/splits from smaller blobs, chrome shading via gradients; 60fps on Chromium; screenshot saved.",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T18",
+      "epic": "E6",
+      "title": "Liquid chrome: color-shift reflections + touch",
+      "acceptance": "Environment reflection tint shifts with velocity; works with touch/drag at 390px width.",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T19",
+      "epic": "E7",
+      "title": "Gravity well sandbox v1",
+      "acceptance": "projects/gravity-well/index.html: click drops a massive body; particles orbit under N-body gravity with glowing motion trails; drag sets initial velocity; single file; 60fps; screenshot saved.",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T20",
+      "epic": "E7",
+      "title": "Gravity well: presets + mobile",
+      "acceptance": "Add binary-star and solar-system presets, trail-fade tuning, touch support at 390px.",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T21",
+      "epic": "E8",
+      "title": "CRT terminal OS v1",
+      "acceptance": "projects/crt-os/index.html: fake boot sequence then interactive prompt with help/ls/clear + one hidden mini-command; CRT scanline/glow aesthetic; single file; screenshot saved.",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T22",
+      "epic": "E1",
+      "title": "board.py brief: show next-queue depth + WARN when under 5",
+      "acceptance": "brief prints count of next tasks and a WARN line when fewer than 5 so grooming triggers reliably; verified.",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:12:01Z"
+    },
+    {
+      "id": "T23",
+      "epic": "E2",
+      "title": "Dashboard: gallery cards link live + show last-updated",
+      "acceptance": "Each shipped-project gallery card links to its live index.html and shows a last-updated timestamp; verified in browser.",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:12:01Z"
     }
   ],
   "next_ids": {
-    "epic": 6,
-    "task": 17
+    "epic": 9,
+    "task": 24
   }
 }
