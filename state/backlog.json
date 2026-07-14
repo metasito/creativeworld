@@ -241,9 +241,9 @@
       "title": "Liquid chrome: color-shift reflections + touch",
       "acceptance": "Environment reflection tint shifts with velocity; works with touch/drag at 390px width.",
       "size": "S",
-      "status": "in_progress",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-14T23:45:02Z"
+      "updated": "2026-07-14T23:52:00Z"
     },
     {
       "id": "T19",
