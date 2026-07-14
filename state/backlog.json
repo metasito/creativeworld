@@ -190,10 +190,20 @@
       "status": "done",
       "handoff": "autopilot.py (headless-agent loop, budget-gated, naps to reset) + heartbeat.py + dashboard Agents panel; dry-run + panel verified",
       "updated": "2026-07-14T18:56:31Z"
+    },
+    {
+      "id": "T16",
+      "epic": "E1",
+      "title": "Think about imporvements in dashboard. still not being correct.",
+      "acceptance": "",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-14T19:04:03Z"
     }
   ],
   "next_ids": {
     "epic": 6,
-    "task": 16
+    "task": 17
   }
 }
