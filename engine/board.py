@@ -42,6 +42,35 @@ def touch(t):
     t["updated"] = lib.iso(lib.now())
 
 
+def create_task(b, epic, size, title, acceptance, status="backlog", top=False):
+    """Create a task (importable — used by server.py's POST /api/task)."""
+    n = b["next_ids"]["task"]
+    b["next_ids"]["task"] = n + 1
+    t = {"id": f"T{n}", "epic": epic, "title": title.strip(),
+         "acceptance": acceptance.strip(), "size": size, "status": status,
+         "handoff": "", "updated": lib.iso(lib.now())}
+    b["tasks"].append(t)
+    lib.save("backlog.json", b)
+    q = sync_queue(b)
+    if top and status == "next":
+        q["next"] = [t["id"]] + [x for x in q["next"] if x != t["id"]]
+        lib.save("queue.json", q)
+    return t
+
+
+def create_epic(b, kind, title, description, slug=None):
+    """Create an epic (importable — used by server.py's POST /api/task)."""
+    n = b["next_ids"]["epic"]
+    b["next_ids"]["epic"] = n + 1
+    e = {"id": f"E{n}", "title": title.strip(), "kind": kind, "status": "planned",
+         "description": description.strip()}
+    if slug:
+        e["slug"] = slug
+    b["epics"].append(e)
+    lib.save("backlog.json", b)
+    return e
+
+
 def main():
     args = sys.argv[1:]
     cmd = args[0] if args else "list"

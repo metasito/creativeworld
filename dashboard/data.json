@@ -1,16 +1,22 @@
 {
-  "generated_at": "2026-07-14T14:33:27Z",
+  "generated_at": "2026-07-14T18:18:20Z",
   "budget": {
-    "used": 1643000,
-    "budget": 1500000,
-    "pct": 109.5,
-    "window_started_at": "2026-07-14T13:36:28Z",
-    "resets_at": "2026-07-14T18:36:28Z",
-    "seconds_to_reset": 14580,
+    "used": 267469,
+    "budget": 4670000,
+    "pct": 5.7,
+    "window_started_at": "2026-07-14T18:10:00Z",
+    "resets_at": "2026-07-14T23:10:00Z",
+    "seconds_to_reset": 17499,
     "wrap_up_pct": 85,
     "stop_pct": 95,
-    "verdict": "STOP",
-    "history": []
+    "verdict": "CONTINUE",
+    "history": [
+      {
+        "started_at": "2026-07-14T13:10:00Z",
+        "used": 4798485,
+        "budget": 4670000
+      }
+    ]
   },
   "epics": [
     {
@@ -159,9 +165,9 @@
       "title": "journal.py: script to append session entries to sessions.json",
       "acceptance": "wrap-up no longer hand-edits JSON; one CLI call appends ended/did/stopped_because/resume_with",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-14T14:14:30Z"
+      "status": "done",
+      "handoff": "journal.py start/end tested; wrap-up skill updated",
+      "updated": "2026-07-14T18:13:22Z"
     },
     {
       "id": "T12",
@@ -172,12 +178,21 @@
       "status": "next",
       "handoff": "",
       "updated": "2026-07-14T18:45:00Z"
+    },
+    {
+      "id": "T13",
+      "epic": "E2",
+      "title": "Dashboard: add-task form - queue a task from the UI, associate to an existing epic or create a new project epic",
+      "acceptance": "Dashboard shows an Add Task form: title, size S/M, epic dropdown listing existing epics plus 'new project' (asks title+slug). server.py POST /api/task validates and writes it via board logic, placing it at a chosen queue position (default top). New task appears on the kanban within one refresh. Verified end-to-end in a real browser.",
+      "size": "M",
+      "status": "done",
+      "handoff": "POST /api/task verified both paths (existing epic top-of-queue, new epic); form screenshot-verified in Chrome",
+      "updated": "2026-07-14T18:18:20Z"
     }
   ],
   "queue": {
     "in_progress": null,
     "next": [
-      "T11",
       "T12",
       "T5",
       "T8"
@@ -193,7 +208,7 @@
       "status": "shipped",
       "description": "Landing page where a phone explodes into its internal layers as you scroll \u2014 3D layer separation with annotations.",
       "built": true,
-      "shot": false,
+      "shot": true,
       "url": "/projects/phone-decompose/"
     },
     {
@@ -204,7 +219,7 @@
       "status": "shipped",
       "description": "A playable single-file neon-styled mini game with juice: particles, screenshake, sound via WebAudio.",
       "built": true,
-      "shot": false,
+      "shot": true,
       "url": "/projects/neon-arcade/"
     },
     {
@@ -215,7 +230,7 @@
       "status": "shipped",
       "description": "Interactive canvas artwork producing a unique composition every visit; seeded randomness, exportable as PNG.",
       "built": true,
-      "shot": false,
+      "shot": true,
       "url": "/projects/genart-01/"
     }
   ],
@@ -233,6 +248,13 @@
       "did": "Migration: session moved from cloud container to local Windows machine; cloud commits were unreachable, so all files were restored from conversation context and pushed to github.com/metasito/creativeworld. Filed T12 (cross-platform support).",
       "stopped_because": "restore complete",
       "resume_with": "python engine/board.py brief \u2014 T11 top of queue; note Windows env (python, chrome.exe)"
+    },
+    {
+      "started": "2026-07-14T18:13:01Z",
+      "ended": null,
+      "did": "Work session: T11 journal.py, then T13 dashboard add-task form (user prio 1)",
+      "stopped_because": null,
+      "resume_with": ""
     }
   ],
   "learnings": [

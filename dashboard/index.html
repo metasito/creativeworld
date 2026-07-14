@@ -63,6 +63,11 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
 #learn li { color: var(--ink-2); font-size: 13px; list-style: none; padding: 3px 0; }
 #learn li::before { content: "◆ "; color: var(--accent); }
 .err { color: var(--crit); font-size: 12px; }
+/* add-task form */
+#addform input, #addform select, #addform button { font: inherit; color: var(--ink);
+  background: var(--page); border: 1px solid var(--border); border-radius: 7px; padding: 7px 10px; }
+#addform button { background: var(--accent); color: #fff; border: 0; cursor: pointer; font-weight: 600; }
+#addform button:hover { filter: brightness(1.1); }
 </style>
 </head>
 <body>
@@ -86,6 +91,21 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
 </div>
 
 <h2>Board</h2>
+<div class="card" id="addcard" style="margin-bottom:12px; display:none">
+  <form id="addform" style="display:flex; flex-wrap:wrap; gap:8px; align-items:center">
+    <input id="f-title" placeholder="Task title (what should the engine build?)" required
+           style="flex:2 1 240px; min-width:200px">
+    <input id="f-accept" placeholder="Acceptance (optional: how do we know it's done?)"
+           style="flex:2 1 240px; min-width:200px">
+    <select id="f-size"><option value="S">S</option><option value="M" selected>M</option><option value="L">L</option></select>
+    <select id="f-epic"></select>
+    <input id="f-newtitle" placeholder="New project title" style="display:none; flex:1 1 160px">
+    <input id="f-newslug" placeholder="slug (e.g. lava-lamp)" style="display:none; flex:0 1 140px">
+    <label style="font-size:12px; color:var(--muted)"><input type="checkbox" id="f-top" checked> top of queue</label>
+    <button type="submit">Add task</button>
+    <span id="f-msg" style="font-size:12px; color:var(--muted)"></span>
+  </form>
+</div>
 <div class="board" id="board"></div>
 
 <h2>Projects</h2>
@@ -154,8 +174,39 @@ function render(d) {
     <div>${s.did}</div><div class="w">${s.started}${s.ended ? " → " + s.ended : " · ongoing"}${s.stopped_because ? " · stopped: " + s.stopped_because : ""}</div></li>`).join("");
 
   $("learn").innerHTML = d.learnings.map(l => `<li>${l}</li>`).join("");
+  syncForm(d);
   $("updated").textContent = (live ? "live · " : "static snapshot · ") + new Date().toLocaleTimeString();
 }
+
+/* ---- add-task form (only in live server mode) ---- */
+const fEpic = $("f-epic");
+function syncForm(d) {
+  $("addcard").style.display = live ? "" : "none";
+  if (!live) return;
+  const cur = fEpic.value;
+  fEpic.innerHTML = d.epics.map(e => `<option value="${e.id}">${e.title}</option>`).join("")
+    + `<option value="__new__">➕ new project…</option>`;
+  if ([...fEpic.options].some(o => o.value === cur)) fEpic.value = cur;
+}
+fEpic.addEventListener("change", () => {
+  const isNew = fEpic.value === "__new__";
+  $("f-newtitle").style.display = isNew ? "" : "none";
+  $("f-newslug").style.display = isNew ? "" : "none";
+});
+$("addform").addEventListener("submit", async e => {
+  e.preventDefault();
+  const isNew = fEpic.value === "__new__";
+  const body = {
+    title: $("f-title").value, acceptance: $("f-accept").value,
+    size: $("f-size").value, top: $("f-top").checked,
+    epic: isNew ? "" : fEpic.value,
+    new_epic: isNew ? { title: $("f-newtitle").value, slug: $("f-newslug").value } : null
+  };
+  const r = await fetch("/api/task", { method: "POST", body: JSON.stringify(body) });
+  const j = await r.json();
+  $("f-msg").textContent = j.ok ? `✓ ${j.task} queued` : `✗ ${j.error}`;
+  if (j.ok) { $("f-title").value = ""; $("f-accept").value = ""; $("f-newtitle").value = ""; $("f-newslug").value = ""; }
+});
 
 function tickReset() {
   $("reset").textContent = resetsAt ? hms((resetsAt - Date.now()) / 1000) : "–";

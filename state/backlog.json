@@ -166,9 +166,9 @@
       "title": "Dashboard: add-task form - queue a task from the UI, associate to an existing epic or create a new project epic",
       "acceptance": "Dashboard shows an Add Task form: title, size S/M, epic dropdown listing existing epics plus 'new project' (asks title+slug). server.py POST /api/task validates and writes it via board logic, placing it at a chosen queue position (default top). New task appears on the kanban within one refresh. Verified end-to-end in a real browser.",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-14T14:49:54Z"
+      "status": "done",
+      "handoff": "POST /api/task verified both paths (existing epic top-of-queue, new epic); form screenshot-verified in Chrome",
+      "updated": "2026-07-14T18:18:20Z"
     }
   ],
   "next_ids": {
