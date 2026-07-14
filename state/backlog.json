@@ -146,9 +146,9 @@
       "title": "journal.py: script to append session entries to sessions.json",
       "acceptance": "wrap-up no longer hand-edits JSON; one CLI call appends ended/did/stopped_because/resume_with",
       "size": "S",
-      "status": "in_progress",
-      "handoff": "",
-      "updated": "2026-07-14T14:46:38Z"
+      "status": "done",
+      "handoff": "journal.py start/end tested; wrap-up skill updated",
+      "updated": "2026-07-14T18:13:22Z"
     },
     {
       "id": "T12",

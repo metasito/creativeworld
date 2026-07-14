@@ -5,14 +5,21 @@
       "ended": "2026-07-14T14:20:00Z",
       "did": "Bootstrap: constitution, state system, engine scripts (track/budget/board/dashboard/server/drive), 5 skills, realtime dashboard, CI cron, and 3 shipped projects (phone teardown, NEON DRIFT game, Silk Fields art). T1-T4, T6, T7, T9, T10 done.",
       "stopped_because": "budget WRAP_UP ~88% of window",
-      "resume_with": "python3 engine/board.py brief — T11 (journal.py) is top of queue"
+      "resume_with": "python3 engine/board.py brief \u2014 T11 (journal.py) is top of queue"
     },
     {
       "started": "2026-07-14T18:40:00Z",
       "ended": "2026-07-14T18:50:00Z",
       "did": "Migration: session moved from cloud container to local Windows machine; cloud commits were unreachable, so all files were restored from conversation context and pushed to github.com/metasito/creativeworld. Filed T12 (cross-platform support).",
       "stopped_because": "restore complete",
-      "resume_with": "python engine/board.py brief — T11 top of queue; note Windows env (python, chrome.exe)"
+      "resume_with": "python engine/board.py brief \u2014 T11 top of queue; note Windows env (python, chrome.exe)"
+    },
+    {
+      "started": "2026-07-14T18:13:01Z",
+      "ended": null,
+      "did": "Work session: T11 journal.py, then T13 dashboard add-task form (user prio 1)",
+      "stopped_because": null,
+      "resume_with": ""
     }
   ]
 }
