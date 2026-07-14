@@ -38,6 +38,37 @@ def find(b, tid):
     sys.exit(f"no task {tid}")
 
 
+def get_task(b, tid):
+    """Lookup that raises (safe inside the long-lived server) instead of exiting."""
+    for t in b["tasks"]:
+        if t["id"] == tid:
+            return t
+    raise KeyError(tid)
+
+
+def update_task(b, tid, status=None, handoff=None, pr=None, order=None):
+    """Edit a task from the dashboard: status/handoff/pr + optional next-queue reorder.
+
+    Importable — used by server.py's POST /api/task/update.
+    """
+    t = get_task(b, tid)
+    if status is not None:
+        assert status in STATUSES, f"status must be one of {STATUSES}"
+        t["status"] = status
+    if handoff is not None:
+        t["handoff"] = handoff.strip()
+    if pr is not None:
+        t["pr"] = pr.strip()
+    touch(t)
+    lib.save("backlog.json", b)
+    q = sync_queue(b)
+    if order:
+        head = [x for x in order if x in q["next"]]
+        q["next"] = head + [x for x in q["next"] if x not in head]
+        lib.save("queue.json", q)
+    return t
+
+
 def touch(t):
     t["updated"] = lib.iso(lib.now())
 

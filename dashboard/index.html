@@ -75,6 +75,29 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
 #a-log li { font-size: 12px; color: var(--ink-2); padding: 3px 0; border-bottom: 1px solid var(--grid); display:flex; gap:8px; }
 #a-log .t { color: var(--muted); flex: none; font-variant-numeric: tabular-nums; }
 #a-log .ag { color: var(--accent); flex: none; }
+/* drag & drop board */
+.task.draggable { cursor: grab; }
+.task.dragging { opacity: .45; }
+.col.dropzone { outline: 2px dashed var(--accent); outline-offset: 2px; border-radius: 8px; background: var(--accent-soft); }
+.task .pr { display: inline-block; margin-top: 4px; font-size: 11px; color: var(--accent); text-decoration: none; }
+.task .pr:hover { text-decoration: underline; }
+/* task modal */
+#modal { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; place-items: center; z-index: 50; padding: 20px; }
+#modal.open { display: grid; }
+#modal .box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; width: 100%; max-width: 460px; max-height: 90vh; overflow: auto; }
+#modal h3 { font-size: 16px; margin-bottom: 2px; }
+#modal .meta { color: var(--muted); font-size: 12px; margin-bottom: 12px; }
+#modal label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 10px 0 4px; }
+#modal .ro { color: var(--ink-2); font-size: 13px; white-space: pre-wrap; }
+#modal input, #modal select, #modal textarea { font: inherit; color: var(--ink); background: var(--page);
+  border: 1px solid var(--border); border-radius: 7px; padding: 7px 10px; width: 100%; }
+#modal textarea { resize: vertical; min-height: 52px; }
+#modal .row { display: flex; gap: 8px; align-items: center; margin-top: 16px; }
+#modal button { font: inherit; border: 0; border-radius: 7px; padding: 8px 14px; cursor: pointer; font-weight: 600; }
+#m-save { background: var(--accent); color: #fff; }
+#m-close { background: var(--grid); color: var(--ink); margin-left: auto; }
+#m-msg { font-size: 12px; color: var(--muted); }
+#m-open { color: var(--accent); font-size: 12px; text-decoration: none; }
 </style>
 </head>
 <body>
@@ -126,6 +149,35 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
 </div>
 <div class="board" id="board"></div>
 
+<div id="modal">
+  <div class="box">
+    <h3 id="m-title"></h3>
+    <div class="meta" id="m-meta"></div>
+    <label>Acceptance</label>
+    <div class="ro" id="m-accept"></div>
+    <div id="m-edit">
+      <label>Status</label>
+      <select id="m-status">
+        <option value="backlog">backlog</option>
+        <option value="next">next</option>
+        <option value="in_progress">in_progress</option>
+        <option value="review">review</option>
+        <option value="done">done</option>
+      </select>
+      <label>Handoff / notes</label>
+      <textarea id="m-handoff"></textarea>
+      <label>Merge request / PR link</label>
+      <input id="m-pr" placeholder="https://github.com/…/pull/…">
+    </div>
+    <a id="m-open" href="#" target="_blank" style="display:none">open merge request ↗</a>
+    <div class="row">
+      <button id="m-save">Save</button>
+      <span id="m-msg"></span>
+      <button id="m-close">Close</button>
+    </div>
+  </div>
+</div>
+
 <h2>Projects</h2>
 <div class="gallery" id="gallery"></div>
 
@@ -140,6 +192,7 @@ const $ = id => document.getElementById(id);
 const fmt = n => n >= 1e6 ? (n/1e6).toFixed(2)+"M" : n >= 1e3 ? Math.round(n/1e3)+"k" : String(n);
 const hms = s => s == null ? "–" : s <= 0 ? "now" : `${Math.floor(s/3600)}h ${Math.floor(s%3600/60)}m`;
 let resetsAt = null, live = true;
+let tasksById = {}, epicsById = {}, dragging = false, dragId = null, currentId = null;
 
 async function fetchState() {
   try {
@@ -172,17 +225,20 @@ function render(d) {
     : d.queue.in_progress ? "● ON TASK " + d.queue.in_progress : "○ IDLE";
   st.className = "chip " + (working ? "working" : b.verdict === "STOP" ? "stopped" : "napping");
 
-  const epics = Object.fromEntries(d.epics.map(e => [e.id, e.title]));
+  epicsById = Object.fromEntries(d.epics.map(e => [e.id, e.title]));
+  tasksById = Object.fromEntries(d.tasks.map(t => [t.id, t]));
   const cols = [["in_progress", "In progress", "doing"], ["next", "Next up", ""], ["backlog", "Backlog", ""], ["done", "Done", ""]];
   const order = Object.fromEntries(d.queue.next.map((id, i) => [id, i]));
-  $("board").innerHTML = cols.map(([s, label, cls]) => {
+  if (!dragging) $("board").innerHTML = cols.map(([s, label, cls]) => {
     let ts = d.tasks.filter(t => t.status === s || (s === "backlog" && t.status === "review"));
     if (s === "next") ts.sort((a, z) => (order[a.id] ?? 99) - (order[z.id] ?? 99));
     if (s === "done") ts = ts.slice(-6).reverse();
-    return `<div class="col ${cls}"><h3>${label} <span class="n">${ts.length}</span></h3>` +
-      ts.map(t => `<div class="task"><div class="t">${t.title}</div>
-        <div class="m">${t.id} · ${t.size} · ${epics[t.epic] || t.epic}</div>
-        ${t.handoff && s !== "done" ? `<div class="h">${t.handoff}</div>` : ""}</div>`).join("") + "</div>";
+    return `<div class="col ${cls}" data-status="${s}"><h3>${label} <span class="n">${ts.length}</span></h3>` +
+      ts.map(t => `<div class="task${live ? " draggable" : ""}"${live ? " draggable=\"true\"" : ""} data-id="${t.id}">
+        <div class="t">${t.title}</div>
+        <div class="m">${t.id} · ${t.size} · ${epicsById[t.epic] || t.epic}</div>
+        ${t.handoff && s !== "done" ? `<div class="h">${t.handoff}</div>` : ""}
+        ${t.pr ? `<a class="pr" href="${t.pr}" target="_blank" rel="noopener">↗ merge request</a>` : ""}</div>`).join("") + "</div>";
   }).join("");
 
   $("gallery").innerHTML = d.projects.map(p => `<div class="card proj">
@@ -249,6 +305,82 @@ function renderAgent(a, b) {
      <span class="ag">${e.agent || "engine"}</span><span>${e.msg}</span></li>`).join("");
 }
 const timeago = s => s === Infinity ? "never" : s < 60 ? Math.round(s)+"s ago" : Math.round(s/60)+"m ago";
+
+/* ---- board drag & drop + task modal (delegated, bound once) ---- */
+const board = $("board");
+async function postUpdate(body) {
+  try {
+    const r = await fetch("/api/task/update", { method: "POST", body: JSON.stringify(body) });
+    if (!r.ok) return;
+    render(await fetchState()); // reflect server truth immediately
+  } catch (e) {}
+}
+function afterElement(col, y) {
+  return [...col.querySelectorAll(".task:not(.dragging)")]
+    .find(el => { const r = el.getBoundingClientRect(); return y < r.top + r.height / 2; });
+}
+function clearDropzones() { board.querySelectorAll(".dropzone").forEach(c => c.classList.remove("dropzone")); }
+
+board.addEventListener("dragstart", e => {
+  const card = e.target.closest(".task"); if (!card || !live) return;
+  dragId = card.dataset.id; dragging = true;
+  card.classList.add("dragging");
+  e.dataTransfer.effectAllowed = "move";
+});
+board.addEventListener("dragend", () => {
+  dragging = false; dragId = null; clearDropzones();
+  board.querySelectorAll(".dragging").forEach(c => c.classList.remove("dragging"));
+});
+board.addEventListener("dragover", e => {
+  const col = e.target.closest(".col"); if (!col || !dragId) return;
+  e.preventDefault();
+  clearDropzones(); col.classList.add("dropzone");
+  if (col.dataset.status === "next") {
+    const card = board.querySelector(`.task[data-id="${dragId}"]`);
+    const after = afterElement(col, e.clientY);
+    if (after) col.insertBefore(card, after); else col.appendChild(card);
+  }
+});
+board.addEventListener("drop", e => {
+  e.preventDefault();
+  const col = e.target.closest(".col"); clearDropzones();
+  if (!col || !dragId) return;
+  const status = col.dataset.status;
+  const order = [...board.querySelectorAll('.col[data-status="next"] .task')].map(x => x.dataset.id);
+  const id = dragId; dragging = false; dragId = null;
+  postUpdate({ id, status, order });
+});
+board.addEventListener("click", e => {
+  if (e.target.closest("a")) return;          // let PR links open
+  const card = e.target.closest(".task"); if (!card) return;
+  const t = tasksById[card.dataset.id]; if (t) openModal(t);
+});
+
+function openModal(t) {
+  currentId = t.id;
+  $("m-title").textContent = t.title;
+  $("m-meta").textContent = `${t.id} · ${t.size} · ${epicsById[t.epic] || t.epic} · ${t.status}`;
+  $("m-accept").textContent = t.acceptance || "—";
+  $("m-status").value = t.status;
+  $("m-handoff").value = t.handoff || "";
+  $("m-pr").value = t.pr || "";
+  const link = $("m-open");
+  if (t.pr) { link.href = t.pr; link.style.display = ""; } else link.style.display = "none";
+  $("m-edit").style.display = live ? "" : "none";
+  $("m-save").style.display = live ? "" : "none";
+  $("m-msg").textContent = live ? "" : "read-only — static snapshot";
+  $("modal").classList.add("open");
+}
+$("m-save").onclick = async () => {
+  const r = await fetch("/api/task/update", { method: "POST", body: JSON.stringify({
+    id: currentId, status: $("m-status").value,
+    handoff: $("m-handoff").value, pr: $("m-pr").value }) });
+  const j = await r.json();
+  $("m-msg").textContent = j.ok ? "✓ saved" : "✗ " + j.error;
+  if (j.ok) { render(await fetchState()); setTimeout(() => $("modal").classList.remove("open"), 400); }
+};
+$("m-close").onclick = () => $("modal").classList.remove("open");
+$("modal").onclick = e => { if (e.target.id === "modal") $("modal").classList.remove("open"); };
 
 function tickReset() {
   $("reset").textContent = resetsAt ? hms((resetsAt - Date.now()) / 1000) : "–";

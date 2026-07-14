@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-07-14T18:56:31Z",
+  "generated_at": "2026-07-14T19:03:02Z",
   "budget": {
-    "used": 1270433,
+    "used": 2118758,
     "budget": 4670000,
-    "pct": 27.2,
+    "pct": 45.4,
     "window_started_at": "2026-07-14T18:10:00Z",
     "resets_at": "2026-07-14T23:10:00Z",
-    "seconds_to_reset": 15208,
+    "seconds_to_reset": 14817,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -107,7 +107,7 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-14T14:14:30Z"
+      "updated": "2026-07-14T19:01:41Z"
     },
     {
       "id": "T6",
@@ -195,9 +195,10 @@
       "title": "dashboard imporvement",
       "acceptance": "should allow me to drag tasks, open them, check the status. If not me, you should by yourself priorityse most important things.  also it should allow me to show the status, the merge request if one done etc",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-14T18:22:42Z"
+      "status": "done",
+      "handoff": "Board now supports drag-to-move (status) + drag-to-reorder (next priority), click-to-open task modal with editable status/handoff/PR link, and PR links on cards. New POST /api/task/update endpoint + board.update_task().",
+      "updated": "2026-07-14T19:03:02Z",
+      "pr": ""
     },
     {
       "id": "T15",
@@ -213,9 +214,8 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T14",
-      "T12",
       "T5",
+      "T12",
       "T8"
     ],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
@@ -286,11 +286,11 @@
     "2026-07-14 (bootstrap): Transcript JSONL at `~/.claude/projects/<proj>/<session>.jsonl` carries per-turn `usage`; weighted formula in tokens.json config approximates plan units \u2014 calibrate, don't trust."
   ],
   "activity": {
-    "engine_status": "idle",
-    "current_task": null,
-    "current_action": null,
+    "engine_status": "working",
+    "current_task": "T14",
+    "current_action": "reading dashboard code",
     "agent": "autopilot",
-    "updated": "2026-07-14T18:56:31Z",
+    "updated": "2026-07-14T19:02:56Z",
     "log": [
       {
         "at": "2026-07-14T18:53:17Z",
@@ -311,6 +311,16 @@
         "at": "2026-07-14T18:56:31Z",
         "agent": "autopilot",
         "msg": "T15 shipped: autopilot + heartbeat + live agent panel"
+      },
+      {
+        "at": "2026-07-14T18:59:21Z",
+        "agent": "autopilot",
+        "msg": "--agent"
+      },
+      {
+        "at": "2026-07-14T19:02:56Z",
+        "agent": "autopilot",
+        "msg": "--agent"
       }
     ]
   }

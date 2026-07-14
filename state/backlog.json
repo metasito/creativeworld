@@ -88,7 +88,7 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-14T14:14:30Z"
+      "updated": "2026-07-14T19:01:41Z"
     },
     {
       "id": "T6",
@@ -176,9 +176,10 @@
       "title": "dashboard imporvement",
       "acceptance": "should allow me to drag tasks, open them, check the status. If not me, you should by yourself priorityse most important things.  also it should allow me to show the status, the merge request if one done etc",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-14T18:22:42Z"
+      "status": "done",
+      "handoff": "Board now supports drag-to-move (status) + drag-to-reorder (next priority), click-to-open task modal with editable status/handoff/PR link, and PR links on cards. New POST /api/task/update endpoint + board.update_task().",
+      "updated": "2026-07-14T19:03:02Z",
+      "pr": ""
     },
     {
       "id": "T15",
