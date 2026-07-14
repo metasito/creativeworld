@@ -1,0 +1,57 @@
+name: creative-engine
+
+on:
+  schedule:
+    - cron: "17 * * * *"   # hourly; the preflight gate makes spent-budget runs free
+  workflow_dispatch: {}
+
+concurrency:
+  group: creative-engine
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Budget preflight (free — no LLM)
+        id: preflight
+        run: |
+          if python3 engine/budget_check.py --preflight; then
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=false" >> "$GITHUB_OUTPUT"
+            echo "Budget spent — napping until window reset. This run cost 0 tokens."
+          fi
+
+      - name: Skip if an interactive session worked recently
+        id: fresh
+        if: steps.preflight.outputs.go == 'true'
+        run: |
+          # Don't compete with a live session: skip if the last commit is <45 min old.
+          last=$(git log -1 --format=%ct)
+          age=$(( $(date +%s) - last ))
+          echo "last commit ${age}s ago"
+          [ "$age" -lt 2700 ] && echo "go=false" >> "$GITHUB_OUTPUT" || echo "go=true" >> "$GITHUB_OUTPUT"
+
+      - name: Run the engine
+        if: steps.preflight.outputs.go == 'true' && steps.fresh.outputs.go == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: "Invoke the boot skill and work the queue autonomously per CLAUDE.md. You are in CI: there is no user. Stop cleanly via the wrap-up skill when budget_check says so, and always commit+push state before finishing."
+          claude_args: "--max-turns 150"
+
+      - name: Push state (belt and braces)
+        if: always() && steps.preflight.outputs.go == 'true'
+        run: |
+          git config user.name "creative-engine"
+          git config user.email "engine@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "engine: CI state checkpoint"
+          git push || true

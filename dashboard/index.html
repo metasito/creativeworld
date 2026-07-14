@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CreativeWorld — Engine Dashboard</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e;
+  --muted: #898781; --grid: #e1e0d9; --border: rgba(11,11,11,.10);
+  --accent: #2a78d6; --accent-soft: #cde2fb;
+  --good: #0ca30c; --warn: #fab219; --crit: #d03b3b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+    --muted: #898781; --grid: #2c2c2a; --border: rgba(255,255,255,.10);
+    --accent: #3987e5; --accent-soft: #184f95;
+  }
+}
+* { box-sizing: border-box; margin: 0; }
+body { background: var(--page); color: var(--ink); font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; padding: 20px; max-width: 1200px; margin: 0 auto; }
+header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+h1 { font-size: 20px; letter-spacing: -.02em; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; margin: 22px 0 10px; }
+.chip { font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 99px; border: 1px solid var(--border); }
+.chip.working { color: var(--good); }
+.chip.napping { color: var(--warn); }
+.chip.stopped { color: var(--crit); }
+#updated { color: var(--muted); font-size: 12px; margin-left: auto; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+/* budget */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.tile .v { font-size: 26px; font-weight: 650; letter-spacing: -.02em; }
+.tile .l { color: var(--muted); font-size: 12px; }
+.gauge { margin-top: 12px; }
+.gauge .bar { position: relative; height: 14px; border-radius: 7px; background: var(--grid); overflow: hidden; }
+.gauge .fill { position: absolute; inset: 0 auto 0 0; width: 0%; background: var(--accent); border-radius: 7px; transition: width .6s ease; }
+.gauge .mark { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--muted); }
+.gauge .labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; margin-top: 4px; }
+/* kanban */
+.board { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.col h3 { font-size: 12px; color: var(--ink-2); font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between; }
+.col h3 .n { color: var(--muted); font-weight: 400; }
+.task { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--grid); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; }
+.col.doing .task { border-left-color: var(--accent); }
+.task .t { font-weight: 550; }
+.task .m { color: var(--muted); font-size: 11px; margin-top: 2px; }
+.task .h { color: var(--ink-2); font-size: 12px; margin-top: 4px; font-style: italic; }
+/* projects */
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.proj img { width: 100%; aspect-ratio: 16/10; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); background: var(--grid); display: block; }
+.proj .ph { width: 100%; aspect-ratio: 16/10; border-radius: 6px; border: 1px dashed var(--grid); display: grid; place-items: center; color: var(--muted); font-size: 12px; }
+.proj .t { font-weight: 600; margin-top: 8px; }
+.proj .d { color: var(--ink-2); font-size: 12px; }
+.proj a { color: var(--accent); font-size: 12px; text-decoration: none; }
+.proj .st { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+/* journal */
+.feed li { border-bottom: 1px solid var(--grid); padding: 8px 0; list-style: none; }
+.feed .w { color: var(--muted); font-size: 12px; }
+#learn li { color: var(--ink-2); font-size: 13px; list-style: none; padding: 3px 0; }
+#learn li::before { content: "◆ "; color: var(--accent); }
+.err { color: var(--crit); font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>CreativeWorld</h1>
+  <span id="status" class="chip">…</span>
+  <span id="updated"></span>
+</header>
+
+<div class="card" id="budget-card">
+  <div class="tiles">
+    <div class="tile"><div class="v" id="pct">–</div><div class="l">of window budget used</div></div>
+    <div class="tile"><div class="v" id="used">–</div><div class="l">weighted tokens spent</div></div>
+    <div class="tile"><div class="v" id="reset">–</div><div class="l">until window reset</div></div>
+    <div class="tile"><div class="v" id="verdict">–</div><div class="l">engine verdict</div></div>
+  </div>
+  <div class="gauge">
+    <div class="bar"><div class="fill" id="fill"></div><div class="mark" id="m85"></div><div class="mark" id="m95"></div></div>
+    <div class="labels"><span>0</span><span id="blabel"></span></div>
+  </div>
+</div>
+
+<h2>Board</h2>
+<div class="board" id="board"></div>
+
+<h2>Projects</h2>
+<div class="gallery" id="gallery"></div>
+
+<h2>Session journal</h2>
+<ul class="feed" id="feed"></ul>
+
+<h2>Learnings</h2>
+<ul id="learn"></ul>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => n >= 1e6 ? (n/1e6).toFixed(2)+"M" : n >= 1e3 ? Math.round(n/1e3)+"k" : String(n);
+const hms = s => s == null ? "–" : s <= 0 ? "now" : `${Math.floor(s/3600)}h ${Math.floor(s%3600/60)}m`;
+let resetsAt = null, live = true;
+
+async function fetchState() {
+  try {
+    const r = await fetch("/api/state", {cache: "no-store"});
+    if (r.ok) { live = true; return r.json(); }
+  } catch (e) {}
+  live = false;
+  return (await fetch("data.json", {cache: "no-store"})).json(); // static fallback
+}
+
+function render(d) {
+  const b = d.budget;
+  $("pct").textContent = b.pct.toFixed(1) + "%";
+  $("used").textContent = fmt(b.used);
+  resetsAt = b.resets_at ? new Date(b.resets_at) : null;
+  tickReset();
+  $("verdict").textContent = b.verdict;
+  $("verdict").style.color = b.verdict === "CONTINUE" ? "var(--good)" : b.verdict === "WRAP_UP" ? "var(--warn)" : "var(--crit)";
+  $("fill").style.width = Math.min(100, b.pct) + "%";
+  $("fill").style.background = b.pct >= b.stop_pct ? "var(--crit)" : b.pct >= b.wrap_up_pct ? "var(--warn)" : "var(--accent)";
+  $("m85").style.left = b.wrap_up_pct + "%"; $("m95").style.left = b.stop_pct + "%";
+  $("blabel").textContent = "budget " + fmt(b.budget) + " (⚑" + b.wrap_up_pct + "% wrap · ⚑" + b.stop_pct + "% stop)";
+
+  const working = b.verdict === "CONTINUE" && d.queue.in_progress;
+  const st = $("status");
+  st.textContent = working ? "● WORKING on " + d.queue.in_progress
+    : b.verdict === "STOP" ? "◌ NAPPING — resumes " + (resetsAt ? resetsAt.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) : "on reset")
+    : d.queue.in_progress ? "● ON TASK " + d.queue.in_progress : "○ IDLE";
+  st.className = "chip " + (working ? "working" : b.verdict === "STOP" ? "stopped" : "napping");
+
+  const epics = Object.fromEntries(d.epics.map(e => [e.id, e.title]));
+  const cols = [["in_progress", "In progress", "doing"], ["next", "Next up", ""], ["backlog", "Backlog", ""], ["done", "Done", ""]];
+  const order = Object.fromEntries(d.queue.next.map((id, i) => [id, i]));
+  $("board").innerHTML = cols.map(([s, label, cls]) => {
+    let ts = d.tasks.filter(t => t.status === s || (s === "backlog" && t.status === "review"));
+    if (s === "next") ts.sort((a, z) => (order[a.id] ?? 99) - (order[z.id] ?? 99));
+    if (s === "done") ts = ts.slice(-6).reverse();
+    return `<div class="col ${cls}"><h3>${label} <span class="n">${ts.length}</span></h3>` +
+      ts.map(t => `<div class="task"><div class="t">${t.title}</div>
+        <div class="m">${t.id} · ${t.size} · ${epics[t.epic] || t.epic}</div>
+        ${t.handoff && s !== "done" ? `<div class="h">${t.handoff}</div>` : ""}</div>`).join("") + "</div>";
+  }).join("");
+
+  $("gallery").innerHTML = d.projects.map(p => `<div class="card proj">
+    ${p.shot ? `<img src="/projects/${p.slug}/shot.png?${Date.now() % 1e5}" alt="${p.title}">` : `<div class="ph">not built yet</div>`}
+    <div class="t">${p.title}</div><div class="st">${p.status}</div><div class="d">${p.description}</div>
+    ${p.url ? `<a href="${p.url}" target="_blank">open ↗</a>` : ""}</div>`).join("");
+
+  $("feed").innerHTML = d.sessions.slice().reverse().map(s => `<li>
+    <div>${s.did}</div><div class="w">${s.started}${s.ended ? " → " + s.ended : " · ongoing"}${s.stopped_because ? " · stopped: " + s.stopped_because : ""}</div></li>`).join("");
+
+  $("learn").innerHTML = d.learnings.map(l => `<li>${l}</li>`).join("");
+  $("updated").textContent = (live ? "live · " : "static snapshot · ") + new Date().toLocaleTimeString();
+}
+
+function tickReset() {
+  $("reset").textContent = resetsAt ? hms((resetsAt - Date.now()) / 1000) : "–";
+}
+
+async function loop() {
+  try { render(await fetchState()); } catch (e) { $("updated").innerHTML = `<span class="err">state unavailable: ${e.message}</span>`; }
+  setTimeout(loop, live ? 2000 : 10000);
+}
+setInterval(tickReset, 1000);
+loop();
+</script>
+</body>
+</html>

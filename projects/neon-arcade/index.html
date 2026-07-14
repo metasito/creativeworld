@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEON DRIFT</title>
+<style>
+* { margin: 0; }
+html, body { height: 100%; background: #04040a; overflow: hidden; touch-action: none; }
+canvas { display: block; width: 100vw; height: 100vh; }
+.hud { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #dfe6ff; text-align: center; }
+.hud .box { text-shadow: 0 0 18px rgba(90,162,255,.9); }
+h1 { font-size: clamp(38px, 8vw, 84px); letter-spacing: .12em; font-weight: 800;
+  background: linear-gradient(90deg, #62f0ff, #7c6bff 55%, #ff5ad0); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 14px rgba(110,120,255,.65)); }
+p { color: #8b95b8; letter-spacing: .2em; text-transform: uppercase; font-size: 13px; margin-top: 10px; }
+#score { position: fixed; top: 16px; left: 0; right: 0; text-align: center; font: 700 26px system-ui;
+  color: #cfe0ff; text-shadow: 0 0 12px rgba(90,162,255,.8); pointer-events: none; }
+.hidden { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="score"></div>
+<div class="hud" id="hud"><div class="box">
+  <h1>NEON DRIFT</h1>
+  <p id="msg">move the mouse / finger · collect sparks · dodge shards</p>
+  <p style="color:#5f6a8f">click or tap to start</p>
+</div></div>
+
+<script>
+const cv = document.getElementById("c"), x = cv.getContext("2d");
+const hud = document.getElementById("hud"), scoreEl = document.getElementById("score"), msg = document.getElementById("msg");
+let W, H, DPR; const fit = () => { DPR = Math.min(devicePixelRatio, 2); W = cv.width = innerWidth * DPR; H = cv.height = innerHeight * DPR; };
+fit(); addEventListener("resize", fit);
+
+const rnd = (a, b) => a + Math.random() * (b - a);
+const TAU = Math.PI * 2;
+let state = "title", score = 0, best = 0, t = 0, shake = 0;
+const P = { x: 0.5, y: 0.6, tx: 0.5, ty: 0.6, r: 10, trail: [] };
+let shards = [], sparks = [], parts = [], ring = 0;
+
+/* --- sound: tiny WebAudio blips --- */
+let AC;
+function beep(f, dur = .08, type = "sine", vol = .12) {
+  if (!AC) return;
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.frequency.value = f; o.type = type;
+  g.gain.setValueAtTime(vol, AC.currentTime);
+  g.gain.exponentialRampToValueAtTime(.0001, AC.currentTime + dur);
+  o.connect(g).connect(AC.destination); o.start(); o.stop(AC.currentTime + dur);
+}
+
+function spawnShard() {
+  const side = Math.floor(rnd(0, 4)), sp = rnd(.0018, .0042) * (1 + score / 40);
+  const s = { x: side === 0 ? -0.05 : side === 1 ? 1.05 : rnd(0, 1), y: side === 2 ? -0.05 : side === 3 ? 1.05 : rnd(0, 1), a: 0, r: rnd(6, 13), hue: rnd(330, 380) };
+  const dx = P.x - s.x, dy = P.y - s.y, d = Math.hypot(dx, dy);
+  s.vx = dx / d * sp * rnd(.7, 1.3); s.vy = dy / d * sp * rnd(.7, 1.3);
+  shards.push(s);
+}
+function spawnSpark() { sparks.push({ x: rnd(.1, .9), y: rnd(.12, .88), r: 7, ph: rnd(0, TAU) }); }
+function burst(px, py, hue, n = 26, speed = .01) {
+  for (let i = 0; i < n; i++) { const a = rnd(0, TAU), v = rnd(.2, 1) * speed;
+    parts.push({ x: px, y: py, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, hue: hue + rnd(-20, 20) }); }
+}
+
+function reset() {
+  shards = []; parts = []; sparks = []; score = 0; ring = 0;
+  P.x = P.tx = .5; P.y = P.ty = .6; P.trail = [];
+  for (let i = 0; i < 3; i++) spawnSpark();
+}
+
+function start() {
+  try { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+  reset(); state = "play"; hud.classList.add("hidden"); beep(440, .12, "triangle"); beep(660, .18, "triangle");
+}
+
+/* ?demo=1 — autopilot attract mode (also used for headless verification) */
+const demo = new URLSearchParams(location.search).has("demo");
+function autopilot() {
+  if (state !== "play" || !sparks.length) return;
+  let best = sparks[0], bd = 9;
+  for (const s of sparks) { const d = Math.hypot(s.x - P.x, s.y - P.y); if (d < bd) { bd = d; best = s; } }
+  let tx = best.x, ty = best.y;
+  for (const s of shards) {                      // steer away from close shards
+    const d = Math.hypot(s.x - P.x, s.y - P.y);
+    if (d < .16) { tx += (P.x - s.x) / d * .22; ty += (P.y - s.y) / d * .22; }
+  }
+  P.tx = Math.max(.03, Math.min(.97, tx)); P.ty = Math.max(.03, Math.min(.97, ty));
+}
+if (demo) { start(); setInterval(() => { if (state === "over") start(); }, 1500); }
+
+addEventListener("pointermove", e => { P.tx = e.clientX / innerWidth; P.ty = e.clientY / innerHeight; });
+addEventListener("pointerdown", e => { P.tx = e.clientX / innerWidth; P.ty = e.clientY / innerHeight;
+  if (state !== "play") start(); });
+
+function step(dt) {
+  t += dt;
+  if (demo) autopilot();
+  if (state === "play") {
+    P.x += (P.tx - P.x) * .12; P.y += (P.ty - P.y) * .12;
+    P.trail.unshift({ x: P.x, y: P.y }); P.trail.length = Math.min(P.trail.length, 22);
+    if (shards.length < 4 + Math.floor(score / 6) && Math.random() < .03) spawnShard();
+    if (sparks.length < 3 && Math.random() < .02) spawnSpark();
+
+    for (const s of sparks) s.ph += dt * .004;
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const s = sparks[i];
+      if (Math.hypot((s.x - P.x) * W, (s.y - P.y) * H) < (s.r + P.r) * DPR * 1.6) {
+        sparks.splice(i, 1); score++; ring = 1; burst(s.x, s.y, 190, 30, .012);
+        beep(700 + score * 14, .09, "sine", .1); shake = Math.min(shake + 2, 6);
+      }
+    }
+    for (let i = shards.length - 1; i >= 0; i--) {
+      const s = shards[i]; s.x += s.vx * dt; s.y += s.vy * dt; s.a += dt * .01;
+      if (s.x < -.1 || s.x > 1.1 || s.y < -.1 || s.y > 1.1) { shards.splice(i, 1); continue; }
+      if (Math.hypot((s.x - P.x) * W, (s.y - P.y) * H) < (s.r + P.r) * DPR) {
+        state = "over"; best = Math.max(best, score); shake = 26;
+        burst(P.x, P.y, 210, 70, .02); burst(P.x, P.y, 330, 50, .015);
+        beep(160, .4, "sawtooth", .18); beep(90, .6, "sawtooth", .14);
+        msg.textContent = `score ${score} · best ${best} — click to drift again`;
+        setTimeout(() => hud.classList.remove("hidden"), 550);
+      }
+    }
+  }
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i]; p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= .985; p.vy *= .985; p.life -= dt * .0016;
+    if (p.life <= 0) parts.splice(i, 1);
+  }
+  shake *= .88; ring = Math.max(0, ring - dt * .003);
+}
+
+function glow(px, py, r, color, blur) {
+  x.shadowColor = color; x.shadowBlur = blur * DPR; x.fillStyle = color;
+  x.beginPath(); x.arc(px, py, r, 0, TAU); x.fill(); x.shadowBlur = 0;
+}
+
+function draw() {
+  x.fillStyle = "rgba(4,4,10,.34)"; x.fillRect(0, 0, W, H);   // motion trails
+  const ox = rnd(-shake, shake) * DPR, oy = rnd(-shake, shake) * DPR;
+  x.save(); x.translate(ox, oy);
+
+  // grid floor
+  x.strokeStyle = "rgba(80,90,160,.08)"; x.lineWidth = DPR;
+  const g = 64 * DPR, off = (t * .02 * DPR) % g;
+  for (let gx = -off; gx < W; gx += g) { x.beginPath(); x.moveTo(gx, 0); x.lineTo(gx, H); x.stroke(); }
+  for (let gy = -off; gy < H; gy += g) { x.beginPath(); x.moveTo(0, gy); x.lineTo(W, gy); x.stroke(); }
+
+  for (const p of parts) glow(p.x * W, p.y * H, Math.max(.5, 3 * p.life) * DPR, `hsla(${p.hue},95%,65%,${p.life})`, 14);
+
+  for (const s of sparks) {
+    const rr = (s.r + Math.sin(s.ph) * 2) * DPR;
+    glow(s.x * W, s.y * H, rr, "hsla(165,100%,60%,.95)", 26);
+    glow(s.x * W, s.y * H, rr * .4, "#eafffa", 8);
+  }
+  for (const s of shards) {
+    x.save(); x.translate(s.x * W, s.y * H); x.rotate(s.a);
+    x.shadowColor = "hsla(335,100%,60%,1)"; x.shadowBlur = 22 * DPR;
+    x.fillStyle = "hsla(335,95%,62%,.95)";
+    const r = s.r * DPR; x.beginPath(); x.moveTo(0, -r); x.lineTo(r * .8, r); x.lineTo(-r * .8, r); x.closePath(); x.fill();
+    x.restore(); x.shadowBlur = 0;
+  }
+
+  if (state !== "title") {
+    for (let i = P.trail.length - 1; i > 0; i--) {
+      const q = P.trail[i], a = 1 - i / P.trail.length;
+      glow(q.x * W, q.y * H, P.r * DPR * a * .8, `hsla(215,100%,66%,${a * .35})`, 10);
+    }
+    glow(P.x * W, P.y * H, P.r * DPR, "hsla(215,100%,66%,1)", 30);
+    glow(P.x * W, P.y * H, P.r * DPR * .45, "#ffffff", 10);
+    if (ring > 0) { x.strokeStyle = `hsla(165,100%,60%,${ring})`; x.lineWidth = 3 * DPR;
+      x.beginPath(); x.arc(P.x * W, P.y * H, (1.2 - ring) * 60 * DPR, 0, TAU); x.stroke(); }
+  }
+  x.restore();
+  scoreEl.textContent = state === "play" ? score : "";
+  if (demo) document.title = `NEON DRIFT demo · state=${state} score=${score} best=${best} shards=${shards.length}`;
+}
+
+let last = performance.now();
+(function loop(now) {
+  const dt = Math.min(32, now - last); last = now;
+  step(dt); draw(); requestAnimationFrame(loop);
+})(last);
+
+/* attract mode for the title screen: drifting particles */
+setInterval(() => { if (state === "title") burst(rnd(.2, .8), rnd(.2, .8), rnd(150, 360), 10, .006); }, 600);
+</script>
+</body>
+</html>

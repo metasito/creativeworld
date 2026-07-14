@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anatomy of a Phone</title>
+<style>
+* { margin: 0; box-sizing: border-box; }
+:root { --bg1: #05060a; --bg2: #0d1220; --ink: #eef1f8; --dim: #7c86a0; --acc: #5aa2ff; }
+html { scroll-behavior: auto; background: var(--bg1); }
+body { color: var(--ink);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; height: 700vh; overflow-x: hidden; }
+
+.stage { position: fixed; inset: 0; perspective: 1400px; overflow: hidden;
+  background: radial-gradient(120% 100% at 50% 0%, var(--bg2), var(--bg1) 70%); }
+
+/* ---------- the phone ---------- */
+.phone { position: absolute; left: 50%; top: 50%; width: 260px; height: 540px; margin: -270px 0 0 -130px;
+  transform-style: preserve-3d; }
+.layer { position: absolute; inset: 0; border-radius: 38px; transform-style: preserve-3d;
+  box-shadow: 0 30px 60px rgba(0,0,0,.45); backface-visibility: visible; }
+
+/* glass */
+.glass { background: linear-gradient(115deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.05) 30%, rgba(160,190,255,.10) 55%, rgba(255,255,255,.03) 80%);
+  border: 1px solid rgba(255,255,255,.35); box-shadow: 0 30px 60px rgba(0,0,0,.35), inset 0 0 30px rgba(255,255,255,.06); }
+.glass::after { content: ""; position: absolute; left: 12%; top: 4%; width: 30%; height: 55%;
+  background: linear-gradient(105deg, rgba(255,255,255,.35), transparent 70%); border-radius: 40px; filter: blur(2px); }
+
+/* screen */
+.screen { background: #04050c; border: 2px solid #11131c; overflow: hidden; }
+.screen .ui { position: absolute; inset: 10px; border-radius: 28px; overflow: hidden;
+  background: linear-gradient(160deg, #1b2a6b 0%, #3d1e63 45%, #0d3b57 100%); }
+.screen .ui::before { content: ""; position: absolute; left: -20%; top: -30%; width: 140%; height: 80%;
+  background: radial-gradient(closest-side, rgba(90,162,255,.55), transparent); }
+.screen .ui::after { content: "16:04"; position: absolute; left: 0; right: 0; top: 34%; text-align: center;
+  font-size: 58px; font-weight: 200; letter-spacing: 2px; color: rgba(255,255,255,.92); }
+.screen .notch { position: absolute; top: 18px; left: 50%; width: 84px; height: 22px; margin-left: -42px;
+  background: #04050c; border-radius: 12px; z-index: 2; }
+
+/* haptics / speakers frame */
+.haptics { background: linear-gradient(180deg, #23262e, #14161c); border: 1px solid #3a3e49; }
+.haptics .coil { position: absolute; left: 24px; bottom: 26px; width: 92px; height: 56px; border-radius: 10px;
+  background: repeating-linear-gradient(90deg, #3c414d 0 6px, #262a33 6px 12px); border: 1px solid #4a4f5c; }
+.haptics .spk { position: absolute; right: 26px; bottom: 30px; width: 70px; height: 46px; border-radius: 8px;
+  background: radial-gradient(circle at 30% 30%, #4a5060, #1a1d24 70%); border: 1px solid #4a4f5c; }
+.haptics .taptic { position: absolute; left: 24px; top: 30px; right: 26px; height: 34px; border-radius: 8px;
+  background: linear-gradient(90deg, #2c3038, #383d48); border: 1px solid #4a4f5c; }
+
+/* battery */
+.battery { background: linear-gradient(180deg, #1a1c22, #101218); border: 1px solid #33363f; }
+.battery .cell { position: absolute; left: 30px; right: 30px; top: 60px; bottom: 90px; border-radius: 14px;
+  background: linear-gradient(160deg, #cfd4dd, #9aa1ad 60%, #b8bec9); box-shadow: inset 0 2px 6px rgba(255,255,255,.5), inset 0 -4px 10px rgba(0,0,0,.25); }
+.battery .cell::before { content: "⚡ 4,441 mAh"; position: absolute; left: 0; right: 0; top: 44%; text-align: center;
+  color: #2c313b; font-weight: 700; font-size: 15px; letter-spacing: .04em; }
+.battery .cell::after { content: "DO NOT PUNCTURE ・ RECYCLE RESPONSIBLY"; position: absolute; left: 0; right: 0; top: 58%;
+  text-align: center; color: #565d6a; font-size: 8px; letter-spacing: .06em; }
+
+/* logic board */
+.board { background: linear-gradient(180deg, #0c3d2e, #072b20); border: 1px solid #1d5a46; }
+.board .chip { position: absolute; border-radius: 4px; background: linear-gradient(145deg, #23262d, #0e1013);
+  border: 1px solid #3d414b; box-shadow: 0 1px 0 rgba(255,255,255,.08) inset; }
+.board .soc { left: 76px; top: 200px; width: 108px; height: 108px; }
+.board .soc::after { content: "A∞ BIONIC"; position: absolute; inset: 0; display: grid; place-items: center;
+  color: #6a7180; font-size: 10px; letter-spacing: .12em; }
+.board .ram { left: 76px; top: 330px; width: 108px; height: 44px; }
+.board .m1 { left: 30px; top: 130px; width: 36px; height: 178px; }
+.board .m2 { right: 30px; top: 200px; width: 36px; height: 174px; }
+.board .cam { position: absolute; left: 26px; top: 26px; width: 118px; height: 118px; border-radius: 26px;
+  background: linear-gradient(145deg, #2a2d35, #14161b); border: 1px solid #454a56; }
+.board .lens { position: absolute; width: 44px; height: 44px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 32%, #7fa8ff 6%, #1b2c55 32%, #05070d 70%); border: 3px solid #3a3f4c; }
+.board .l1 { left: 12px; top: 12px; } .board .l2 { right: 12px; top: 12px; } .board .l3 { left: 12px; bottom: 12px; }
+.board .trace { position: absolute; background: rgba(70,190,140,.25); height: 2px; }
+.board .t1 { left: 40px; right: 40px; top: 180px; } .board .t2 { left: 40px; right: 40px; top: 420px; }
+.board .t3 { left: 130px; top: 180px; height: 240px; width: 2px; }
+
+/* chassis */
+.chassis { background: linear-gradient(160deg, #3f4552 0%, #262b35 55%, #343a46 100%); border: 1px solid #545b69; }
+.chassis::before { content: ""; position: absolute; left: 26px; top: 26px; width: 118px; height: 118px; border-radius: 26px;
+  background: rgba(0,0,0,.35); box-shadow: inset 0 0 0 2px #10131a; }
+.chassis::after { content: "creativeworld"; position: absolute; left: 0; right: 0; top: 56%; text-align: center;
+  color: rgba(255,255,255,.28); font-size: 13px; letter-spacing: .3em; }
+
+/* ---------- annotations ---------- */
+.note { position: fixed; left: 50%; display: flex; align-items: center; gap: 10px; opacity: 0;
+  transform: translateY(8px); transition: opacity .35s, transform .35s; pointer-events: none; }
+.note .line { width: 70px; height: 1px; background: linear-gradient(90deg, var(--acc), transparent); }
+.note.left .line { background: linear-gradient(270deg, var(--acc), transparent); }
+.note b { display: block; font-size: 15px; color: var(--ink); }
+.note span { font-size: 12.5px; color: var(--dim); max-width: 220px; display: block; }
+.note .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--acc); box-shadow: 0 0 12px var(--acc); flex: none; }
+.note.on { opacity: 1; transform: translateY(0); }
+.note.left { flex-direction: row-reverse; text-align: right; }
+
+/* ---------- copy ---------- */
+.title { position: fixed; left: 0; right: 0; top: 9vh; text-align: center; transition: opacity .4s; }
+.title h1 { font-size: clamp(30px, 5.5vw, 56px); font-weight: 750; letter-spacing: -.03em;
+  background: linear-gradient(90deg, #eef1f8, #9db8e8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.title p { color: var(--dim); margin-top: 6px; font-size: 15px; }
+.hint { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); color: var(--dim); font-size: 13px;
+  letter-spacing: .18em; text-transform: uppercase; animation: bob 1.8s ease-in-out infinite; transition: opacity .4s; }
+@keyframes bob { 50% { transform: translateX(-50%) translateY(6px); } }
+.outro { position: fixed; left: 0; right: 0; bottom: 8vh; text-align: center; opacity: 0; transition: opacity .5s; }
+.outro h2 { font-size: clamp(20px, 3vw, 30px); font-weight: 650; }
+.outro p { color: var(--dim); font-size: 14px; }
+.bar { position: fixed; left: 0; top: 0; height: 3px; width: 0; background: linear-gradient(90deg, var(--acc), #a78bfa); z-index: 5; }
+
+@media (max-width: 700px) {
+  .phone { width: 190px; height: 396px; margin: -198px 0 0 -95px; }
+  .note span { max-width: 130px; } .note .line { width: 26px; }
+}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="stage">
+  <div class="phone" id="phone">
+    <div class="layer chassis" data-z="-2.2"></div>
+    <div class="layer board" data-z="-1.1">
+      <div class="cam"><div class="lens l1"></div><div class="lens l2"></div><div class="lens l3"></div></div>
+      <div class="trace t1"></div><div class="trace t2"></div><div class="trace t3"></div>
+      <div class="chip soc"></div><div class="chip ram"></div><div class="chip m1"></div><div class="chip m2"></div>
+    </div>
+    <div class="layer battery" data-z="0"><div class="cell"></div></div>
+    <div class="layer haptics" data-z="1.1"><div class="taptic"></div><div class="coil"></div><div class="spk"></div></div>
+    <div class="layer screen" data-z="2.2"><div class="ui"></div><div class="notch"></div></div>
+    <div class="layer glass" data-z="3.3"></div>
+  </div>
+</div>
+
+<div class="title" id="title"><h1>Anatomy of a Phone</h1><p>Six layers of everyday magic, pulled apart.</p></div>
+<div class="hint" id="hint">scroll to disassemble</div>
+
+<div class="note" data-at=".18" style="top:22%"><div class="dot"></div><div class="line"></div><div><b>Ion-glass</b><span>Chemically strengthened. Survives pockets, mostly survives gravity.</span></div></div>
+<div class="note left" data-at=".30" style="top:34%"><div class="dot"></div><div class="line"></div><div><b>OLED display</b><span>3.5 million pixels that switch themselves off to make true black.</span></div></div>
+<div class="note" data-at=".42" style="top:47%"><div class="dot"></div><div class="line"></div><div><b>Haptics & audio</b><span>A tiny motor forging the illusion of a click that never happened.</span></div></div>
+<div class="note left" data-at=".54" style="top:58%"><div class="dot"></div><div class="line"></div><div><b>Battery</b><span>4,441 mAh of impatience management.</span></div></div>
+<div class="note" data-at=".66" style="top:70%"><div class="dot"></div><div class="line"></div><div><b>Logic board</b><span>A rainforest of silicon; the camera alone has three eyes.</span></div></div>
+<div class="note left" data-at=".78" style="top:82%"><div class="dot"></div><div class="line"></div><div><b>Aluminium chassis</b><span>Recycled aerospace metal, milled to a tenth of a millimetre.</span></div></div>
+
+<div class="outro" id="outro"><h2>Reassemble on the way up.</h2><p>Scroll back — every layer returns home.</p></div>
+
+<script>
+const phone = document.getElementById("phone");
+const layers = [...phone.querySelectorAll(".layer")];
+const notes = [...document.querySelectorAll(".note")];
+const title = document.getElementById("title"), hint = document.getElementById("hint"),
+      outro = document.getElementById("outro"), bar = document.getElementById("bar");
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp01 = v => Math.min(1, Math.max(0, v));
+const ease = t => t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2;
+let cur = 0;
+const forced = new URLSearchParams(location.search).get("p"); // ?p=0.5 pins progress (headless testing)
+if (forced !== null) cur = +forced;
+
+function frame() {
+  const max = document.body.scrollHeight - innerHeight;
+  const target = forced !== null ? +forced : max > 0 ? clamp01(scrollY / max) : 0;
+  cur = lerp(cur, target, 0.09);                    // smoothing
+  const p = cur, ex = ease(clamp01((p - .12) / .68)); // explosion 12%..80% of scroll
+  const spread = 95;                                 // px per layer step at full explosion
+  const ry = lerp(16, 44, ex) + Math.sin(p * 6) * 2;
+  const rx = lerp(6, 14, ex);
+  const scale = innerWidth < 700 ? 1 : lerp(1, .92, ex);
+  phone.style.transform = `scale(${scale}) rotateX(${rx}deg) rotateY(${ry}deg)`;
+  for (const l of layers) {
+    const z = parseFloat(l.dataset.z);
+    l.style.transform = `translateZ(${lerp(z * 7, z * spread, ex)}px)`;
+  }
+  title.style.opacity = p < .08 ? 1 : Math.max(0, 1 - (p - .08) / .06);
+  hint.style.opacity = p < .05 ? 1 : Math.max(0, 1 - (p - .05) / .05);
+  outro.style.opacity = p > .9 ? (p - .9) / .08 : 0;
+  bar.style.width = (p * 100).toFixed(1) + "%";
+  for (const n of notes) n.classList.toggle("on", p >= +n.dataset.at && p < .92);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
