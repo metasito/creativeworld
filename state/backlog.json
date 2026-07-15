@@ -664,10 +664,23 @@
       "status": "next",
       "handoff": "",
       "updated": "2026-07-15T10:03:44Z"
+    },
+    {
+      "id": "T54",
+      "epic": "E1",
+      "title": "Finish opened project and then change the costitustion of this project. The next will be to make android games and be able to run them and in future upload on playstore. This may be needed also for iphone so make it compatible for both",
+      "acceptance": "all planned project are finished",
+      "size": "M",
+      "status": "done",
+      "handoff": "",
+      "updated": "2026-07-15T14:14:22Z",
+      "claimed_by": "unknown",
+      "issue": "24",
+      "cost": 58693
     }
   ],
   "next_ids": {
     "epic": 14,
-    "task": 54
+    "task": 55
   }
 }

@@ -10,6 +10,7 @@ description: Project-manager role — groom the CreativeWorld backlog. Invents n
    - Maximally creative and varied: mini games, generative/interactive art, 3D CSS/WebGL scenes, physics toys, audio-reactive pages, wild landing-page effects, weird UI experiments.
    - Never repeat a concept already in the epics list. Prefer ideas that look impressive as a screenshot.
    - Must be buildable as a single dependency-free `index.html` (S/M sized).
+   - Mobile-games era (CLAUDE.md Direction, issue #24): once all pre-2026-07-15 epics have shipped, every new project epic is a touch-first mobile game playable on Android and iPhone.
    - `python3 engine/board.py add-epic project "<Title>" -- "<one-line concept>" --slug <slug>`
 3. Slice: every active project epic needs a v1 task (M) and optionally a polish task (S, backlog). Meta-epics (Engine E1, Dashboard E2) should always have at least one improvement task filed — the engine gets better every day.
    - `python3 engine/board.py add <epic-id> <S|M> "<title>" -- "<verifiable acceptance criteria>"`

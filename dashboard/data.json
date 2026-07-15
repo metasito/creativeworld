@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-15T10:15:18Z",
+  "generated_at": "2026-07-15T14:14:31Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 3676714,
-    "window_used": 2138055,
-    "rolling_used": 3676714,
+    "used": 2875414,
+    "window_used": 2499590,
+    "rolling_used": 2875414,
     "budget": 4798485,
-    "pct": 76.6,
-    "rate_per_hour": 1763919,
-    "eta_hours": 0.6,
+    "pct": 59.9,
+    "rate_per_hour": 578747,
+    "eta_hours": 3.3,
     "window_started_at": "2026-07-15T09:22:33Z",
-    "resets_at": "2026-07-15T13:10:14Z",
-    "seconds_to_reset": 10496,
+    "resets_at": "2026-07-15T14:16:25Z",
+    "seconds_to_reset": 113,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -46,7 +46,7 @@
       "kind": "meta",
       "status": "active",
       "description": "The autonomous engine itself: budget tracking, board, boot/wrap-up flow, CI cron. Permanent epic \u2014 always improvable.",
-      "cost": 768062
+      "cost": 826755
     },
     {
       "id": "E2",
@@ -662,7 +662,7 @@
       "claimed_by": "unknown",
       "issue": "23",
       "cost": 142152,
-      "commit": null
+      "commit": "0b6d8c2"
     },
     {
       "id": "T45",
@@ -767,6 +767,20 @@
       "status": "next",
       "handoff": "",
       "updated": "2026-07-15T10:03:44Z",
+      "commit": null
+    },
+    {
+      "id": "T54",
+      "epic": "E1",
+      "title": "Finish opened project and then change the costitustion of this project. The next will be to make android games and be able to run them and in future upload on playstore. This may be needed also for iphone so make it compatible for both",
+      "acceptance": "all planned project are finished",
+      "size": "M",
+      "status": "done",
+      "handoff": "",
+      "updated": "2026-07-15T14:14:22Z",
+      "claimed_by": "unknown",
+      "issue": "24",
+      "cost": 58693,
       "commit": null
     }
   ],
@@ -961,70 +975,70 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T44",
-    "current_action": "Paper Storm polish: dive-bomb + wind gusts",
+    "current_task": "T54",
+    "current_action": "reviewing T54 scope: finish open projects + constitution change for mobile games",
     "agent": "autopilot",
-    "updated": "2026-07-15T10:13:12Z",
+    "updated": "2026-07-15T14:14:21Z",
     "log": [
       {
-        "at": "2026-07-15T09:47:50Z",
+        "at": "2026-07-15T13:59:13Z",
+        "agent": "autopilot",
+        "msg": "agent error rc=1 \u2014 120s backoff"
+      },
+      {
+        "at": "2026-07-15T14:01:26Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T09:49:05Z",
+        "at": "2026-07-15T14:01:26Z",
         "agent": "autopilot",
-        "msg": "built index.html, verifying in Chromium"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-15T09:51:54Z",
+        "at": "2026-07-15T14:03:33Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T09:54:36Z",
+        "at": "2026-07-15T14:03:33Z",
         "agent": "autopilot",
-        "msg": "T43: wrote index.html, verifying in Chromium"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-15T09:58:07Z",
-        "agent": "autopilot",
-        "msg": "T43 done: clockwork garden verified 8/8 bloomed via drive.py"
-      },
-      {
-        "at": "2026-07-15T09:58:41Z",
+        "at": "2026-07-15T14:05:41Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T10:01:28Z",
+        "at": "2026-07-15T14:05:41Z",
         "agent": "autopilot",
-        "msg": "T47 verified: burn line in brief, test_engine OK"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-15T10:02:18Z",
+        "at": "2026-07-15T14:07:48Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T10:09:02Z",
+        "at": "2026-07-15T14:07:48Z",
         "agent": "autopilot",
-        "msg": "T48: gallery verified via screenshot - all 9 shipped epics show shot.png thumbs linking live; added lazy-loading"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-15T10:10:04Z",
-        "agent": "autopilot",
-        "msg": "T48 done: gallery verified, lazy-load shipped, pushed"
-      },
-      {
-        "at": "2026-07-15T10:10:20Z",
+        "at": "2026-07-15T14:09:56Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T10:13:12Z",
+        "at": "2026-07-15T14:09:56Z",
         "agent": "autopilot",
-        "msg": "T44: dive-bomb + gust code in; verifying with drive.py"
+        "msg": "agent error rc=1 \u2014 120s backoff"
+      },
+      {
+        "at": "2026-07-15T14:14:21Z",
+        "agent": "autopilot",
+        "msg": "T54: constitution Direction section added (mobile-games pivot, finish-first gate); pm + build-project skills updated"
       }
     ]
   }
