@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-15T19:41:54Z",
+  "generated_at": "2026-07-15T19:47:07Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 1209921,
-    "window_used": 736146,
-    "rolling_used": 1209921,
+    "used": 1401829,
+    "window_used": 928054,
+    "rolling_used": 1401829,
     "budget": 4798485,
-    "pct": 25.2,
-    "rate_per_hour": 242280,
-    "eta_hours": 14.8,
+    "pct": 29.2,
+    "rate_per_hour": 281791,
+    "eta_hours": 12.1,
     "window_started_at": "2026-07-15T19:22:33Z",
-    "resets_at": "2026-07-15T19:42:16Z",
-    "seconds_to_reset": 21,
+    "resets_at": "2026-07-15T19:48:38Z",
+    "seconds_to_reset": 91,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -163,7 +163,7 @@
       "status": "shipped",
       "description": "Deep-sea bioluminescence scene: anglerfish lantern follows cursor, luring glowing creature swarms out of the dark",
       "slug": "abyss-lantern",
-      "cost": 233654
+      "cost": 369586
     },
     {
       "id": "E14",
@@ -771,7 +771,7 @@
       "claimed_by": "unknown",
       "issue": "29",
       "cost": 249436,
-      "commit": null
+      "commit": "1c5f6f4"
     },
     {
       "id": "T51",
@@ -793,9 +793,12 @@
       "title": "Abyss Lantern polish: predator event + depth parallax",
       "acceptance": "occasional leviathan silhouette sweep scatters creatures; 3-layer parallax marine snow; demo mode triggers one sweep",
       "size": "S",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T14:19:35Z",
+      "updated": "2026-07-15T19:47:03Z",
+      "claimed_by": "unknown",
+      "issue": "30",
+      "cost": 135932,
       "commit": null
     },
     {
@@ -907,7 +910,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T52",
       "T56",
       "T57",
       "T59",
@@ -1055,8 +1057,8 @@
       "slug": "abyss-lantern",
       "built": true,
       "shot": true,
-      "updated": "2026-07-15T19:25:56Z",
-      "cost": 233654,
+      "updated": "2026-07-15T19:45:03Z",
+      "cost": 369586,
       "url": "/projects/abyss-lantern/"
     },
     {
@@ -1121,26 +1123,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T50",
-    "current_action": "Sandfall Cathedral polish: light rays + bell toll",
+    "current_task": "T52",
+    "current_action": "Abyss Lantern polish: predator sweep + parallax snow",
     "agent": "autopilot",
-    "updated": "2026-07-15T19:41:50Z",
+    "updated": "2026-07-15T19:45:14Z",
     "log": [
-      {
-        "at": "2026-07-15T19:15:58Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-15T19:18:00Z",
-        "agent": "autopilot",
-        "msg": "T49: fixed middle-lancet/rose collision (clamped ly0); validating"
-      },
-      {
-        "at": "2026-07-15T19:21:04Z",
-        "agent": "autopilot",
-        "msg": "T49 done: all lancets fill, demo 83-100% telemetry, canonical drive.py shot"
-      },
       {
         "at": "2026-07-15T19:22:01Z",
         "agent": "autopilot",
@@ -1185,6 +1172,21 @@
         "at": "2026-07-15T19:41:50Z",
         "agent": "autopilot",
         "msg": "T50 validated: shafts in shot, live sec 3->6 proves chime/shimmer path, no console errors"
+      },
+      {
+        "at": "2026-07-15T19:42:21Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished (T50 shipped)"
+      },
+      {
+        "at": "2026-07-15T19:42:37Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T19:45:14Z",
+        "agent": "autopilot",
+        "msg": "T52: snow layers + leviathan implemented, verifying in Chromium"
       }
     ]
   }

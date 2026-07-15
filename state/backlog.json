@@ -679,9 +679,12 @@
       "title": "Abyss Lantern polish: predator event + depth parallax",
       "acceptance": "occasional leviathan silhouette sweep scatters creatures; 3-layer parallax marine snow; demo mode triggers one sweep",
       "size": "S",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T14:19:35Z"
+      "updated": "2026-07-15T19:47:03Z",
+      "claimed_by": "unknown",
+      "issue": "30",
+      "cost": 135932
     },
     {
       "id": "T53",

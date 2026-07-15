@@ -60,6 +60,30 @@ for(let i=0;i<NE;i++){
   e.speed=42+rnd()*26; eels.push(e);
 }
 
+// ---------- marine snow: 3 parallax depth layers ----------
+// layer 0 = far (tiny, dim, slow, barely shifts), 2 = near (big, bright, fast)
+const SNOW_LAYERS = [
+  {n:70, size:0.8, alpha:0.14, fall:6,  par:0.015, drift:3},
+  {n:55, size:1.5, alpha:0.26, fall:13, par:0.05,  drift:6},
+  {n:40, size:2.4, alpha:0.42, par:0.12, fall:24, drift:10}
+];
+for(const L of SNOW_LAYERS){
+  L.pts=[];
+  for(let i=0;i<L.n;i++) L.pts.push({x:rnd()*W, y:rnd()*H, ph:rnd()*TAU});
+}
+
+// ---------- leviathan sweep ----------
+const lev = {active:false, x:0, y:0, dir:1, speed:0, born:0};
+let nextSweep = DEMO ? 5.5 : 16 + rnd()*18;
+function startSweep(t){
+  lev.active = true;
+  lev.dir = rnd() < 0.5 ? 1 : -1;
+  lev.x = lev.dir > 0 ? -260 : W + 260;
+  lev.y = H*(0.28 + rnd()*0.44);
+  lev.speed = W/(5.5 + rnd()*2);
+  lev.born = t;
+}
+
 // steering toward lure with per-creature wander; scatter impulse on click
 function steer(o, dt, pull, maxV, wander){
   const dx=lure.x-o.x, dy=lure.y-o.y, d=Math.hypot(dx,dy)+1;
@@ -67,6 +91,8 @@ function steer(o, dt, pull, maxV, wander){
   o.ph+=dt*(0.4+wander); ax+=Math.cos(o.ph*1.7)*wander*30; ay+=Math.sin(o.ph)*wander*30;
   if(scatterT>0){const sx=o.x-scX, sy=o.y-scY, sd=Math.hypot(sx,sy)+1;
     const f=scatterT*900/Math.max(sd,40); ax+=sx/sd*f; ay+=sy/sd*f;}
+  if(lev.active){const sx=o.x-lev.x, sy=o.y-lev.y, sd=Math.hypot(sx,sy)+1;
+    if(sd<320){const f=1400/Math.max(sd,50); ax+=sx/sd*f; ay+=sy/sd*f;}}
   o.vx+=ax*dt; o.vy+=ay*dt;
   const v=Math.hypot(o.vx,o.vy);
   if(v>maxV){o.vx*=maxV/v; o.vy*=maxV/v;}
@@ -94,11 +120,35 @@ function frame(now){
   lure.y += (lure.ty-lure.y)*Math.min(1,dt*4);
   if(scatterT>0) scatterT -= dt*1.4;
 
+  // leviathan lifecycle
+  if(!lev.active && t > nextSweep) startSweep(t);
+  if(lev.active){
+    lev.x += lev.dir*lev.speed*dt;
+    if((lev.dir>0 && lev.x > W+280) || (lev.dir<0 && lev.x < -280)){
+      lev.active = false;
+      nextSweep = t + 22 + rnd()*16;
+    }
+  }
+
   // trail fade to pitch black
   ctx.globalCompositeOperation='source-over';
   ctx.fillStyle='rgba(0,2,6,0.10)'; ctx.fillRect(0,0,W,H);
 
   ctx.globalCompositeOperation='lighter';
+
+  // marine snow: far->near, parallax against lure position
+  for(const L of SNOW_LAYERS){
+    const px = (lure.x - W/2)*L.par, py = (lure.y - H/2)*L.par;
+    ctx.fillStyle='#cfe8ee';
+    for(const p of L.pts){
+      p.y += L.fall*dt; p.ph += dt;
+      p.x += Math.sin(p.ph*0.7)*L.drift*dt;
+      if(p.y > H+8){p.y = -8; p.x = rnd()*W;}
+      const sx = ((p.x - px)%W + W)%W, sy = ((p.y - py)%H + H)%H;
+      ctx.globalAlpha = L.alpha*(0.7+0.3*Math.sin(p.ph*2));
+      ctx.fillRect(sx, sy, L.size, L.size);
+    }
+  }
 
   // light halo around lure
   const halo = ctx.createRadialGradient(lure.x,lure.y,0,lure.x,lure.y,240);
@@ -186,8 +236,34 @@ function frame(now){
   ctx.fillStyle=lg; ctx.beginPath(); ctx.arc(bx,by,26,0,TAU); ctx.fill();
   ctx.fillStyle=C_LURE; ctx.beginPath(); ctx.arc(bx,by,3.2,0,TAU); ctx.fill();
 
-  // vignette
+  // leviathan: vast dark silhouette occluding the glow, faint rim light
   ctx.globalCompositeOperation='source-over';
+  if(lev.active){
+    const N=15, seg=34, amp=16;
+    const spine=[];
+    for(let i=0;i<N;i++){
+      spine.push({x:lev.x - lev.dir*i*seg,
+                  y:lev.y + Math.sin(t*2.6 + i*0.55)*amp*(i/N)});
+    }
+    // width profile: blunt head, fat mid, tapering tail
+    const wof=i=>{const u=i/(N-1); return 30*Math.sin(Math.PI*Math.min(1,u*1.25+0.12))+2;};
+    ctx.beginPath();
+    ctx.moveTo(spine[0].x + lev.dir*26, spine[0].y);
+    for(let i=0;i<N;i++) ctx.lineTo(spine[i].x, spine[i].y - wof(i));
+    for(let i=N-1;i>=0;i--) ctx.lineTo(spine[i].x, spine[i].y + wof(i));
+    ctx.closePath();
+    ctx.fillStyle='rgba(1,4,9,0.94)'; ctx.fill();
+    ctx.strokeStyle='rgba(90,170,190,0.14)'; ctx.lineWidth=1.6; ctx.stroke();
+    // dorsal fin + dim predatory eye
+    const m=spine[4];
+    ctx.beginPath(); ctx.moveTo(m.x, m.y - wof(4));
+    ctx.quadraticCurveTo(m.x - lev.dir*20, m.y - wof(4) - 34, m.x - lev.dir*44, m.y - wof(4)+2);
+    ctx.closePath(); ctx.fillStyle='rgba(1,4,9,0.94)'; ctx.fill();
+    ctx.fillStyle='rgba(255,120,80,0.5)';
+    ctx.beginPath(); ctx.arc(spine[0].x + lev.dir*10, spine[0].y - 6, 2.2, 0, TAU); ctx.fill();
+  }
+
+  // vignette
   const v=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.35,W/2,H/2,Math.max(W,H)*0.72);
   v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,0.55)');
   ctx.fillStyle=v; ctx.fillRect(0,0,W,H);
@@ -197,7 +273,8 @@ function frame(now){
   if(DEMO && titleT>0.25){
     titleT=0;
     document.title='abyss t='+t.toFixed(1)+'s near='+near+'/'+(NP+NJ+NE)+
-      ' lure='+(lure.x|0)+','+(lure.y|0)+(scatterT>0?' SCATTER':'');
+      ' lure='+(lure.x|0)+','+(lure.y|0)+(scatterT>0?' SCATTER':'')+
+      (lev.active?' SWEEP x='+(lev.x|0):'');
   }
   requestAnimationFrame(frame);
 }
