@@ -1,13 +1,15 @@
 {
-  "generated_at": "2026-07-15T09:31:12Z",
+  "generated_at": "2026-07-15T09:33:26Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 0,
+    "used": 2131825,
+    "window_used": 571191,
+    "rolling_used": 2131825,
     "budget": 4798485,
-    "pct": 0.0,
+    "pct": 44.4,
     "window_started_at": "2026-07-15T09:22:33Z",
-    "resets_at": "2026-07-15T14:22:33Z",
-    "seconds_to_reset": 17480,
+    "resets_at": "2026-07-15T13:10:14Z",
+    "seconds_to_reset": 13007,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -42,7 +44,7 @@
       "kind": "meta",
       "status": "active",
       "description": "The autonomous engine itself: budget tracking, board, boot/wrap-up flow, CI cron. Permanent epic \u2014 always improvable.",
-      "cost": 276293
+      "cost": 426260
     },
     {
       "id": "E2",
@@ -515,7 +517,7 @@
       "claimed_by": "opus",
       "issue": "13",
       "cost": 74058,
-      "commit": null
+      "commit": "6ef50cb"
     },
     {
       "id": "T36",
@@ -534,9 +536,12 @@
       "title": "Rolling 5h budget window (match real subscription cap)",
       "acceptance": "lib budget math computes usage over the TRAILING 5h from all transcripts instead of discrete anchored windows; brief/budget_check/dashboard use it; discrete history kept for the bars; validated against the 04:22Z limit-hit-at-457k incident",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T09:22:30Z",
+      "status": "done",
+      "handoff": "used = max(anchored window, trailing-5h rolling sum); nap target follows binding measure; incident replay: rolling would have shown 52.1% vs anchored 7.9% at the limit hit; smoke test green",
+      "updated": "2026-07-15T09:33:24Z",
+      "claimed_by": "opus",
+      "issue": "14",
+      "cost": 149967,
       "commit": null
     },
     {
@@ -554,7 +559,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T38",
       "T39",
       "T36"
     ],
@@ -675,10 +679,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T35",
-    "current_action": "engine smoke test",
+    "current_task": "T38",
+    "current_action": "rolling 5h budget window",
     "agent": "opus",
-    "updated": "2026-07-15T09:29:34Z",
+    "updated": "2026-07-15T09:31:25Z",
     "log": [
       {
         "at": "2026-07-15T04:06:41Z",

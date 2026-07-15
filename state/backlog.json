@@ -454,9 +454,12 @@
       "title": "Rolling 5h budget window (match real subscription cap)",
       "acceptance": "lib budget math computes usage over the TRAILING 5h from all transcripts instead of discrete anchored windows; brief/budget_check/dashboard use it; discrete history kept for the bars; validated against the 04:22Z limit-hit-at-457k incident",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T09:22:30Z"
+      "status": "done",
+      "handoff": "used = max(anchored window, trailing-5h rolling sum); nap target follows binding measure; incident replay: rolling would have shown 52.1% vs anchored 7.9% at the limit hit; smoke test green",
+      "updated": "2026-07-15T09:33:24Z",
+      "claimed_by": "opus",
+      "issue": "14",
+      "cost": 149967
     },
     {
       "id": "T39",

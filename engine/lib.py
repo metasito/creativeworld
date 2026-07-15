@@ -189,13 +189,15 @@ def weighted(usage, weights):
 
 
 def scan_transcripts(weights, since=None):
-    """Return ({session_id: weighted_total}, earliest_usage_dt).
+    """Return ({session_id: weighted_total}, earliest_usage_dt, earliest_in_span_dt).
 
+    earliest is across ALL usage; earliest_in_span is the oldest usage that
+    passed the `since` filter (drives the rolling-window reset estimate).
     Dedupes by message id (streaming rewrites the same message with growing
     usage), keeping the max weighted value per id.
     """
     per_session = {}
-    earliest = None
+    earliest = in_span = None
     root = project_transcript_dir()
     files = root.glob("*.jsonl") if root else TRANSCRIPTS.glob("*/*.jsonl")
     for f in files:
@@ -217,11 +219,13 @@ def scan_transcripts(weights, since=None):
                 earliest = dt
             if since and dt < since:
                 continue
+            if in_span is None or dt < in_span:
+                in_span = dt
             mid = msg.get("id") or ts
             by_msg[mid] = max(by_msg.get(mid, 0), weighted(usage, weights))
         if by_msg:
             per_session[f.stem] = round(sum(by_msg.values()))
-    return per_session, earliest
+    return per_session, earliest, in_span
 
 
 def total_usage():
@@ -229,7 +233,7 @@ def total_usage():
     task cost = total_at_done - total_at_claim survives window rolls. With two
     agents working at once the bystander's tokens bleed in — treat as ceiling."""
     tokens = load("tokens.json")
-    per_session, _ = scan_transcripts(tokens["config"]["weights"])
+    per_session, _, _ = scan_transcripts(tokens["config"]["weights"])
     return round(sum(per_session.values()))
 
 
@@ -263,7 +267,7 @@ def update_from_transcripts(tokens):
     win = tokens["window"]
     weights = tokens["config"]["weights"]
     since = parse_iso(win["started_at"]) if win.get("started_at") else None
-    per_session, earliest = scan_transcripts(weights, since=since)
+    per_session, earliest, _ = scan_transcripts(weights, since=since)
     if win.get("started_at") is None:
         # Window starts at the first usage seen after the previous window ended.
         not_before = parse_iso(win["not_before"]) if win.get("not_before") else None
@@ -271,7 +275,7 @@ def update_from_transcripts(tokens):
         if not_before and start < not_before:
             start = not_before
         win["started_at"] = iso(start)
-        per_session, _ = scan_transcripts(weights, since=parse_iso(win["started_at"]))
+        per_session, _, _ = scan_transcripts(weights, since=parse_iso(win["started_at"]))
     by = win.setdefault("by_session", {})
     for sid, total in per_session.items():
         by[sid] = max(by.get(sid, 0), total)  # max: recounts never shrink, other containers' entries survive
@@ -296,13 +300,32 @@ def calibrate_floor_from_history(tokens):
 
 
 def budget_summary(tokens):
+    """Budget verdict input. The REAL subscription cap behaves like a trailing
+    window, so `used` is the max of (a) the anchored engine window — keeps
+    history/bars meaningful — and (b) the TRAILING window_hours sum over
+    transcripts, which is boundary-drift-proof (see the 04:22Z incident where
+    an anchored 'fresh' window showed 457k while the true session was 5x in).
+    """
     cfg = tokens["config"]
-    used = round(sum(tokens["window"].get("by_session", {}).values()))
+    win_used = round(sum(tokens["window"].get("by_session", {}).values()))
+    used, roll_used, roll_end = win_used, None, None
+    if cfg.get("weights"):  # rolling needs transcript access (tests may omit it)
+        span_start = now() - timedelta(hours=cfg["window_hours"])
+        per, _, first_in = scan_transcripts(cfg["weights"], since=span_start)
+        roll_used = round(sum(per.values()))
+        if first_in:
+            roll_end = first_in + timedelta(hours=cfg["window_hours"])
+        used = max(win_used, roll_used)
     budget = cfg["budget_per_window"]
     pct = 100.0 * used / budget if budget else 0.0
     end = window_end(tokens)
+    # nap target follows whichever measure is binding
+    if roll_used is not None and roll_used >= win_used and roll_end:
+        end = roll_end
     return {
         "used": used,
+        "window_used": win_used,
+        "rolling_used": roll_used,
         "budget": budget,
         "pct": round(pct, 1),
         "window_started_at": tokens["window"].get("started_at"),
