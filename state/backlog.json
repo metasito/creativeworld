@@ -101,6 +101,22 @@
       "status": "shipped",
       "description": "Deep-sea bioluminescence scene: anglerfish lantern follows cursor, luring glowing creature swarms out of the dark",
       "slug": "abyss-lantern"
+    },
+    {
+      "id": "E14",
+      "title": "Comet Sling",
+      "kind": "project",
+      "status": "planned",
+      "description": "One-finger orbital golf: drag-and-release to slingshot a comet through star gates using planet gravity assists, glowing trails on a parallax starfield",
+      "slug": "comet-sling"
+    },
+    {
+      "id": "E15",
+      "title": "Forge Tempo",
+      "kind": "project",
+      "status": "planned",
+      "description": "Rhythm blacksmith: tap the anvil when the spark pulse crosses the strike zone to forge a glowing blade, molten metal and spark-burst feedback",
+      "slug": "forge-tempo"
     }
   ],
   "tasks": [
@@ -670,9 +686,12 @@
       "title": "Engine: test_engine.py covers brief burn-rate + queue-thin warning",
       "acceptance": "test_engine.py exercises board.py brief output paths (burn rate line, thin-queue WARN, resume line) with a temp state dir; exit 0; run passes locally",
       "size": "S",
-      "status": "next",
+      "status": "in_progress",
       "handoff": "",
-      "updated": "2026-07-15T10:03:44Z"
+      "updated": "2026-07-15T19:29:19Z",
+      "claimed_by": "unknown",
+      "cost_start": 15841931,
+      "issue": "28"
     },
     {
       "id": "T54",
@@ -706,10 +725,60 @@
       "status": "next",
       "handoff": "",
       "updated": "2026-07-15T14:19:41Z"
+    },
+    {
+      "id": "T57",
+      "epic": "E14",
+      "title": "Comet Sling v1 - touch orbital golf",
+      "acceptance": "Single index.html, pointer-event drag-aim slingshot; comet with glowing trail, >=3 levels with planets whose gravity bends the path, star-gate goal, strokes counter, win state; viewport meta, portrait-friendly, touch targets >=44px; ?seed= deterministic + ?demo=1 auto-shot with state in document.title; verified via drive.py screenshot",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T19:30:37Z"
+    },
+    {
+      "id": "T58",
+      "epic": "E14",
+      "title": "Comet Sling polish: supernova hazard + level select",
+      "acceptance": "Add a pulsing supernova hazard that destroys the comet on contact, and a 44px+ touch level-select screen; verified via screenshot",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-15T19:30:30Z"
+    },
+    {
+      "id": "T59",
+      "epic": "E15",
+      "title": "Forge Tempo v1 - rhythm blacksmith",
+      "acceptance": "Single index.html, tap/pointer-down hammer strike timed to a moving spark pulse crossing the strike zone; combo meter, blade heats/glows toward completion over >=10 strikes, miss cools blade, win state with forged sword reveal; viewport meta, portrait layout; ?demo=1 autoplay with state in document.title; verified via drive.py screenshot",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T19:30:37Z"
+    },
+    {
+      "id": "T60",
+      "epic": "E15",
+      "title": "Forge Tempo polish: quench sizzle + haptics",
+      "acceptance": "Quench animation (steam burst) on completion, navigator.vibrate haptics on strike where supported, difficulty ramps pulse speed; verified via screenshot",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-15T19:30:30Z"
+    },
+    {
+      "id": "T61",
+      "epic": "E1",
+      "title": "Engine: autopilot cycle summary line in sessions.json",
+      "acceptance": "autopilot.py appends a one-line cycle summary (task id, result, weighted tokens) to state/sessions.json per cycle; test_engine.py still exits 0",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T19:30:38Z"
     }
   ],
   "next_ids": {
-    "epic": 14,
-    "task": 57
+    "epic": 16,
+    "task": 62
   }
 }
