@@ -523,7 +523,7 @@
       "title": "Paper Storm v1: boids origami murmuration",
       "acceptance": "projects/paper-storm/index.html: canvas boids flock (1500+ birds) as folded-triangle sprites over dusk gradient; flock steers toward/away from cursor; birds visibly fold/unfold in flight; ?demo=1 auto-moves a virtual cursor and mirrors state in title; ?seed= deterministic; 60fps-ish; screenshot shot.png; registered in backlog",
       "size": "M",
-      "status": "next",
+      "status": "done",
       "handoff": "",
       "updated": "2026-07-15T14:19:37Z",
       "claimed_by": "unknown",
@@ -687,9 +687,9 @@
       "title": "Self-improving skill architecture: specialized creative skills with pre-flight/validation/lessons",
       "acceptance": "3+ SKILL.md files (game-builder, frontend-designer, art-generator) with YAML gatekeeper description, tool-based pre-flight checks, guardrails, validation commands, self-improvement protocol + Lessons Learned; CLAUDE.md orchestrator section; user prio 1",
       "size": "M",
-      "status": "in_progress",
-      "handoff": "",
-      "updated": "2026-07-15T14:19:37Z"
+      "status": "done",
+      "handoff": "3 specialist skills scaffolded (game-builder, frontend-designer, art-generator) with pre-flight/guardrails/validation/lessons; CLAUDE.md orchestration merged with autopilot's section; shot.py seed-query fix found during validation, recorded as first lesson",
+      "updated": "2026-07-15T14:23:06Z"
     },
     {
       "id": "T56",

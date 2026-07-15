@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-15T14:17:59Z",
+  "generated_at": "2026-07-15T14:23:07Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2938851,
-    "window_used": 2642192,
-    "rolling_used": 2938851,
+    "used": 3488756,
+    "window_used": 3430689,
+    "rolling_used": 3488756,
     "budget": 4798485,
-    "pct": 61.2,
-    "rate_per_hour": 587911,
-    "eta_hours": 3.2,
+    "pct": 72.7,
+    "rate_per_hour": 697963,
+    "eta_hours": 1.9,
     "window_started_at": "2026-07-15T09:22:33Z",
-    "resets_at": "2026-07-15T14:18:03Z",
-    "seconds_to_reset": 4,
+    "resets_at": "2026-07-15T14:23:12Z",
+    "seconds_to_reset": 5,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -616,7 +616,7 @@
       "size": "M",
       "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T09:46:33Z",
+      "updated": "2026-07-15T14:19:37Z",
       "claimed_by": "unknown",
       "issue": "18",
       "cost": 133534,
@@ -676,7 +676,7 @@
       "claimed_by": "unknown",
       "issue": "25",
       "cost": 101441,
-      "commit": null
+      "commit": "25e0105"
     },
     {
       "id": "T46",
@@ -734,9 +734,9 @@
       "title": "Sandfall Cathedral polish: light rays + bell toll",
       "acceptance": "volumetric light shafts through completed glass sections; subtle chime + screen shimmer when a section completes; still single-file, demo mode covers it",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T10:03:37Z",
+      "updated": "2026-07-15T14:19:35Z",
       "commit": null
     },
     {
@@ -756,9 +756,9 @@
       "title": "Abyss Lantern polish: predator event + depth parallax",
       "acceptance": "occasional leviathan silhouette sweep scatters creatures; 3-layer parallax marine snow; demo mode triggers one sweep",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T10:03:37Z",
+      "updated": "2026-07-15T14:19:35Z",
       "commit": null
     },
     {
@@ -785,6 +785,28 @@
       "issue": "24",
       "cost": 58693,
       "commit": "e8a01e7"
+    },
+    {
+      "id": "T55",
+      "epic": "E1",
+      "title": "Self-improving skill architecture: specialized creative skills with pre-flight/validation/lessons",
+      "acceptance": "3+ SKILL.md files (game-builder, frontend-designer, art-generator) with YAML gatekeeper description, tool-based pre-flight checks, guardrails, validation commands, self-improvement protocol + Lessons Learned; CLAUDE.md orchestrator section; user prio 1",
+      "size": "M",
+      "status": "done",
+      "handoff": "3 specialist skills scaffolded (game-builder, frontend-designer, art-generator) with pre-flight/guardrails/validation/lessons; CLAUDE.md orchestration merged with autopilot's section; shot.py seed-query fix found during validation, recorded as first lesson",
+      "updated": "2026-07-15T14:23:06Z",
+      "commit": null
+    },
+    {
+      "id": "T56",
+      "epic": "E2",
+      "title": "Dashboard: trailing-5h burn sparkline + cap ETA on budget panel",
+      "acceptance": "Budget panel shows a sparkline of trailing-5h weighted burn from tokens.json history plus estimated time-to-cap; verified via Chromium screenshot",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T14:19:41Z",
+      "commit": null
     }
   ],
   "queue": {
@@ -793,7 +815,10 @@
       "T46",
       "T49",
       "T51",
-      "T53"
+      "T53",
+      "T50",
+      "T52",
+      "T56"
     ],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
   },
@@ -977,31 +1002,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T45",
-    "current_action": "Shatter Type polish: color themes + shockwave",
+    "current_task": "T55",
+    "current_action": "resume: self-improving skill architecture",
     "agent": "autopilot",
-    "updated": "2026-07-15T14:16:48Z",
+    "updated": "2026-07-15T14:22:31Z",
     "log": [
-      {
-        "at": "2026-07-15T14:01:26Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-15T14:03:33Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-15T14:03:33Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-15T14:05:41Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-15T14:05:41Z",
         "agent": "autopilot",
@@ -1041,6 +1046,26 @@
         "at": "2026-07-15T14:16:48Z",
         "agent": "autopilot",
         "msg": "T45: themes + shockwave coded; verifying with screenshots"
+      },
+      {
+        "at": "2026-07-15T14:18:26Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T14:20:44Z",
+        "agent": "autopilot",
+        "msg": "autopilot cycle: pm groomed queue to 8 (added T56 dashboard burn-sparkline, promoted T50/T52/T55); WIP held by opus on T55 - yielding, no second task"
+      },
+      {
+        "at": "2026-07-15T14:21:00Z",
+        "agent": "opus",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T14:22:31Z",
+        "agent": "autopilot",
+        "msg": "T55 verified: 3 specialist SKILL.md files valid + CLAUDE.md orchestrator section added"
       }
     ]
   }

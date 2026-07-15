@@ -18,7 +18,11 @@ def shot(target, out, size="1280,800", vt=4000):
     browser = lib.browser_path()
     if not browser:
         sys.exit("no browser found — set $BROWSER or install Chrome/Chromium")
-    url = target if "://" in target else Path(target).resolve().as_uri()
+    if "://" in target:
+        url = target
+    else:  # keep ?seed=7 etc. intact — as_uri() would percent-encode the '?'
+        path, _, query = target.partition("?")
+        url = Path(path).resolve().as_uri() + (f"?{query}" if query else "")
     cmd = [browser, "--headless", "--no-sandbox", "--disable-gpu",
            f"--screenshot={Path(out).resolve()}", f"--window-size={size}",
            f"--virtual-time-budget={vt}", url]
