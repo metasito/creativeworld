@@ -14,7 +14,7 @@
 </head>
 <body>
 <canvas id="c"></canvas>
-<div id="hint">TYPE A WORD &mdash; EVERY KEYSTROKE SHATTERS IT &middot; ENTER CLEARS</div>
+<div id="hint">TYPE A WORD &mdash; EVERY KEYSTROKE SHATTERS IT &middot; ENTER CLEARS &middot; TAB CYCLES THEME</div>
 <script>
 (() => {
 'use strict';
@@ -64,13 +64,26 @@ function sampleWord(w) {
   return pts;
 }
 
+// --- themes ----------------------------------------------------------------
+const THEMES = [
+  { name: 'NEON',  bg: [11, 11, 18], hues: [174, 42, 340, 210, 96], sat: 85 },
+  { name: 'EMBER', bg: [20,  8,  5], hues: [8, 32, 46, 2, 20],      sat: 95 },
+  { name: 'ICE',   bg: [ 5, 10, 20], hues: [200, 225, 185, 255, 170], sat: 65 }
+];
+let themeIdx = (parseInt(q.get('theme'), 10) || 0) % THEMES.length;
+function theme() { return THEMES[themeIdx]; }
+function applyTheme() {
+  document.body.style.background = `rgb(${theme().bg.join(',')})`;
+  hue = theme().hues[wordCount % theme().hues.length];
+}
+
 // --- particles ------------------------------------------------------------
-const HUES = [174, 42, 340, 210, 96];
-let parts = [], word = '', hue = HUES[0], wordCount = 0;
+let parts = [], word = '', hue = THEMES[0].hues[0], wordCount = 0, waves = [];
 
 function retarget(w, explode) {
   word = w;
-  hue = HUES[wordCount % HUES.length];
+  hue = theme().hues[wordCount % theme().hues.length];
+  if (explode) waves.push({ x: W / 2, y: H / 2, r: 0, v: 16, life: 1 });
   const pts = sampleWord(w);
   // grow/shrink particle pool to match targets
   while (parts.length < pts.length) {
@@ -92,9 +105,26 @@ function retarget(w, explode) {
 }
 
 function step() {
-  ctx.fillStyle = 'rgba(11,11,18,0.28)';
+  const bg = theme().bg;
+  ctx.fillStyle = `rgba(${bg[0]},${bg[1]},${bg[2]},0.28)`;
   ctx.fillRect(0, 0, W, H);
+  // shockwave rings: expanding front that shoves particles it passes
+  const BAND = 46;
+  for (const wv of waves) {
+    wv.r += wv.v; wv.v *= 0.97; wv.life -= 0.022;
+    ctx.strokeStyle = `hsla(${hue},${theme().sat}%,75%,${Math.max(wv.life, 0) * 0.55})`;
+    ctx.lineWidth = 2 + wv.life * 10;
+    ctx.beginPath(); ctx.arc(wv.x, wv.y, wv.r, 0, Math.PI * 2); ctx.stroke();
+  }
   for (const p of parts) {
+    for (const wv of waves) {
+      const dx = p.x - wv.x, dy = p.y - wv.y, d = Math.hypot(dx, dy) || 1;
+      const off = Math.abs(d - wv.r);
+      if (off < BAND) {
+        const f = (1 - off / BAND) * wv.life * 1.6;
+        p.vx += (dx / d) * f; p.vy += (dy / d) * f;
+      }
+    }
     // magnetic spring toward target, per-particle stiffness
     const k = 0.012 + p.j * 0.02, damp = 0.88;
     p.vx += (p.tx - p.x) * k; p.vy += (p.ty - p.y) * k;
@@ -102,15 +132,23 @@ function step() {
     p.x += p.vx; p.y += p.vy;
     const speed = Math.min(Math.hypot(p.vx, p.vy), 14);
     const l = 55 + speed * 3;
-    ctx.fillStyle = `hsl(${hue + p.j * 24},85%,${l}%)`;
+    ctx.fillStyle = `hsl(${hue + p.j * 24},${theme().sat}%,${l}%)`;
     const r = 1.1 + p.j * 1.4;
     ctx.fillRect(p.x - r / 2, p.y - r / 2, r, r);
   }
+  waves = waves.filter(wv => wv.life > 0);
   requestAnimationFrame(step);
 }
 
 // --- input ----------------------------------------------------------------
 addEventListener('keydown', e => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    themeIdx = (themeIdx + 1) % THEMES.length;
+    applyTheme();
+    document.title = `Shatter Type — ${theme().name}`;
+    return;
+  }
   if (DEMO) return;
   if (e.key === 'Enter' || e.key === 'Escape') { wordCount++; retarget('', false); return; }
   let w = word;
@@ -120,6 +158,8 @@ addEventListener('keydown', e => {
   } else return;
   if (w !== word) { wordCount++; retarget(w, true); }
 });
+
+applyTheme();
 
 // --- demo mode: auto-type a word sequence, state in title ------------------
 if (DEMO) {

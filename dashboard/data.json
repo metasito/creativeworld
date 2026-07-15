@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-15T14:14:31Z",
+  "generated_at": "2026-07-15T14:17:59Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2875414,
-    "window_used": 2499590,
-    "rolling_used": 2875414,
+    "used": 2938851,
+    "window_used": 2642192,
+    "rolling_used": 2938851,
     "budget": 4798485,
-    "pct": 59.9,
-    "rate_per_hour": 578747,
-    "eta_hours": 3.3,
+    "pct": 61.2,
+    "rate_per_hour": 587911,
+    "eta_hours": 3.2,
     "window_started_at": "2026-07-15T09:22:33Z",
-    "resets_at": "2026-07-15T14:16:25Z",
-    "seconds_to_reset": 113,
+    "resets_at": "2026-07-15T14:18:03Z",
+    "seconds_to_reset": 4,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -126,7 +126,7 @@
       "status": "shipped",
       "description": "Kinetic typography playground: giant letters built from physics particles explode as you type and magnetically reassemble into the new word",
       "slug": "shatter-type",
-      "cost": 96704
+      "cost": 198145
     },
     {
       "id": "E11",
@@ -670,9 +670,12 @@
       "title": "Shatter Type polish: color themes + shockwave",
       "acceptance": "3 cyclable color themes; explosion emits shockwave ring distorting nearby particles; updated shot.png",
       "size": "S",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T09:40:27Z",
+      "updated": "2026-07-15T14:17:55Z",
+      "claimed_by": "unknown",
+      "issue": "25",
+      "cost": 101441,
       "commit": null
     },
     {
@@ -781,13 +784,12 @@
       "claimed_by": "unknown",
       "issue": "24",
       "cost": 58693,
-      "commit": null
+      "commit": "e8a01e7"
     }
   ],
   "queue": {
     "in_progress": null,
     "next": [
-      "T45",
       "T46",
       "T49",
       "T51",
@@ -896,8 +898,8 @@
       "slug": "shatter-type",
       "built": true,
       "shot": true,
-      "updated": "2026-07-15T09:48:59Z",
-      "cost": 96704,
+      "updated": "2026-07-15T14:16:42Z",
+      "cost": 198145,
       "url": "/projects/shatter-type/"
     },
     {
@@ -975,21 +977,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T54",
-    "current_action": "reviewing T54 scope: finish open projects + constitution change for mobile games",
+    "current_task": "T45",
+    "current_action": "Shatter Type polish: color themes + shockwave",
     "agent": "autopilot",
-    "updated": "2026-07-15T14:14:21Z",
+    "updated": "2026-07-15T14:16:48Z",
     "log": [
-      {
-        "at": "2026-07-15T13:59:13Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-15T14:01:26Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-15T14:01:26Z",
         "agent": "autopilot",
@@ -1039,6 +1031,16 @@
         "at": "2026-07-15T14:14:21Z",
         "agent": "autopilot",
         "msg": "T54: constitution Direction section added (mobile-games pivot, finish-first gate); pm + build-project skills updated"
+      },
+      {
+        "at": "2026-07-15T14:15:07Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T14:16:48Z",
+        "agent": "autopilot",
+        "msg": "T45: themes + shockwave coded; verifying with screenshots"
       }
     ]
   }
