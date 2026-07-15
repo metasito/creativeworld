@@ -142,7 +142,8 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-14T14:14:30Z"
+      "updated": "2026-07-14T14:14:30Z",
+      "issue": "2"
     },
     {
       "id": "T9",
@@ -182,7 +183,8 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-14T18:45:00Z"
+      "updated": "2026-07-14T18:45:00Z",
+      "issue": "3"
     },
     {
       "id": "T13",
@@ -283,7 +285,8 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-14T19:12:01Z"
+      "updated": "2026-07-14T19:12:01Z",
+      "issue": "4"
     },
     {
       "id": "T23",
@@ -293,7 +296,8 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-14T19:12:01Z"
+      "updated": "2026-07-14T19:12:01Z",
+      "issue": "5"
     },
     {
       "id": "T24",
@@ -334,9 +338,10 @@
       "title": "GitHub API automation: auto-create issues + PR close-keywords (needs gh CLI or GITHUB_TOKEN)",
       "acceptance": "When gh CLI or GITHUB_TOKEN is available: board.py claim opens a real GitHub issue and stores its number; board.py done opens/links a PR with 'Closes #N'; dashboard tag edits sync to GitHub labels both ways. Blocked in the current headless local env which has neither gh nor a token \u2014 the commit-link traceability from T26 is the token-free fallback.",
       "size": "M",
-      "status": "backlog",
-      "handoff": "",
-      "updated": "2026-07-14T23:42:46Z"
+      "status": "done",
+      "handoff": "issues auto-open on claim/in_progress, auto-close with commit link on done; github.py sync backfills; two-way label sync split to follow-up task",
+      "updated": "2026-07-15T08:43:30Z",
+      "issue": "6"
     },
     {
       "id": "T28",
@@ -346,7 +351,8 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T08:31:09Z"
+      "updated": "2026-07-15T08:31:09Z",
+      "issue": "7"
     },
     {
       "id": "T29",
@@ -356,7 +362,8 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T08:31:09Z"
+      "updated": "2026-07-15T08:31:09Z",
+      "issue": "8"
     },
     {
       "id": "T30",
@@ -366,7 +373,8 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T08:31:09Z"
+      "updated": "2026-07-15T08:31:09Z",
+      "issue": "9"
     },
     {
       "id": "T31",
@@ -376,7 +384,8 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T08:31:10Z"
+      "updated": "2026-07-15T08:31:10Z",
+      "issue": "10"
     },
     {
       "id": "T32",
@@ -396,7 +405,8 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T08:31:10Z"
+      "updated": "2026-07-15T08:31:10Z",
+      "issue": "11"
     },
     {
       "id": "T34",
@@ -417,10 +427,20 @@
       "status": "backlog",
       "handoff": "",
       "updated": "2026-07-15T08:12:53Z"
+    },
+    {
+      "id": "T36",
+      "epic": "E1",
+      "title": "GitHub labels two-way sync",
+      "acceptance": "github.py sync also pulls: label/status edits made on GitHub issues update the board task (closed issue -> done, size label edit -> size); ran on boot; conflicts resolved board-wins",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-15T08:43:30Z"
     }
   ],
   "next_ids": {
     "epic": 9,
-    "task": 36
+    "task": 37
   }
 }

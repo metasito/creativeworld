@@ -20,6 +20,19 @@ import lib
 STATUSES = {"backlog", "next", "in_progress", "review", "done"}
 
 
+def gh_safe(fn, *a, **kw):
+    """Run a github-sync call without ever breaking board flow (offline, bad
+    token, rate limit -> warn and move on; the board is the source of truth)."""
+    try:
+        import github
+        if not github.enabled():
+            return None
+        return fn(github, *a, **kw)
+    except Exception as e:
+        print(f"  (github sync skipped: {e})")
+        return None
+
+
 def sync_queue(b):
     q = lib.load("queue.json")
     inprog = [t["id"] for t in b["tasks"] if t["status"] == "in_progress"]
@@ -55,7 +68,14 @@ def update_task(b, tid, status=None, handoff=None, pr=None, issue=None, order=No
     t = get_task(b, tid)
     if status is not None:
         assert status in STATUSES, f"status must be one of {STATUSES}"
+        was = t["status"]
         t["status"] = status
+        if status != was:  # mirror board moves onto GitHub
+            epics = {e["id"]: e["title"] for e in b["epics"]}
+            if status == "in_progress":
+                gh_safe(lambda gh: gh.ensure_task_issue(t, epics.get(t["epic"], t["epic"])))
+            elif status == "done":
+                gh_safe(lambda gh: gh.close_task_issue(t, gh.ship_comment(t)))
     if handoff is not None:
         t["handoff"] = handoff.strip()
     if pr is not None:
@@ -173,6 +193,8 @@ def main():
         t = find(b, q["next"][0])
         t["status"] = "in_progress"
         touch(t)
+        epics = {e["id"]: e["title"] for e in b["epics"]}
+        gh_safe(lambda gh: gh.ensure_task_issue(t, epics.get(t["epic"], t["epic"])))
         print(f"claimed {t['id']}: {t['title']}\nacceptance: {t['acceptance']}")
         print(f"  {issue_line(t)}")
 
@@ -181,7 +203,10 @@ def main():
         t["status"] = "done"
         t["handoff"] = " ".join(args[2:])
         touch(t)
+        gh_safe(lambda gh: gh.close_task_issue(t, gh.ship_comment(t)))
         print(f"done {t['id']}")
+        if t.get("issue"):
+            print(f"  commit with: {t['id']}: <what shipped> (closes #{t['issue']})")
 
     elif cmd == "move":
         t = find(b, args[1])

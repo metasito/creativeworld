@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-15T04:21:56Z",
+  "generated_at": "2026-07-15T08:44:25Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 436405,
+    "used": 0,
     "budget": 4798485,
-    "pct": 9.1,
-    "window_started_at": "2026-07-15T04:10:00Z",
-    "resets_at": "2026-07-15T09:10:00Z",
-    "seconds_to_reset": 17283,
+    "pct": 0.0,
+    "window_started_at": "2026-07-15T09:22:33Z",
+    "resets_at": "2026-07-15T14:22:33Z",
+    "seconds_to_reset": 20287,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -26,6 +26,12 @@
         "started_at": "2026-07-14T23:10:00Z",
         "used": 2157643,
         "budget": 4670000
+      },
+      {
+        "started_at": "2026-07-15T04:10:00Z",
+        "used": 456909,
+        "budget": 456909,
+        "limit_hit": true
       }
     ]
   },
@@ -180,6 +186,7 @@
       "status": "next",
       "handoff": "",
       "updated": "2026-07-14T14:14:30Z",
+      "issue": "2",
       "commit": null
     },
     {
@@ -224,6 +231,7 @@
       "status": "next",
       "handoff": "",
       "updated": "2026-07-14T18:45:00Z",
+      "issue": "3",
       "commit": null
     },
     {
@@ -335,6 +343,7 @@
       "status": "next",
       "handoff": "",
       "updated": "2026-07-14T19:12:01Z",
+      "issue": "4",
       "commit": null
     },
     {
@@ -346,6 +355,7 @@
       "status": "next",
       "handoff": "",
       "updated": "2026-07-14T19:12:01Z",
+      "issue": "5",
       "commit": null
     },
     {
@@ -371,7 +381,7 @@
       "handoff": "",
       "updated": "2026-07-15T04:21:56Z",
       "issue": "",
-      "commit": null
+      "commit": "9337c5e"
     },
     {
       "id": "T26",
@@ -390,9 +400,114 @@
       "title": "GitHub API automation: auto-create issues + PR close-keywords (needs gh CLI or GITHUB_TOKEN)",
       "acceptance": "When gh CLI or GITHUB_TOKEN is available: board.py claim opens a real GitHub issue and stores its number; board.py done opens/links a PR with 'Closes #N'; dashboard tag edits sync to GitHub labels both ways. Blocked in the current headless local env which has neither gh nor a token \u2014 the commit-link traceability from T26 is the token-free fallback.",
       "size": "M",
+      "status": "done",
+      "handoff": "issues auto-open on claim/in_progress, auto-close with commit link on done; github.py sync backfills; two-way label sync split to follow-up task",
+      "updated": "2026-07-15T08:43:30Z",
+      "issue": "6",
+      "commit": null
+    },
+    {
+      "id": "T28",
+      "epic": "E2",
+      "title": "Dashboard: render budget history bars (used vs budget per past window, limit-hits marked red)",
+      "acceptance": "dashboard/index.html renders budget.history (already in data.json) as a small bar strip under the gauge; limit-hit windows visually flagged; auto-raised budget visible; verified with screenshot",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T08:31:09Z",
+      "issue": "7",
+      "commit": null
+    },
+    {
+      "id": "T29",
+      "epic": "E2",
+      "title": "Dashboard: escape HTML in all injected strings",
+      "acceptance": "titles, handoffs, acceptance, log msgs, learnings pass through an esc() helper before innerHTML; a task titled '<img src=x onerror=alert(1)>' renders as text; board still renders correctly",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T08:31:09Z",
+      "issue": "8",
+      "commit": null
+    },
+    {
+      "id": "T30",
+      "epic": "E2",
+      "title": "Dashboard: live tab title + favicon with budget % and verdict",
+      "acceptance": "document.title shows e.g. '38% CONTINUE - CreativeWorld'; canvas-drawn favicon dot green/amber/red by verdict; updates each poll",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T08:31:09Z",
+      "issue": "9",
+      "commit": null
+    },
+    {
+      "id": "T31",
+      "epic": "E2",
+      "title": "Dashboard: fix false IDLE when agent is quietly working",
+      "acceptance": "when a task is in_progress and heartbeat is stale, panel shows 'working - quiet Xm' (amber) instead of 'IDLE (no agent)'; true idle unchanged",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T08:31:10Z",
+      "issue": "10",
+      "commit": null
+    },
+    {
+      "id": "T32",
+      "epic": "E1",
+      "title": "Per-task token cost attribution",
+      "acceptance": "board.py claim/done snapshot window usage into the task (cost_start/cost); done tasks store real weighted cost; data.json exposes it; board cards + project gallery show cost; learnings sizing (S/M/L) can be checked against reals",
+      "size": "M",
       "status": "backlog",
       "handoff": "",
-      "updated": "2026-07-14T23:42:46Z",
+      "updated": "2026-07-15T08:12:53Z",
+      "commit": null
+    },
+    {
+      "id": "T33",
+      "epic": "E1",
+      "title": "Multi-agent safety: atomic state writes + claimed_by",
+      "acceptance": "lib.save writes tmp+os.replace with a lockfile retry; claim stamps claimed_by/agent; second claim by another agent refuses; observed race (2 agents editing same project) can no longer corrupt state json",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T08:31:10Z",
+      "issue": "11",
+      "commit": null
+    },
+    {
+      "id": "T34",
+      "epic": "E1",
+      "title": "heartbeat.py robustness: usage on bad args + trim log",
+      "acceptance": "heartbeat.py status with no arg prints usage instead of traceback; log kept to last 100 entries; heartbeat.py show still works",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-15T08:12:53Z",
+      "commit": null
+    },
+    {
+      "id": "T35",
+      "epic": "E1",
+      "title": "Engine smoke test",
+      "acceptance": "python engine/test_engine.py runs add-epic/add/claim/done/sync on a temp STATE dir + budget math sanity; exits 0; documented in CLAUDE.md work loop as pre-commit check for engine changes",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-15T08:12:53Z",
+      "commit": null
+    },
+    {
+      "id": "T36",
+      "epic": "E1",
+      "title": "GitHub labels two-way sync",
+      "acceptance": "github.py sync also pulls: label/status edits made on GitHub issues update the board task (closed issue -> done, size label edit -> size); ran on boot; conflicts resolved board-wins",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-15T08:43:30Z",
       "commit": null
     }
   ],
@@ -402,7 +517,12 @@
       "T12",
       "T8",
       "T22",
-      "T23"
+      "T23",
+      "T28",
+      "T29",
+      "T30",
+      "T31",
+      "T33"
     ],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
   },
@@ -505,27 +625,12 @@
     "2026-07-14 (bootstrap): Transcript JSONL at `~/.claude/projects/<proj>/<session>.jsonl` carries per-turn `usage`; weighted formula in tokens.json config approximates plan units \u2014 calibrate, don't trust."
   ],
   "activity": {
-    "engine_status": "idle",
-    "current_task": null,
-    "current_action": null,
-    "agent": "autopilot",
-    "updated": "2026-07-15T04:21:49Z",
+    "engine_status": "working",
+    "current_task": "T27",
+    "current_action": "GitHub API automation: issues + close-keywords",
+    "agent": "opus",
+    "updated": "2026-07-15T08:40:17Z",
     "log": [
-      {
-        "at": "2026-07-15T04:02:35Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-15T04:02:35Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-15T04:04:38Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-15T04:04:38Z",
         "agent": "autopilot",
@@ -570,6 +675,21 @@
         "at": "2026-07-15T04:21:49Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T04:21:57Z",
+        "agent": "autopilot",
+        "msg": "T25 done: floor calibration + probe_limit.py shipped"
+      },
+      {
+        "at": "2026-07-15T04:22:32Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T04:22:33Z",
+        "agent": "autopilot",
+        "msg": "REAL usage limit hit \u2014 napping until 2026-07-15T09:22:33Z"
       }
     ]
   }
