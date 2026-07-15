@@ -4,7 +4,10 @@
     "T48",
     "T44",
     "T45",
-    "T46"
+    "T46",
+    "T49",
+    "T51",
+    "T53"
   ],
   "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
 }
