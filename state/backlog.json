@@ -313,9 +313,9 @@
       "title": "optimizazion token consume. also if the budget is used, try to call claud to see if it still works, and when a task is working and it doesnt work anymore, (app is live and the task gets blocked, it just stores the information so the next time can start the task from the same state, and the buged it better esitmated",
       "acceptance": "get a better estimation of the token budget. last time was false",
       "size": "M",
-      "status": "next",
-      "handoff": "DONE so far (this session): autopilot now reacts to the REAL Claude CLI usage-limit (lib.looks_like_limit/parse_reset_time), records it (lib.record_limit_hit: calibrates budget down to real spend + sets window.not_before), and naps to the exact reset then auto-resumes with no manual restart. REMAINING: switch per-run counting from the weighted-transcript heuristic to real usage/cost from 'claude -p --output-format json'; and resume-a-blocked-task-from-saved-state.",
-      "updated": "2026-07-14T23:33:19Z",
+      "status": "done",
+      "handoff": "",
+      "updated": "2026-07-15T04:21:56Z",
       "issue": ""
     },
     {

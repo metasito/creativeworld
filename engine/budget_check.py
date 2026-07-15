@@ -4,6 +4,7 @@
 Usage:
   budget_check.py               # live: scan transcripts, persist, verdict
   budget_check.py --preflight   # CI gate: committed tokens.json only, no transcript scan
+  budget_check.py --probe       # on STOP, verify by really calling claude (see probe_limit.py)
 """
 import json
 import sys
@@ -23,6 +24,14 @@ def main():
         lib.save("tokens.json", tokens)
     summary = lib.budget_summary(tokens)
     name, code = lib.verdict(summary)
+    if name == "STOP" and "--probe" in sys.argv and not preflight:
+        import probe_limit
+        status, detail = probe_limit.probe_and_calibrate()
+        tokens = lib.load("tokens.json")  # probe recalibrated and saved
+        summary = lib.budget_summary(tokens)
+        name, code = lib.verdict(summary)
+        print(json.dumps({"verdict": name, "probe": status, "probe_detail": detail, **summary}))
+        sys.exit(code)
     print(json.dumps({"verdict": name, **summary}))
     sys.exit(code)
 

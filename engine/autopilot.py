@@ -22,6 +22,7 @@ from datetime import timedelta
 
 import heartbeat
 import lib
+import probe_limit
 
 CLAUDE = shutil.which("claude") or "claude"
 PROMPT = (
@@ -110,7 +111,17 @@ def main():
             continue
 
         # 2. Soft gate: the (estimated) budget says wrap up / stop for this window.
+        #    STOP is only an estimate — probe reality before napping on it: if
+        #    claude still answers, the budget was false (probe recalibrates it up
+        #    and we keep working); if a real limit answers, not_before is set and
+        #    the hard gate above naps until the true reset.
         name, _ = lib.verdict(s)
+        if name == "STOP" and not dry:
+            status, detail = probe_limit.probe_and_calibrate()
+            _run_heartbeat(["log", f"STOP estimate probed: {status} — {detail}"])
+            print(f"STOP estimate probed: {status} — {detail}")
+            if status in ("ok", "limit"):
+                continue
         if name != "CONTINUE":
             reset = lib.parse_iso(s["resets_at"]) if s["resets_at"] else lib.now() + timedelta(hours=1)
             if not nap(reset, f"budget {name} {s['pct']}%", once):

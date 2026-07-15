@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-15T04:17:19Z",
+  "generated_at": "2026-07-15T04:21:56Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 236860,
-    "budget": 4670000,
-    "pct": 5.1,
+    "used": 436405,
+    "budget": 4798485,
+    "pct": 9.1,
     "window_started_at": "2026-07-15T04:10:00Z",
     "resets_at": "2026-07-15T09:10:00Z",
-    "seconds_to_reset": 17560,
+    "seconds_to_reset": 17283,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -324,7 +324,7 @@
       "status": "done",
       "handoff": "",
       "updated": "2026-07-15T04:17:19Z",
-      "commit": null
+      "commit": "646c160"
     },
     {
       "id": "T22",
@@ -367,9 +367,9 @@
       "title": "optimizazion token consume. also if the budget is used, try to call claud to see if it still works, and when a task is working and it doesnt work anymore, (app is live and the task gets blocked, it just stores the information so the next time can start the task from the same state, and the buged it better esitmated",
       "acceptance": "get a better estimation of the token budget. last time was false",
       "size": "M",
-      "status": "next",
-      "handoff": "DONE so far (this session): autopilot now reacts to the REAL Claude CLI usage-limit (lib.looks_like_limit/parse_reset_time), records it (lib.record_limit_hit: calibrates budget down to real spend + sets window.not_before), and naps to the exact reset then auto-resumes with no manual restart. REMAINING: switch per-run counting from the weighted-transcript heuristic to real usage/cost from 'claude -p --output-format json'; and resume-a-blocked-task-from-saved-state.",
-      "updated": "2026-07-14T23:33:19Z",
+      "status": "done",
+      "handoff": "",
+      "updated": "2026-07-15T04:21:56Z",
       "issue": "",
       "commit": null
     },
@@ -399,7 +399,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T25",
       "T12",
       "T8",
       "T22",
@@ -506,27 +505,12 @@
     "2026-07-14 (bootstrap): Transcript JSONL at `~/.claude/projects/<proj>/<session>.jsonl` carries per-turn `usage`; weighted formula in tokens.json config approximates plan units \u2014 calibrate, don't trust."
   ],
   "activity": {
-    "engine_status": "working",
-    "current_task": "T21",
-    "current_action": "building CRT terminal OS",
+    "engine_status": "idle",
+    "current_task": null,
+    "current_action": null,
     "agent": "autopilot",
-    "updated": "2026-07-15T04:12:33Z",
+    "updated": "2026-07-15T04:21:49Z",
     "log": [
-      {
-        "at": "2026-07-15T03:58:20Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-15T04:00:33Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-15T04:00:33Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
       {
         "at": "2026-07-15T04:02:35Z",
         "agent": "autopilot",
@@ -571,6 +555,21 @@
         "at": "2026-07-15T04:12:33Z",
         "agent": "autopilot",
         "msg": "crt-os index.html written, verifying"
+      },
+      {
+        "at": "2026-07-15T04:17:53Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T04:19:48Z",
+        "agent": "autopilot",
+        "msg": "T25: adding history floor calibration + real claude probe on STOP"
+      },
+      {
+        "at": "2026-07-15T04:21:49Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
       }
     ]
   }

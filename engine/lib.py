@@ -197,6 +197,23 @@ def update_from_transcripts(tokens):
     by = win.setdefault("by_session", {})
     for sid, total in per_session.items():
         by[sid] = max(by.get(sid, 0), total)  # max: recounts never shrink, other containers' entries survive
+    calibrate_floor_from_history(tokens)
+    return tokens
+
+
+def calibrate_floor_from_history(tokens):
+    """Budget can never be below usage we PROVED achievable: any past window that
+    spent more than the budget WITHOUT a real limit hit shows the true ceiling is
+    at least that spend. Idempotent; runs on every transcript update."""
+    cfg = tokens["config"]
+    floor = max((h["used"] for h in tokens.get("history", [])
+                 if not h.get("limit_hit")), default=0)
+    if floor > cfg["budget_per_window"]:
+        old = cfg["budget_per_window"]
+        cfg["budget_per_window"] = floor
+        tokens.setdefault("calibration", {}).setdefault("notes", []).append(
+            f"{iso(now())}: auto-raised budget {old} -> {floor} "
+            "(a past window overran it with no real limit hit)")
     return tokens
 
 
