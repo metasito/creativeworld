@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-07-15T14:23:07Z",
+  "generated_at": "2026-07-15T19:15:18Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 3488756,
-    "window_used": 3430689,
-    "rolling_used": 3488756,
+    "used": 1794776,
+    "window_used": 901555,
+    "rolling_used": 1794776,
     "budget": 4798485,
-    "pct": 72.7,
-    "rate_per_hour": 697963,
-    "eta_hours": 1.9,
-    "window_started_at": "2026-07-15T09:22:33Z",
-    "resets_at": "2026-07-15T14:23:12Z",
+    "pct": 37.4,
+    "rate_per_hour": 359063,
+    "eta_hours": 8.4,
+    "window_started_at": "2026-07-15T14:22:33Z",
+    "resets_at": "2026-07-15T19:15:23Z",
     "seconds_to_reset": 5,
     "wrap_up_pct": 85,
     "stop_pct": 95,
@@ -36,6 +36,11 @@
         "used": 456909,
         "budget": 456909,
         "limit_hit": true
+      },
+      {
+        "started_at": "2026-07-15T09:22:33Z",
+        "used": 3430689,
+        "budget": 4798485
       }
     ]
   },
@@ -135,7 +140,7 @@
       "status": "shipped",
       "description": "A steampunk generative garden: brass gear-flowers bloom along spiral stems on hover, each procedurally unique, ticking like watch movements",
       "slug": "clockwork-garden",
-      "cost": 185574
+      "cost": 801830
     },
     {
       "id": "E12",
@@ -684,9 +689,12 @@
       "title": "Clockwork Garden polish: butterflies + day cycle",
       "acceptance": "clockwork butterflies visit bloomed flowers; slow day/night brass-patina lighting cycle; updated shot.png",
       "size": "S",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T09:40:27Z",
+      "updated": "2026-07-15T19:15:15Z",
+      "claimed_by": "opus",
+      "issue": "26",
+      "cost": 616256,
       "commit": null
     },
     {
@@ -723,9 +731,9 @@
       "title": "Sandfall Cathedral v1",
       "acceptance": "projects/sandfall-cathedral/index.html: falling-sand cellular automaton on canvas; sand streams in stained-glass palette pour and pile to form a rose-window cathedral silhouette (mask emerges as sand settles); click spawns new pour, ?seed= deterministic, ?demo=1 auto-pours and mirrors progress into document.title; screenshot shot.png shows recognizable glowing window",
       "size": "M",
-      "status": "next",
+      "status": "in_progress",
       "handoff": "",
-      "updated": "2026-07-15T10:03:44Z",
+      "updated": "2026-07-15T14:26:01Z",
       "commit": null
     },
     {
@@ -795,7 +803,7 @@
       "status": "done",
       "handoff": "3 specialist skills scaffolded (game-builder, frontend-designer, art-generator) with pre-flight/guardrails/validation/lessons; CLAUDE.md orchestration merged with autopilot's section; shot.py seed-query fix found during validation, recorded as first lesson",
       "updated": "2026-07-15T14:23:06Z",
-      "commit": null
+      "commit": "0dfb7d1"
     },
     {
       "id": "T56",
@@ -810,10 +818,8 @@
     }
   ],
   "queue": {
-    "in_progress": null,
+    "in_progress": "T49",
     "next": [
-      "T46",
-      "T49",
       "T51",
       "T53",
       "T50",
@@ -936,8 +942,8 @@
       "slug": "clockwork-garden",
       "built": true,
       "shot": true,
-      "updated": "2026-07-15T09:57:06Z",
-      "cost": 185574,
+      "updated": "2026-07-15T14:29:41Z",
+      "cost": 801830,
       "url": "/projects/clockwork-garden/"
     },
     {
@@ -947,11 +953,11 @@
       "status": "planned",
       "description": "Falling-sand physics automaton that gradually builds a glowing stained-glass cathedral window",
       "slug": "sandfall-cathedral",
-      "built": false,
-      "shot": false,
-      "updated": null,
+      "built": true,
+      "shot": true,
+      "updated": "2026-07-15T14:27:55Z",
       "cost": 0,
-      "url": null
+      "url": "/projects/sandfall-cathedral/"
     },
     {
       "id": "E13",
@@ -1002,70 +1008,70 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T55",
-    "current_action": "resume: self-improving skill architecture",
+    "current_task": "T46",
+    "current_action": "resume Clockwork Garden polish: butterflies + day cycle",
     "agent": "autopilot",
-    "updated": "2026-07-15T14:22:31Z",
+    "updated": "2026-07-15T19:13:11Z",
     "log": [
       {
-        "at": "2026-07-15T14:05:41Z",
+        "at": "2026-07-15T18:59:27Z",
         "agent": "autopilot",
         "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-15T14:07:48Z",
+        "at": "2026-07-15T19:01:31Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T14:07:48Z",
+        "at": "2026-07-15T19:01:31Z",
         "agent": "autopilot",
         "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-15T14:09:56Z",
+        "at": "2026-07-15T19:03:35Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T14:09:56Z",
+        "at": "2026-07-15T19:03:35Z",
         "agent": "autopilot",
         "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-15T14:14:21Z",
-        "agent": "autopilot",
-        "msg": "T54: constitution Direction section added (mobile-games pivot, finish-first gate); pm + build-project skills updated"
-      },
-      {
-        "at": "2026-07-15T14:15:07Z",
+        "at": "2026-07-15T19:05:39Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T14:16:48Z",
+        "at": "2026-07-15T19:05:39Z",
         "agent": "autopilot",
-        "msg": "T45: themes + shockwave coded; verifying with screenshots"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-15T14:18:26Z",
+        "at": "2026-07-15T19:07:47Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T14:20:44Z",
+        "at": "2026-07-15T19:07:47Z",
         "agent": "autopilot",
-        "msg": "autopilot cycle: pm groomed queue to 8 (added T56 dashboard burn-sparkline, promoted T50/T52/T55); WIP held by opus on T55 - yielding, no second task"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-15T14:21:00Z",
-        "agent": "opus",
+        "at": "2026-07-15T19:09:52Z",
+        "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T14:22:31Z",
+        "at": "2026-07-15T19:09:52Z",
         "agent": "autopilot",
-        "msg": "T55 verified: 3 specialist SKILL.md files valid + CLAUDE.md orchestrator section added"
+        "msg": "agent error rc=1 \u2014 120s backoff"
+      },
+      {
+        "at": "2026-07-15T19:13:11Z",
+        "agent": "autopilot",
+        "msg": "T46: prior session's butterfly+daycycle code found intact; validating with screenshots"
       }
     ]
   }

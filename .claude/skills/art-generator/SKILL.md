@@ -42,4 +42,5 @@ Whenever you fix a bug, find an algorithm/palette pattern that elevated a piece,
 
 ## Lessons Learned
 
+- 2026-07-15: virtual-time shots capture animated pieces at t≈0 (buds closed, scene "off") — canonical shot.png for any animated piece must come from `drive.py --wait N --shot`; give pieces a `?demo=1` autoplay param so the real-time shot shows the piece fully alive.
 - 2026-07-15: `shot.py` used to percent-encode `?seed=7` on file paths (as_uri), silently ignoring the seed — fixed in engine/shot.py; if seeds ever "stop working", check URL encoding first.

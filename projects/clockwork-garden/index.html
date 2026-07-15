@@ -33,8 +33,9 @@ function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;
 const TAU=Math.PI*2;
 const ease=t=>t<0?0:t>1?1:t*t*(3-2*t);
 const easeOut=t=>1-Math.pow(1-Math.max(0,Math.min(1,t)),3);
+const mix=(c1,c2,u)=>`rgb(${c1.map((v,i)=>Math.round(v+(c2[i]-v)*u)).join(',')})`;
 
-let seed=SEED0,flowers=[],bgGears=[],dust=[],cogs=[],clicks=0;
+let seed=SEED0,flowers=[],bgGears=[],dust=[],cogs=[],flies=[],clicks=0;
 
 function plant(s){
   const R=mulberry32(s);
@@ -65,6 +66,8 @@ function plant(s){
   dust=[];for(let i=0;i<50;i++)dust.push({x:R()*W,y:R()*H,s:0.5+R()*1.6,v:4+R()*10,p:R()*TAU});
   cogs=[];for(let i=0;i<10;i++)cogs.push({x:R()*W,y:groundY+2+R()*(H-groundY-4),
     r:3+R()*7,t:5+(R()*4|0),a:R()*TAU});
+  flies=[];for(let i=0;i<3;i++)flies.push({x:R()*W,y:H*(0.2+R()*0.35),
+    s:0.7+R()*0.6,hue:R()<0.55?46:165,fl:5+R()*4,ph:R()*TAU,wx:R()*TAU,wy:R()*TAU});
 }
 plant(seed);
 
@@ -98,15 +101,26 @@ let demoIdx=0,lastBloom=0;
 function frame(now){
   let t=(now-T0)/1000;
   if(DEMO)t+=1.5; // demo starts mid-scene
-  // ---- sky ----
+  // ---- day/night cycle: brass day -> patina night, 48s ----
+  const CYC=48,dayT=(t/CYC+0.18)%1,half=dayT<0.5,ph=(dayT%0.5)*2,day=half?Math.sin(ph*Math.PI):0;
   const g=ctx.createLinearGradient(0,0,0,H);
-  g.addColorStop(0,'#14100a');g.addColorStop(0.6,'#1d1509');g.addColorStop(1,'#0c0905');
+  g.addColorStop(0,mix([5,10,9],[27,21,10],day));
+  g.addColorStop(0.6,mix([9,19,16],[46,31,12],day));
+  g.addColorStop(1,mix([3,7,6],[14,10,5],day));
   ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  // brass sun / verdigris moon gear arcs across the sky
+  const ox=W*(0.10+0.80*ph),oy=H*(0.46-0.34*Math.sin(ph*Math.PI)),orbR=half?26:19;
+  const og=ctx.createRadialGradient(ox,oy,2,ox,oy,orbR*4);
+  og.addColorStop(0,half?'rgba(255,214,130,0.5)':'rgba(150,230,205,0.35)');
+  og.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=og;ctx.fillRect(ox-orbR*4,oy-orbR*4,orbR*8,orbR*8);
+  ctx.fillStyle=half?'hsl(44,75%,68%)':'hsl(168,42%,64%)';
+  gearPath(ox,oy,t*0.06,orbR*0.78,orbR,12);ctx.fill();
   // background phantom gears
   for(const b of bgGears){ctx.fillStyle='rgba(216,180,106,0.045)';
     gearPath(b.x,b.y,t*b.sp,b.r*0.8,b.r,b.t);ctx.fill();}
-  // dust motes
-  ctx.fillStyle='rgba(230,195,120,0.35)';
+  // dust motes (gold by day, verdigris by night)
+  ctx.fillStyle=`hsla(${46+119*(1-day)},60%,66%,0.35)`;
   for(const d of dust){const y=(d.y-t*d.v)%H,x=d.x+Math.sin(t*0.4+d.p)*12;
     ctx.globalAlpha=0.12+0.2*Math.sin(t+d.p);
     ctx.fillRect(x,y<0?y+H:y,d.s,d.s);}
@@ -118,16 +132,17 @@ function frame(now){
   for(const c of cogs){ctx.fillStyle='rgba(150,115,60,0.35)';
     gearPath(c.x,c.y,c.a,c.r*0.7,c.r,c.t);ctx.fill();}
 
-  // demo autoplay: bloom one flower every 0.7s
-  if(DEMO&&demoIdx<flowers.length&&t-lastBloom>0.7){
-    flowers[demoIdx].t0=t;demoIdx++;lastBloom=t;}
-  let bloomed=0;
+  // demo autoplay: staggered blooms, first few already open at t=0
+  if(DEMO&&demoIdx<flowers.length){
+    flowers[demoIdx].t0=-1+demoIdx*0.7;demoIdx++;}
+  let bloomed=0;const open=[];
 
   for(const f of flowers){
     // hover opens (stays open); bloom is time-based, ~1.2s unfold
     const[tx,ty]=stemPt(f,1,t);
     if(!DEMO&&f.t0===null&&(mx-tx)**2+(my-ty)**2<90*90)f.t0=t;
     const b=ease(f.t0===null?0:(t-f.t0)/1.2);if(b>0.5)bloomed++;
+    if(b>0.85)open.push([tx,ty]);
     // ---- spiral stem ----
     ctx.lineCap='round';
     for(const[w,col]of[[4.5,'rgba(60,42,18,0.9)'],[2.2,'hsl(40,45%,38%)'],[0.8,'hsla(46,70%,68%,0.5)']]){
@@ -172,6 +187,37 @@ function frame(now){
     ctx.fillStyle=jg;ctx.beginPath();ctx.arc(0,0,7,0,TAU);ctx.fill();
     ctx.restore();
   }
+  // ---- clockwork butterflies: seek open blooms, wander otherwise ----
+  for(let i=0;i<flies.length;i++){const bf=flies[i];
+    let gx,gy;
+    if(open.length){const k=(i+(t/7|0))%open.length; // rotate targets every 7s
+      gx=open[k][0]+Math.sin(t*1.1+bf.ph)*14;gy=open[k][1]-22+Math.sin(t*1.7+bf.ph)*8;}
+    else{gx=W*(0.5+0.38*Math.sin(t*0.10+bf.wx));gy=H*(0.30+0.20*Math.sin(t*0.13+bf.wy));}
+    bf.x+=(gx-bf.x)*0.022;bf.y+=(gy-bf.y)*0.022+Math.sin(t*bf.fl)*0.5;
+    const flap=0.22+0.78*Math.abs(Math.sin(t*bf.fl+bf.ph));
+    ctx.save();ctx.translate(bf.x,bf.y);ctx.scale(bf.s,bf.s);
+    ctx.rotate(Math.sin(t*0.9+bf.ph)*0.18);
+    if(day<0.5){const bg=ctx.createRadialGradient(0,0,2,0,0,26); // night glow
+      bg.addColorStop(0,`hsla(${bf.hue},80%,70%,${0.25*(1-day)})`);bg.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=bg;ctx.fillRect(-26,-26,52,52);}
+    for(const sd of[-1,1]){ctx.save();ctx.scale(sd*flap,1);
+      ctx.fillStyle=`hsla(${bf.hue},58%,${50+14*day}%,0.85)`;
+      ctx.strokeStyle=`hsla(${bf.hue},80%,78%,0.9)`;ctx.lineWidth=1.1;
+      ctx.beginPath();ctx.ellipse(9,-4,9,5,-0.45,0,TAU);ctx.fill();ctx.stroke(); // fore wing
+      ctx.beginPath();ctx.ellipse(7,4,6.5,4,0.5,0,TAU);ctx.fill();ctx.stroke();  // hind wing
+      ctx.strokeStyle=`hsla(${bf.hue},60%,85%,0.5)`;ctx.lineWidth=0.7;           // rivet vein
+      ctx.beginPath();ctx.moveTo(2,-1);ctx.lineTo(14,-6);ctx.stroke();
+      ctx.restore();}
+    ctx.strokeStyle='hsla(44,70%,72%,0.8)';ctx.lineWidth=0.9;                    // gear thorax
+    gearPath(0,-1,t*2.2,2.6,4,6);ctx.stroke();
+    ctx.fillStyle='hsl(40,50%,42%)';ctx.beginPath();ctx.ellipse(0,1,2,6.5,0,0,TAU);ctx.fill();
+    ctx.fillStyle=`hsl(${(bf.hue+180)%360},85%,70%)`;ctx.beginPath();ctx.arc(0,-6.5,2,0,TAU);ctx.fill();
+    ctx.strokeStyle='rgba(230,200,140,0.8)';ctx.lineWidth=0.8;
+    ctx.beginPath();ctx.moveTo(0,-8);ctx.lineTo(-3.5,-12);ctx.moveTo(0,-8);ctx.lineTo(3.5,-12);ctx.stroke();
+    ctx.restore();
+  }
+  // night patina wash
+  ctx.fillStyle=`rgba(64,128,108,${0.10*(1-day)})`;ctx.fillRect(0,0,W,H);
   if(DEMO)document.title=`Clockwork Garden — ${bloomed}/${flowers.length} bloomed t=${t.toFixed(1)}`;
   requestAnimationFrame(frame);
 }
