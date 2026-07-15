@@ -74,7 +74,7 @@
       "id": "E10",
       "title": "Shatter Type",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Kinetic typography playground: giant letters built from physics particles explode as you type and magnetically reassemble into the new word",
       "slug": "shatter-type"
     },
@@ -520,9 +520,12 @@
       "title": "Shatter Type v1: physics particle typography",
       "acceptance": "projects/shatter-type/index.html: type a word, giant letters rendered as particles; on new keystroke particles explode then magnetically reassemble into new word; canvas 2D, no deps; ?demo=1 auto-types a word sequence with state in title; ?seed= deterministic scatter; screenshot shot.png; registered in backlog",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T09:40:26Z"
+      "status": "done",
+      "handoff": "particle typography with explode/reassemble, demo+seed modes verified via drive.py",
+      "updated": "2026-07-15T09:51:14Z",
+      "claimed_by": "unknown",
+      "issue": "19",
+      "cost": 96704
     },
     {
       "id": "T43",

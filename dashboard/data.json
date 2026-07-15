@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-15T09:46:36Z",
+  "generated_at": "2026-07-15T09:51:17Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2753457,
-    "window_used": 1214798,
-    "rolling_used": 2753457,
+    "used": 2911085,
+    "window_used": 1372426,
+    "rolling_used": 2911085,
     "budget": 4798485,
-    "pct": 57.4,
+    "pct": 60.7,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T13:10:14Z",
-    "seconds_to_reset": 12218,
+    "seconds_to_reset": 11936,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -121,10 +121,10 @@
       "id": "E10",
       "title": "Shatter Type",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Kinetic typography playground: giant letters built from physics particles explode as you type and magnetically reassemble into the new word",
       "slug": "shatter-type",
-      "cost": 0
+      "cost": 96704
     },
     {
       "id": "E11",
@@ -600,7 +600,7 @@
       "claimed_by": "unknown",
       "issue": "18",
       "cost": 133534,
-      "commit": null
+      "commit": "f839b06"
     },
     {
       "id": "T42",
@@ -608,9 +608,12 @@
       "title": "Shatter Type v1: physics particle typography",
       "acceptance": "projects/shatter-type/index.html: type a word, giant letters rendered as particles; on new keystroke particles explode then magnetically reassemble into new word; canvas 2D, no deps; ?demo=1 auto-types a word sequence with state in title; ?seed= deterministic scatter; screenshot shot.png; registered in backlog",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T09:40:26Z",
+      "status": "done",
+      "handoff": "particle typography with explode/reassemble, demo+seed modes verified via drive.py",
+      "updated": "2026-07-15T09:51:14Z",
+      "claimed_by": "unknown",
+      "issue": "19",
+      "cost": 96704,
       "commit": null
     },
     {
@@ -683,7 +686,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T42",
       "T43",
       "T47",
       "T48",
@@ -789,14 +791,14 @@
       "id": "E10",
       "title": "Shatter Type",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Kinetic typography playground: giant letters built from physics particles explode as you type and magnetically reassemble into the new word",
       "slug": "shatter-type",
-      "built": false,
-      "shot": false,
-      "updated": null,
-      "cost": 0,
-      "url": null
+      "built": true,
+      "shot": true,
+      "updated": "2026-07-15T09:48:59Z",
+      "cost": 96704,
+      "url": "/projects/shatter-type/"
     },
     {
       "id": "E11",
@@ -847,26 +849,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T41",
-    "current_action": "building Paper Storm boids murmuration",
+    "current_task": "T42",
+    "current_action": "building Shatter Type v1 particle typography",
     "agent": "autopilot",
-    "updated": "2026-07-15T09:45:31Z",
+    "updated": "2026-07-15T09:49:05Z",
     "log": [
-      {
-        "at": "2026-07-15T04:12:33Z",
-        "agent": "autopilot",
-        "msg": "crt-os index.html written, verifying"
-      },
-      {
-        "at": "2026-07-15T04:17:53Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-15T04:19:48Z",
-        "agent": "autopilot",
-        "msg": "T25: adding history floor calibration + real claude probe on STOP"
-      },
       {
         "at": "2026-07-15T04:21:49Z",
         "agent": "autopilot",
@@ -911,6 +898,21 @@
         "at": "2026-07-15T09:45:31Z",
         "agent": "autopilot",
         "msg": "preview.png looks striking; waiting on chromedriver download for real-time verify"
+      },
+      {
+        "at": "2026-07-15T09:47:32Z",
+        "agent": "autopilot",
+        "msg": "T41 shipped, committed, pushed (chromedriver kept local, gitignored)"
+      },
+      {
+        "at": "2026-07-15T09:47:50Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T09:49:05Z",
+        "agent": "autopilot",
+        "msg": "built index.html, verifying in Chromium"
       }
     ]
   }
