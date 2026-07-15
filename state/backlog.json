@@ -686,12 +686,12 @@
       "title": "Engine: test_engine.py covers brief burn-rate + queue-thin warning",
       "acceptance": "test_engine.py exercises board.py brief output paths (burn rate line, thin-queue WARN, resume line) with a temp state dir; exit 0; run passes locally",
       "size": "S",
-      "status": "in_progress",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T19:29:19Z",
+      "updated": "2026-07-15T19:33:58Z",
       "claimed_by": "unknown",
-      "cost_start": 15841931,
-      "issue": "28"
+      "issue": "28",
+      "cost": 161823
     },
     {
       "id": "T54",
