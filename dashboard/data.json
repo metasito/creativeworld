@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T09:24:00Z",
+  "generated_at": "2026-07-15T09:27:10Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
     "used": 0,
@@ -7,7 +7,7 @@
     "pct": 0.0,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T14:22:33Z",
-    "seconds_to_reset": 17912,
+    "seconds_to_reset": 17722,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -41,14 +41,16 @@
       "title": "Engine",
       "kind": "meta",
       "status": "active",
-      "description": "The autonomous engine itself: budget tracking, board, boot/wrap-up flow, CI cron. Permanent epic \u2014 always improvable."
+      "description": "The autonomous engine itself: budget tracking, board, boot/wrap-up flow, CI cron. Permanent epic \u2014 always improvable.",
+      "cost": 120000
     },
     {
       "id": "E2",
       "title": "Dashboard",
       "kind": "meta",
       "status": "active",
-      "description": "The realtime PM dashboard. Permanent epic \u2014 always improvable."
+      "description": "The realtime PM dashboard. Permanent epic \u2014 always improvable.",
+      "cost": 120158
     },
     {
       "id": "E3",
@@ -56,7 +58,8 @@
       "kind": "project",
       "slug": "phone-decompose",
       "status": "shipped",
-      "description": "Landing page where a phone explodes into its internal layers as you scroll \u2014 3D layer separation with annotations."
+      "description": "Landing page where a phone explodes into its internal layers as you scroll \u2014 3D layer separation with annotations.",
+      "cost": 0
     },
     {
       "id": "E4",
@@ -64,7 +67,8 @@
       "kind": "project",
       "slug": "neon-arcade",
       "status": "shipped",
-      "description": "A playable single-file neon-styled mini game with juice: particles, screenshake, sound via WebAudio."
+      "description": "A playable single-file neon-styled mini game with juice: particles, screenshake, sound via WebAudio.",
+      "cost": 0
     },
     {
       "id": "E5",
@@ -72,7 +76,8 @@
       "kind": "project",
       "slug": "genart-01",
       "status": "shipped",
-      "description": "Interactive canvas artwork producing a unique composition every visit; seeded randomness, exportable as PNG."
+      "description": "Interactive canvas artwork producing a unique composition every visit; seeded randomness, exportable as PNG.",
+      "cost": 0
     },
     {
       "id": "E6",
@@ -80,7 +85,8 @@
       "kind": "project",
       "status": "shipped",
       "description": "A reflective liquid-metal metaball that chases the cursor, merging and splitting like mercury",
-      "slug": "liquid-chrome"
+      "slug": "liquid-chrome",
+      "cost": 0
     },
     {
       "id": "E7",
@@ -88,7 +94,8 @@
       "kind": "project",
       "status": "shipped",
       "description": "Drop massive bodies and watch glowing particles orbit under N-body gravity; a physics toy",
-      "slug": "gravity-well"
+      "slug": "gravity-well",
+      "cost": 0
     },
     {
       "id": "E8",
@@ -96,7 +103,8 @@
       "kind": "project",
       "status": "shipped",
       "description": "A bootable fake retro OS with a working command prompt, scanlines, and hidden mini-commands",
-      "slug": "crt-os"
+      "slug": "crt-os",
+      "cost": 0
     }
   ],
   "tasks": [
@@ -183,10 +191,12 @@
       "title": "Dashboard v2: per-project token cost + usage sparkline",
       "acceptance": "Dashboard shows weighted tokens spent per epic and a window-usage sparkline from history.",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-14T14:14:30Z",
+      "status": "done",
+      "handoff": "per-epic spend chips in budget card (from measured task costs); window-usage history bars serve as the sparkline; verified live screenshot",
+      "updated": "2026-07-15T09:27:08Z",
       "issue": "2",
+      "claimed_by": "opus",
+      "cost": 120158,
       "commit": null
     },
     {
@@ -464,7 +474,7 @@
       "handoff": "claim/done snapshot total_usage into cost_start/cost; dashboard cards + gallery show measured cost; T32's own figure approximate (attribution landed mid-task), future tasks measure clean",
       "updated": "2026-07-15T09:24:00Z",
       "cost": 120000,
-      "commit": null
+      "commit": "589c4f6"
     },
     {
       "id": "T33",
@@ -538,7 +548,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T8",
       "T34",
       "T35",
       "T38",
@@ -662,10 +671,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T32",
-    "current_action": "per-task token cost attribution",
+    "current_task": "T8",
+    "current_action": "dashboard v2: per-project cost + sparkline",
     "agent": "opus",
-    "updated": "2026-07-15T09:21:36Z",
+    "updated": "2026-07-15T09:24:54Z",
     "log": [
       {
         "at": "2026-07-15T04:06:41Z",

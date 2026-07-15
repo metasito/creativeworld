@@ -140,10 +140,12 @@
       "title": "Dashboard v2: per-project token cost + usage sparkline",
       "acceptance": "Dashboard shows weighted tokens spent per epic and a window-usage sparkline from history.",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-14T14:14:30Z",
-      "issue": "2"
+      "status": "done",
+      "handoff": "per-epic spend chips in budget card (from measured task costs); window-usage history bars serve as the sparkline; verified live screenshot",
+      "updated": "2026-07-15T09:27:08Z",
+      "issue": "2",
+      "claimed_by": "opus",
+      "cost": 120158
     },
     {
       "id": "T9",

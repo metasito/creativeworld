@@ -50,7 +50,7 @@ def compose(live=False):
         "repo_url": lib.repo_url(),
         "budget": {**summary, "verdict": name,
                    "history": tokens.get("history", [])[-20:]},
-        "epics": backlog["epics"],
+        "epics": [{**e, "cost": cost_by_epic.get(e["id"], 0)} for e in backlog["epics"]],
         "tasks": tasks,
         "queue": queue,
         "projects": projects,

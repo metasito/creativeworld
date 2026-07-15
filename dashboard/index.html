@@ -129,6 +129,7 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
   </div>
   <div class="hist" id="hist"></div>
   <div class="hist-label" id="hist-label"></div>
+  <div id="epiccost" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px"></div>
 </div>
 
 <div class="card" id="agentcard" style="margin-top:14px">
@@ -258,6 +259,12 @@ function render(d) {
     return `<div class="b${cls}" style="height:${Math.max(4, Math.round(100 * (h.used || 0) / maxV))}%" title="${when} — ${fmt(h.used || 0)} of ${fmt(h.budget || 0)}${note}"></div>`;
   }).join("");
   $("hist-label").textContent = `last ${hist.length - 1} window(s) + current · bar = weighted spend`;
+
+  // measured spend per epic (from per-task cost attribution)
+  $("epiccost").innerHTML = d.epics.filter(e => e.cost > 0)
+    .sort((a, z) => z.cost - a.cost)
+    .map(e => `<span class="chip" title="measured weighted tokens across ${esc(e.title)} tasks">${esc(e.title)} · ${fmt(e.cost)}</span>`).join("")
+    || `<span class="chip" style="color:var(--muted)">per-task costs appear as tasks complete</span>`;
 
   renderAgent(d.activity, b, d.queue.in_progress);
 
