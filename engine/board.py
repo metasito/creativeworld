@@ -13,6 +13,7 @@ Usage:
   board.py add-epic <kind> <title> -- <description> [--slug SLUG]
   board.py epic-status <id> <status>
 """
+import os
 import sys
 
 import lib
@@ -188,17 +189,29 @@ def main():
         return
 
     if cmd == "claim":
-        q = lib.load("queue.json")
-        if q.get("in_progress"):
-            sys.exit(f"already in progress: {q['in_progress']} (WIP limit = 1)")
-        if not q.get("next"):
-            sys.exit("queue empty — run the pm skill")
-        t = find(b, q["next"][0])
-        t["status"] = "in_progress"
-        touch(t)
+        agent = os.environ.get("CW_AGENT", "unknown")
+        if "--agent" in args:
+            agent = args[args.index("--agent") + 1]
+        # whole claim under the state lock: two concurrent claims must not both win
+        with lib.state_lock():
+            b = lib.load("backlog.json")
+            q = lib.load("queue.json")
+            if q.get("in_progress"):
+                holder = next((x.get("claimed_by") for x in b["tasks"]
+                               if x["id"] == q["in_progress"]), None)
+                sys.exit(f"already in progress: {q['in_progress']} (WIP limit = 1"
+                         + (f", claimed_by {holder}" if holder else "") + ")")
+            if not q.get("next"):
+                sys.exit("queue empty — run the pm skill")
+            t = find(b, q["next"][0])
+            t["status"] = "in_progress"
+            t["claimed_by"] = agent
+            touch(t)
+            lib.save("backlog.json", b)
+            sync_queue(b)
         epics = {e["id"]: e["title"] for e in b["epics"]}
         gh_safe(lambda gh: gh.ensure_task_issue(t, epics.get(t["epic"], t["epic"])))
-        print(f"claimed {t['id']}: {t['title']}\nacceptance: {t['acceptance']}")
+        print(f"claimed {t['id']}: {t['title']} (agent: {agent})\nacceptance: {t['acceptance']}")
         print(f"  {issue_line(t)}")
 
     elif cmd == "done":

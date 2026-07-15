@@ -1,4 +1,5 @@
 """Shared helpers for the CreativeWorld engine. Stdlib only."""
+import contextlib
 import json
 import os
 import re
@@ -115,12 +116,55 @@ def commits_by_task():
     return out
 
 
+LOCK = STATE / ".engine.lock"
+
+
+@contextlib.contextmanager
+def state_lock(timeout=10.0, stale=60.0):
+    """Cross-process mutex for read-modify-write on state files.
+
+    Multiple agents (interactive session + autopilot + dashboard server) mutate
+    the same JSON; without this, two concurrent claims/saves lose updates.
+    O_EXCL lockfile with retry; locks older than `stale` seconds are broken
+    (a crashed holder must not deadlock the engine forever)."""
+    deadline = time.time() + timeout
+    fd = None
+    while fd is None:
+        try:
+            fd = os.open(LOCK, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            os.write(fd, str(os.getpid()).encode())
+        except FileExistsError:
+            with contextlib.suppress(OSError):
+                if time.time() - LOCK.stat().st_mtime > stale:
+                    LOCK.unlink()
+                    continue
+            if time.time() > deadline:
+                raise TimeoutError(f"state lock busy > {timeout}s: {LOCK}")
+            time.sleep(0.1)
+    try:
+        yield
+    finally:
+        os.close(fd)
+        with contextlib.suppress(OSError):
+            LOCK.unlink()
+
+
 def load(name):
     return json.loads((STATE / name).read_text(encoding="utf-8"))
 
 
 def save(name, data):
-    (STATE / name).write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    """Atomic write: tmp file + os.replace, so a reader/crash never sees a torn file."""
+    path = STATE / name
+    tmp = path.parent / f"{path.name}.{os.getpid()}.tmp"
+    tmp.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    for _ in range(40):  # Windows: replace can briefly fail while a reader has it open
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError:
+            time.sleep(0.05)
+    os.replace(tmp, path)
 
 
 def now():

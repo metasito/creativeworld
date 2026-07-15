@@ -403,10 +403,11 @@
       "title": "Multi-agent safety: atomic state writes + claimed_by",
       "acceptance": "lib.save writes tmp+os.replace with a lockfile retry; claim stamps claimed_by/agent; second claim by another agent refuses; observed race (2 agents editing same project) can no longer corrupt state json",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T08:31:10Z",
-      "issue": "11"
+      "status": "done",
+      "handoff": "state_lock ctx mgr (O_EXCL lockfile, stale-break), atomic tmp+os.replace saves, claim transactional with claimed_by, server POST locked; verified: 8-proc hammer 200/200, second claim refused with holder name",
+      "updated": "2026-07-15T09:20:00Z",
+      "issue": "11",
+      "claimed_by": "opus"
     },
     {
       "id": "T34",
@@ -435,8 +436,8 @@
       "acceptance": "github.py sync also pulls: label/status edits made on GitHub issues update the board task (closed issue -> done, size label edit -> size); ran on boot; conflicts resolved board-wins",
       "size": "S",
       "status": "backlog",
-      "handoff": "",
-      "updated": "2026-07-15T08:43:30Z"
+      "handoff": "locked-api smoke test ok",
+      "updated": "2026-07-15T09:19:50Z"
     }
   ],
   "next_ids": {

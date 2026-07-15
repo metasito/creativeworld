@@ -28,26 +28,27 @@ class Handler(SimpleHTTPRequestHandler):
             return
         try:
             body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
-            b = lib.load("backlog.json")
-            if route == "/api/task/update":
-                t = board.update_task(b, body["id"], status=body.get("status"),
-                                      handoff=body.get("handoff"), pr=body.get("pr"),
-                                      issue=body.get("issue"), order=body.get("order"))
-                out, code = {"ok": True, "task": t["id"], "status": t["status"]}, 200
-            else:
-                title = body["title"].strip()
-                assert title, "title required"
-                size = body.get("size", "S")
-                assert size in ("S", "M", "L"), "bad size"
-                epic = body.get("epic", "")
-                if body.get("new_epic"):
-                    ne = body["new_epic"]
-                    epic = board.create_epic(b, "project", ne["title"], ne.get("description", ""),
-                                             slug=ne.get("slug") or None)["id"]
-                assert any(e["id"] == epic for e in b["epics"]), f"unknown epic {epic}"
-                t = board.create_task(b, epic, size, title, body.get("acceptance", ""),
-                                      status="next", top=body.get("top", True))
-                out, code = {"ok": True, "task": t["id"], "epic": epic}, 200
+            with lib.state_lock():  # whole read-modify-write is one transaction
+                b = lib.load("backlog.json")
+                if route == "/api/task/update":
+                    t = board.update_task(b, body["id"], status=body.get("status"),
+                                          handoff=body.get("handoff"), pr=body.get("pr"),
+                                          issue=body.get("issue"), order=body.get("order"))
+                    out, code = {"ok": True, "task": t["id"], "status": t["status"]}, 200
+                else:
+                    title = body["title"].strip()
+                    assert title, "title required"
+                    size = body.get("size", "S")
+                    assert size in ("S", "M", "L"), "bad size"
+                    epic = body.get("epic", "")
+                    if body.get("new_epic"):
+                        ne = body["new_epic"]
+                        epic = board.create_epic(b, "project", ne["title"], ne.get("description", ""),
+                                                 slug=ne.get("slug") or None)["id"]
+                    assert any(e["id"] == epic for e in b["epics"]), f"unknown epic {epic}"
+                    t = board.create_task(b, epic, size, title, body.get("acceptance", ""),
+                                          status="next", top=body.get("top", True))
+                    out, code = {"ok": True, "task": t["id"], "epic": epic}, 200
         except Exception as e:
             out, code = {"ok": False, "error": str(e)}, 400
         resp = json.dumps(out).encode()

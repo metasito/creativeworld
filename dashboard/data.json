@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T09:17:06Z",
+  "generated_at": "2026-07-15T09:20:01Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
     "used": 0,
@@ -7,7 +7,7 @@
     "pct": 0.0,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T14:22:33Z",
-    "seconds_to_reset": 18326,
+    "seconds_to_reset": 18151,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -356,7 +356,7 @@
       "handoff": "gallery shots are live links, cards show last-updated from index.html mtime; server restarted to load new compose",
       "updated": "2026-07-15T09:17:04Z",
       "issue": "5",
-      "commit": null
+      "commit": "87e5da8"
     },
     {
       "id": "T24",
@@ -471,10 +471,11 @@
       "title": "Multi-agent safety: atomic state writes + claimed_by",
       "acceptance": "lib.save writes tmp+os.replace with a lockfile retry; claim stamps claimed_by/agent; second claim by another agent refuses; observed race (2 agents editing same project) can no longer corrupt state json",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T08:31:10Z",
+      "status": "done",
+      "handoff": "state_lock ctx mgr (O_EXCL lockfile, stale-break), atomic tmp+os.replace saves, claim transactional with claimed_by, server POST locked; verified: 8-proc hammer 200/200, second claim refused with holder name",
+      "updated": "2026-07-15T09:20:00Z",
       "issue": "11",
+      "claimed_by": "opus",
       "commit": null
     },
     {
@@ -506,16 +507,15 @@
       "acceptance": "github.py sync also pulls: label/status edits made on GitHub issues update the board task (closed issue -> done, size label edit -> size); ran on boot; conflicts resolved board-wins",
       "size": "S",
       "status": "backlog",
-      "handoff": "",
-      "updated": "2026-07-15T08:43:30Z",
+      "handoff": "locked-api smoke test ok",
+      "updated": "2026-07-15T09:19:50Z",
       "commit": null
     }
   ],
   "queue": {
     "in_progress": null,
     "next": [
-      "T8",
-      "T33"
+      "T8"
     ],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
   },
@@ -625,10 +625,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T23",
-    "current_action": "gallery: live links + last-updated",
+    "current_task": "T33",
+    "current_action": "atomic state writes + claimed_by",
     "agent": "opus",
-    "updated": "2026-07-15T09:06:37Z",
+    "updated": "2026-07-15T09:17:09Z",
     "log": [
       {
         "at": "2026-07-15T04:06:41Z",
