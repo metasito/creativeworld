@@ -82,7 +82,7 @@
       "id": "E11",
       "title": "Clockwork Garden",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "A steampunk generative garden: brass gear-flowers bloom along spiral stems on hover, each procedurally unique, ticking like watch movements",
       "slug": "clockwork-garden"
     }
@@ -533,9 +533,12 @@
       "title": "Clockwork Garden v1: procedural gear-flowers",
       "acceptance": "projects/clockwork-garden/index.html: spiral brass stems, hover (or ?demo=1 autoplay) blooms procedurally-unique gear-flowers that rotate/tick; each flower distinct (teeth count, radius, palette); ?seed= deterministic; screenshot shot.png; registered in backlog",
       "size": "M",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T09:40:26Z"
+      "updated": "2026-07-15T09:57:53Z",
+      "claimed_by": "unknown",
+      "issue": "20",
+      "cost": 185574
     },
     {
       "id": "T44",

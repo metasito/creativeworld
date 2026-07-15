@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-15T09:51:17Z",
+  "generated_at": "2026-07-15T09:58:07Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2911085,
-    "window_used": 1372426,
-    "rolling_used": 2911085,
+    "used": 3144487,
+    "window_used": 1605828,
+    "rolling_used": 3144487,
     "budget": 4798485,
-    "pct": 60.7,
+    "pct": 65.5,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T13:10:14Z",
-    "seconds_to_reset": 11936,
+    "seconds_to_reset": 11527,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -130,10 +130,10 @@
       "id": "E11",
       "title": "Clockwork Garden",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "A steampunk generative garden: brass gear-flowers bloom along spiral stems on hover, each procedurally unique, ticking like watch movements",
       "slug": "clockwork-garden",
-      "cost": 0
+      "cost": 185574
     }
   ],
   "tasks": [
@@ -614,7 +614,7 @@
       "claimed_by": "unknown",
       "issue": "19",
       "cost": 96704,
-      "commit": null
+      "commit": "4698731"
     },
     {
       "id": "T43",
@@ -622,9 +622,12 @@
       "title": "Clockwork Garden v1: procedural gear-flowers",
       "acceptance": "projects/clockwork-garden/index.html: spiral brass stems, hover (or ?demo=1 autoplay) blooms procedurally-unique gear-flowers that rotate/tick; each flower distinct (teeth count, radius, palette); ?seed= deterministic; screenshot shot.png; registered in backlog",
       "size": "M",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T09:40:26Z",
+      "updated": "2026-07-15T09:57:53Z",
+      "claimed_by": "unknown",
+      "issue": "20",
+      "cost": 185574,
       "commit": null
     },
     {
@@ -686,7 +689,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T43",
       "T47",
       "T48",
       "T44",
@@ -804,14 +806,14 @@
       "id": "E11",
       "title": "Clockwork Garden",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "A steampunk generative garden: brass gear-flowers bloom along spiral stems on hover, each procedurally unique, ticking like watch movements",
       "slug": "clockwork-garden",
-      "built": false,
-      "shot": false,
-      "updated": null,
-      "cost": 0,
-      "url": null
+      "built": true,
+      "shot": true,
+      "updated": "2026-07-15T09:57:06Z",
+      "cost": 185574,
+      "url": "/projects/clockwork-garden/"
     }
   ],
   "sessions": [
@@ -849,21 +851,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T42",
-    "current_action": "building Shatter Type v1 particle typography",
+    "current_task": "T43",
+    "current_action": "building Clockwork Garden v1",
     "agent": "autopilot",
-    "updated": "2026-07-15T09:49:05Z",
+    "updated": "2026-07-15T09:54:36Z",
     "log": [
-      {
-        "at": "2026-07-15T04:21:49Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-15T04:21:57Z",
-        "agent": "autopilot",
-        "msg": "T25 done: floor calibration + probe_limit.py shipped"
-      },
       {
         "at": "2026-07-15T04:22:32Z",
         "agent": "autopilot",
@@ -913,6 +905,16 @@
         "at": "2026-07-15T09:49:05Z",
         "agent": "autopilot",
         "msg": "built index.html, verifying in Chromium"
+      },
+      {
+        "at": "2026-07-15T09:51:54Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T09:54:36Z",
+        "agent": "autopilot",
+        "msg": "T43: wrote index.html, verifying in Chromium"
       }
     ]
   }
