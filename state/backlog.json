@@ -438,10 +438,30 @@
       "status": "backlog",
       "handoff": "locked-api smoke test ok",
       "updated": "2026-07-15T09:19:50Z"
+    },
+    {
+      "id": "T38",
+      "epic": "E1",
+      "title": "Rolling 5h budget window (match real subscription cap)",
+      "acceptance": "lib budget math computes usage over the TRAILING 5h from all transcripts instead of discrete anchored windows; brief/budget_check/dashboard use it; discrete history kept for the bars; validated against the 04:22Z limit-hit-at-457k incident",
+      "size": "M",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-15T09:21:21Z"
+    },
+    {
+      "id": "T39",
+      "epic": "E1",
+      "title": "server.py: auto-restart on engine module change",
+      "acceptance": "server watches mtimes of engine/*.py it imports and re-execs itself when they change (or serves via importlib.reload); editing build_dashboard.py no longer silently serves stale compose",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-15T09:21:21Z"
     }
   ],
   "next_ids": {
     "epic": 9,
-    "task": 38
+    "task": 40
   }
 }
