@@ -748,9 +748,9 @@
       "title": "Comet Sling polish: supernova hazard + level select",
       "acceptance": "Add a pulsing supernova hazard that destroys the comet on contact, and a 44px+ touch level-select screen; verified via screenshot",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T19:30:30Z"
+      "updated": "2026-07-15T19:48:36Z"
     },
     {
       "id": "T59",
@@ -768,9 +768,9 @@
       "title": "Forge Tempo polish: quench sizzle + haptics",
       "acceptance": "Quench animation (steam burst) on completion, navigator.vibrate haptics on strike where supported, difficulty ramps pulse speed; verified via screenshot",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T19:30:30Z"
+      "updated": "2026-07-15T19:48:36Z"
     },
     {
       "id": "T61",
