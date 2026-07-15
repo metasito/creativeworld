@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T09:29:30Z",
+  "generated_at": "2026-07-15T09:31:12Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
     "used": 0,
@@ -7,7 +7,7 @@
     "pct": 0.0,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T14:22:33Z",
-    "seconds_to_reset": 17582,
+    "seconds_to_reset": 17480,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -42,7 +42,7 @@
       "kind": "meta",
       "status": "active",
       "description": "The autonomous engine itself: budget tracking, board, boot/wrap-up flow, CI cron. Permanent epic \u2014 always improvable.",
-      "cost": 202235
+      "cost": 276293
     },
     {
       "id": "E2",
@@ -501,7 +501,7 @@
       "claimed_by": "opus",
       "issue": "12",
       "cost": 82235,
-      "commit": null
+      "commit": "27da43c"
     },
     {
       "id": "T35",
@@ -509,9 +509,12 @@
       "title": "Engine smoke test",
       "acceptance": "python engine/test_engine.py runs add-epic/add/claim/done/sync on a temp STATE dir + budget math sanity; exits 0; documented in CLAUDE.md work loop as pre-commit check for engine changes",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T09:22:30Z",
+      "status": "done",
+      "handoff": "test_engine.py: board lifecycle + lock + budget math on temp STATE, network stubbed; documented in CLAUDE.md git rules",
+      "updated": "2026-07-15T09:31:09Z",
+      "claimed_by": "opus",
+      "issue": "13",
+      "cost": 74058,
       "commit": null
     },
     {
@@ -551,7 +554,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T35",
       "T38",
       "T39",
       "T36"
@@ -673,10 +675,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T34",
-    "current_action": "heartbeat.py robustness + log trim",
+    "current_task": "T35",
+    "current_action": "engine smoke test",
     "agent": "opus",
-    "updated": "2026-07-15T09:29:18Z",
+    "updated": "2026-07-15T09:29:34Z",
     "log": [
       {
         "at": "2026-07-15T04:06:41Z",

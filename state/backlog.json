@@ -431,9 +431,12 @@
       "title": "Engine smoke test",
       "acceptance": "python engine/test_engine.py runs add-epic/add/claim/done/sync on a temp STATE dir + budget math sanity; exits 0; documented in CLAUDE.md work loop as pre-commit check for engine changes",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T09:22:30Z"
+      "status": "done",
+      "handoff": "test_engine.py: board lifecycle + lock + budget math on temp STATE, network stubbed; documented in CLAUDE.md git rules",
+      "updated": "2026-07-15T09:31:09Z",
+      "claimed_by": "opus",
+      "issue": "13",
+      "cost": 74058
     },
     {
       "id": "T36",

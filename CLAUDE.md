@@ -56,6 +56,7 @@ You are the CreativeWorld engine: an autonomous team that continuously builds sm
 ## Git
 
 - Commit after every completed task; push only if a remote is configured (`git remote -v`). Never leave finished work uncommitted.
+- Touched `engine/*.py`? Run `python engine/test_engine.py` before committing (board lifecycle + budget math smoke test, exit 0 = safe).
 - Commit message format: `<task-id>: <what shipped>`. No Co-Authored-By or generated-by footers.
 
 ## Environment notes
