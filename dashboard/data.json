@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T08:49:12Z",
+  "generated_at": "2026-07-15T08:50:07Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
     "used": 0,
@@ -7,7 +7,7 @@
     "pct": 0.0,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T14:22:33Z",
-    "seconds_to_reset": 20000,
+    "seconds_to_reset": 19945,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -232,7 +232,7 @@
       "handoff": "lib.browser_path() + shot.py CLI + drive.py graceful chromedriver detection; CLAUDE.md env notes updated; verified: live dashboard screenshot on Windows",
       "updated": "2026-07-15T08:49:10Z",
       "issue": "3",
-      "commit": null
+      "commit": "9a4060c"
     },
     {
       "id": "T13",
@@ -340,9 +340,9 @@
       "title": "board.py brief: show next-queue depth + WARN when under 5",
       "acceptance": "brief prints count of next tasks and a WARN line when fewer than 5 so grooming triggers reliably; verified.",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-14T19:12:01Z",
+      "status": "done",
+      "handoff": "brief now prints queue depth + WARN under 5",
+      "updated": "2026-07-15T08:50:05Z",
       "issue": "4",
       "commit": null
     },
@@ -515,7 +515,6 @@
     "in_progress": null,
     "next": [
       "T8",
-      "T22",
       "T23",
       "T28",
       "T29",
@@ -625,10 +624,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T12",
-    "current_action": "cross-platform browser/python detection",
+    "current_task": "T22",
+    "current_action": "brief: queue depth + WARN",
     "agent": "opus",
-    "updated": "2026-07-15T08:46:51Z",
+    "updated": "2026-07-15T08:49:38Z",
     "log": [
       {
         "at": "2026-07-15T04:06:41Z",

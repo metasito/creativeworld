@@ -283,9 +283,9 @@
       "title": "board.py brief: show next-queue depth + WARN when under 5",
       "acceptance": "brief prints count of next tasks and a WARN line when fewer than 5 so grooming triggers reliably; verified.",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-14T19:12:01Z",
+      "status": "done",
+      "handoff": "brief now prints queue depth + WARN under 5",
+      "updated": "2026-07-15T08:50:05Z",
       "issue": "4"
     },
     {

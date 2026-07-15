@@ -161,6 +161,9 @@ def main():
             print(f"  handoff: {t['handoff'] or '(none)'}")
         else:
             print("no task in progress — run: python3 engine/board.py claim")
+        depth = len(q["next"])
+        warn = " — WARN: queue thin, run the pm skill" if depth < 5 else ""
+        print(f"queue: {depth} task(s) in next{warn}")
         for tid in q["next"][:5]:
             t = find(b, tid)
             print(f"  next: {t['id']} [{t['size']}] {t['title']}")
