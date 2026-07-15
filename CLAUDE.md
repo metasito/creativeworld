@@ -60,6 +60,12 @@ You are the orchestrator; specialized skills are the team. After claiming a task
 
 Never stack two specialist skills on one task. Contract phases, self-improvement rules: see "Skill architecture (self-improving)" below.
 
+## Skill architecture (self-improving)
+
+- Specialist skills live in `.claude/skills/<name>/SKILL.md` and are contracts with phases in order: **Pre-Flight Checks** (run the listed commands BEFORE coding) → **Implementation Guardrails** → **Validation Phase** (run, READ the screenshots) → checkpoint. Run them, don't improvise.
+- Skills are living documents (Self-Improvement Protocol): whenever a session fixes a bug or finds a better pattern while using a skill, it MUST append one line to that skill's **Lessons Learned** section (newest first, ≤15 lines, delete disproven ones) — part of finishing the task, not optional polish.
+- New discipline emerging (audio toys, shaders, tools)? Scaffold a new skill with the same structure and note it in `state/learnings.md`.
+
 ## Agile conventions
 
 - Epics = projects (plus permanent meta-epics: Engine, Dashboard). Tasks have: id, epic, title, acceptance, size (S/M/L ≈ <30k / <100k / <300k weighted tokens), status (`backlog|next|in_progress|review|done`), handoff.
