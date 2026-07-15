@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sandfall Cathedral</title>
+<style>
+  html,body{margin:0;height:100%;background:#0a0812;overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  #hud{position:fixed;left:18px;top:16px;color:#e8ddc8;z-index:2;pointer-events:none;
+    text-shadow:0 1px 10px rgba(0,0,0,.9);letter-spacing:.02em}
+  #hud h1{margin:0;font-size:15px;font-weight:600;
+    background:linear-gradient(90deg,#ffe9b0,#c88a4a);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #hud p{margin:3px 0 0;font-size:11px;opacity:.65}
+  @media (max-width:420px){#hud h1{font-size:13px}}
+</style>
+</head>
+<body>
+<div id="hud"><h1>SANDFALL CATHEDRAL</h1><p>colored sand builds the rose window — tap to pour more light</p></div>
+<canvas id="c"></canvas>
+<script>
+"use strict";
+// ---- seeded PRNG (mulberry32): structure must be reproducible per ?seed= ----
+const Q = new URLSearchParams(location.search);
+const SEED = parseInt(Q.get("seed") || "7", 10);
+const DEMO = Q.has("demo");
+let _s = SEED >>> 0;
+const rnd = () => { _s |= 0; _s = _s + 0x6D2B79F5 | 0; let t = Math.imul(_s ^ _s >>> 15, 1 | _s);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+
+const cv = document.getElementById("c"), ctx = cv.getContext("2d");
+// fixed internal grid => identical art for identical seeds on any screen
+const GW = 260;
+let GH, scale, W, H;
+const EMPTY = 0, WALL = 1; // 2.. = palette index+2, settled: +64 flag? keep simple: moving handled by sweep
+let grid, img, lo, lc;
+
+// stained-glass palette: ruby, sapphire, amber, emerald, violet + hub white-gold
+const PAL = [[215,38,61],[46,109,246],[255,180,0],[6,167,125],[123,47,190],[255,236,180]];
+const glow = c => [Math.min(255,c[0]*1.35+30), Math.min(255,c[1]*1.35+30), Math.min(255,c[2]*1.35+30)];
+
+function resize(){
+  W = cv.width = innerWidth; H = cv.height = innerHeight;
+}
+addEventListener("resize", resize); resize();
+GH = Math.max(150, Math.round(GW * Math.min(1.4, innerHeight / innerWidth)));
+grid = new Uint8Array(GW * GH);
+lo = document.createElement("canvas"); lo.width = GW; lo.height = GH;
+lc = lo.getContext("2d");
+img = lc.createImageData(GW, GH);
+
+// ---- cathedral mask: walls (tracery) + per-pane emitters ----
+const emitters = []; // {x, y, color, rate}
+function wall(x, y){ if (x>=0&&x<GW&&y>=0&&y<GH) grid[y*GW+x] = WALL; }
+function ring(cx, cy, r, th){
+  for (let y=-r-th; y<=r+th; y++) for (let x=-r-th; x<=r+th; x++){
+    const d = Math.hypot(x, y);
+    if (d >= r-th/2 && d <= r+th/2) wall(cx+x, cy+y);
+  }
+}
+function line(x0,y0,x1,y1){ // thick-ish bresenham for spokes
+  const n = Math.ceil(Math.hypot(x1-x0, y1-y0));
+  for (let i=0;i<=n;i++){
+    const x = Math.round(x0+(x1-x0)*i/n), y = Math.round(y0+(y1-y0)*i/n);
+    wall(x,y); wall(x+1,y); wall(x,y+1);
+  }
+}
+function buildCathedral(){
+  const cx = GW>>1, cy = Math.round(GH*0.34), R = Math.round(Math.min(GW*0.32, GH*0.26));
+  const hub = Math.round(R*0.22);
+  ring(cx, cy, R, 3);          // rose outer ring
+  ring(cx, cy, hub, 2);        // hub ring
+  const SP = 12;
+  for (let i=0;i<SP;i++){      // radial spokes
+    const a = i/SP*2*Math.PI - Math.PI/2;
+    line(cx+Math.cos(a)*(hub+1), cy+Math.sin(a)*(hub+1), cx+Math.cos(a)*(R-1), cy+Math.sin(a)*(R-1));
+  }
+  // one emitter per petal, at the sector's high point so gravity fills it fully
+  for (let i=0;i<SP;i++){
+    const a = (i+0.5)/SP*2*Math.PI - Math.PI/2;
+    const up = Math.sin(a) < 0;                       // sector points upward on screen?
+    const rr = up ? R - 6 : hub + 5;                  // top of the petal cavity
+    emitters.push({x: Math.round(cx+Math.cos(a)*rr), y: Math.round(cy+Math.sin(a)*rr),
+                   color: 2 + (i % 5), rate: 2});
+  }
+  emitters.push({x: cx, y: cy - hub + 3, color: 7, rate: 2}); // hub: white-gold
+  // three gothic lancets below the rose; keep arches clear of the rose ring
+  const hw = Math.round(GW*0.055), archH = Math.round(hw*1.6);
+  const ly0 = Math.max(Math.round(GH*0.66), cy + R + archH + 6), ly1 = GH - 4;
+  [[0.27,0],[0.5,2],[0.73,4]].forEach(([fx, ci]) => {
+    const lx = Math.round(GW*fx);
+    // walls: two verticals + pointed arch
+    for (let y=ly0; y<=ly1; y++){ wall(lx-hw,y); wall(lx-hw-1,y); wall(lx+hw,y); wall(lx+hw+1,y); }
+    for (let i=0;i<=hw;i++){ // arch tip
+      const y = ly0 - Math.round(Math.sqrt(hw*hw - i*i)*1.6);
+      wall(lx-i, y); wall(lx-i, y+1); wall(lx+i, y); wall(lx+i, y+1);
+    }
+    for (let x=lx-hw; x<=lx+hw; x++) wall(x, ly1+1); // sill
+    emitters.push({x: lx, y: ly0 - Math.round(hw*1.6) + 4, color: 2+ci%5, rate: 3});
+  });
+  for (let x=0;x<GW;x++) wall(x, GH-1); // floor
+}
+buildCathedral();
+
+// pane capacity ≈ open cells enclosed near emitters — progress = settled / est. capacity
+let settled = 0;
+const capacity = Math.round(GW*GH*0.16); // tuned: full window ≈ this many grains
+
+// ---- CA step: classic falling sand with color, deterministic sweeps ----
+let frame = 0;
+function spawn(e){
+  for (let k=0;k<e.rate;k++){
+    const x = e.x + ((rnd()*3)|0) - 1, y = e.y + ((rnd()*2)|0);
+    const i = y*GW + x;
+    if (x>0 && x<GW-1 && y>0 && y<GH-1 && grid[i] === EMPTY){ grid[i] = e.color; settled++; }
+  }
+}
+const clickPours = []; // {x, life, color}
+function step(){
+  // pour
+  if (frame % 2 === 0) for (const e of emitters) spawn(e);
+  for (let p=clickPours.length-1; p>=0; p--){
+    const cp = clickPours[p];
+    const i = 2*GW + cp.x;
+    if (grid[i] === EMPTY){ grid[i] = cp.color; settled++; }
+    if (--cp.life <= 0) clickPours.splice(p,1);
+  }
+  // gravity sweep bottom-up; alternate scan direction to kill bias
+  const ltr = (frame & 1) === 0;
+  for (let y=GH-2; y>=1; y--){
+    const row = y*GW, below = row+GW;
+    for (let xi=1; xi<GW-1; xi++){
+      const x = ltr ? xi : GW-1-xi, i = row+x, v = grid[i];
+      if (v <= WALL) continue;
+      if (grid[below+x] === EMPTY){ grid[below+x] = v; grid[i] = EMPTY; continue; }
+      const d = rnd() < 0.5 ? 1 : -1;
+      if (grid[below+x+d] === EMPTY && grid[i+d] === EMPTY){ grid[below+x+d] = v; grid[i] = EMPTY; }
+      else if (grid[below+x-d] === EMPTY && grid[i-d] === EMPTY){ grid[below+x-d] = v; grid[i] = EMPTY; }
+    }
+  }
+  frame++;
+}
+
+// warm start: the first paint already shows a half-built glowing window
+for (let i=0;i<520;i++) step();
+
+// ---- render: grid -> imagedata, then bloom pass ----
+function paint(){
+  const d = img.data;
+  for (let i=0;i<GW*GH;i++){
+    const v = grid[i], p = i*4;
+    if (v === EMPTY){ d[p]=10; d[p+1]=8; d[p+2]=18; d[p+3]=255; }
+    else if (v === WALL){ d[p]=38; d[p+1]=30; d[p+2]=28; d[p+3]=255; }
+    else { const c = glow(PAL[v-2]); d[p]=c[0]; d[p+1]=c[1]; d[p+2]=c[2]; d[p+3]=255; }
+  }
+  lc.putImageData(img, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+  const s = Math.min(W/GW, H/GH), dw = GW*s, dh = GH*s, ox = (W-dw)/2, oy = (H-dh)/2;
+  ctx.fillStyle = "#0a0812"; ctx.fillRect(0,0,W,H);
+  ctx.drawImage(lo, ox, oy, dw, dh);
+  // bloom: blurred additive re-draw makes the glass GLOW
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  ctx.globalAlpha = 0.45; ctx.filter = "blur(10px)";
+  ctx.drawImage(lo, ox, oy, dw, dh);
+  ctx.restore();
+  // vignette
+  const g = ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.3, W/2,H/2,Math.max(W,H)*.75);
+  g.addColorStop(0,"rgba(0,0,0,0)"); g.addColorStop(1,"rgba(0,0,0,.55)");
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+}
+
+// tap/click pours a new sand stream from the top at that x
+addEventListener("pointerdown", e => {
+  const s = Math.min(W/GW, H/GH), ox = (W-GW*s)/2;
+  const gx = Math.max(1, Math.min(GW-2, Math.round((e.clientX-ox)/s)));
+  clickPours.push({x: gx, life: 140, color: 2 + (clickPours.length % 5)});
+}, {passive:true});
+
+let lastTitle = 0;
+function loop(){
+  step();
+  if (DEMO && frame % 90 === 0){ // demo autopilot: periodic pours across the nave
+    clickPours.push({x: 20 + ((rnd()*(GW-40))|0), life: 100, color: 2 + (frame/90|0) % 5});
+  }
+  paint();
+  if (DEMO && frame - lastTitle >= 30){
+    document.title = `sandfall ${Math.min(100, Math.round(100*settled/capacity))}% f=${frame}`;
+    lastTitle = frame;
+  }
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>

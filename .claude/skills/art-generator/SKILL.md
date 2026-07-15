@@ -42,5 +42,7 @@ Whenever you fix a bug, find an algorithm/palette pattern that elevated a piece,
 
 ## Lessons Learned
 
+- 2026-07-15: same-seed md5 hash equality fails for ANIMATED pieces (capture lands on different frames) — verify determinism by eyeballing structure of the two shots, not hashes.
+- 2026-07-15: drive.py takes a full URL only — pass `file:///C:/...?seed=7&demo=1` (relative paths give chromedriver HTTP 400); masks built from fixed geometry must be clearance-checked across aspect ratios (a lancet arch landed inside the rose ring at 1280x800 and its pane never filled).
 - 2026-07-15: virtual-time shots capture animated pieces at t≈0 (buds closed, scene "off") — canonical shot.png for any animated piece must come from `drive.py --wait N --shot`; give pieces a `?demo=1` autoplay param so the real-time shot shows the piece fully alive.
 - 2026-07-15: `shot.py` used to percent-encode `?seed=7` on file paths (as_uri), silently ignoring the seed — fixed in engine/shot.py; if seeds ever "stop working", check URL encoding first.

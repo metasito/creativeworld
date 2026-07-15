@@ -90,7 +90,7 @@
       "id": "E12",
       "title": "Sandfall Cathedral",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Falling-sand physics automaton that gradually builds a glowing stained-glass cathedral window",
       "slug": "sandfall-cathedral"
     },
@@ -627,9 +627,9 @@
       "title": "Sandfall Cathedral v1",
       "acceptance": "projects/sandfall-cathedral/index.html: falling-sand cellular automaton on canvas; sand streams in stained-glass palette pour and pile to form a rose-window cathedral silhouette (mask emerges as sand settles); click spawns new pour, ?seed= deterministic, ?demo=1 auto-pours and mirrors progress into document.title; screenshot shot.png shows recognizable glowing window",
       "size": "M",
-      "status": "in_progress",
-      "handoff": "",
-      "updated": "2026-07-15T14:26:01Z"
+      "status": "done",
+      "handoff": "v1 verified: seeded CA builds glowing rose window + 3 lancets; demo autopilot title telemetry; lancet/rose collision fixed",
+      "updated": "2026-07-15T19:21:04Z"
     },
     {
       "id": "T50",

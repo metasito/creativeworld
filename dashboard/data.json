@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-15T19:15:18Z",
+  "generated_at": "2026-07-15T19:21:30Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 1794776,
-    "window_used": 901555,
-    "rolling_used": 1794776,
+    "used": 1333799,
+    "window_used": 1167080,
+    "rolling_used": 1333799,
     "budget": 4798485,
-    "pct": 37.4,
-    "rate_per_hour": 359063,
-    "eta_hours": 8.4,
+    "pct": 27.8,
+    "rate_per_hour": 266775,
+    "eta_hours": 13.0,
     "window_started_at": "2026-07-15T14:22:33Z",
-    "resets_at": "2026-07-15T19:15:23Z",
-    "seconds_to_reset": 5,
+    "resets_at": "2026-07-15T19:21:31Z",
+    "seconds_to_reset": 1,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -146,7 +146,7 @@
       "id": "E12",
       "title": "Sandfall Cathedral",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Falling-sand physics automaton that gradually builds a glowing stained-glass cathedral window",
       "slug": "sandfall-cathedral",
       "cost": 0
@@ -695,7 +695,7 @@
       "claimed_by": "opus",
       "issue": "26",
       "cost": 616256,
-      "commit": null
+      "commit": "b7f173c"
     },
     {
       "id": "T47",
@@ -731,9 +731,9 @@
       "title": "Sandfall Cathedral v1",
       "acceptance": "projects/sandfall-cathedral/index.html: falling-sand cellular automaton on canvas; sand streams in stained-glass palette pour and pile to form a rose-window cathedral silhouette (mask emerges as sand settles); click spawns new pour, ?seed= deterministic, ?demo=1 auto-pours and mirrors progress into document.title; screenshot shot.png shows recognizable glowing window",
       "size": "M",
-      "status": "in_progress",
-      "handoff": "",
-      "updated": "2026-07-15T14:26:01Z",
+      "status": "done",
+      "handoff": "v1 verified: seeded CA builds glowing rose window + 3 lancets; demo autopilot title telemetry; lancet/rose collision fixed",
+      "updated": "2026-07-15T19:21:04Z",
       "commit": null
     },
     {
@@ -818,7 +818,7 @@
     }
   ],
   "queue": {
-    "in_progress": "T49",
+    "in_progress": null,
     "next": [
       "T51",
       "T53",
@@ -950,12 +950,12 @@
       "id": "E12",
       "title": "Sandfall Cathedral",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Falling-sand physics automaton that gradually builds a glowing stained-glass cathedral window",
       "slug": "sandfall-cathedral",
       "built": true,
       "shot": true,
-      "updated": "2026-07-15T14:27:55Z",
+      "updated": "2026-07-15T19:17:46Z",
       "cost": 0,
       "url": "/projects/sandfall-cathedral/"
     },
@@ -1008,31 +1008,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T46",
-    "current_action": "resume Clockwork Garden polish: butterflies + day cycle",
+    "current_task": "T49",
+    "current_action": "resume Sandfall Cathedral v1",
     "agent": "autopilot",
-    "updated": "2026-07-15T19:13:11Z",
+    "updated": "2026-07-15T19:21:04Z",
     "log": [
-      {
-        "at": "2026-07-15T18:59:27Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-15T19:01:31Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-15T19:01:31Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-15T19:03:35Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-15T19:03:35Z",
         "agent": "autopilot",
@@ -1072,6 +1052,26 @@
         "at": "2026-07-15T19:13:11Z",
         "agent": "autopilot",
         "msg": "T46: prior session's butterfly+daycycle code found intact; validating with screenshots"
+      },
+      {
+        "at": "2026-07-15T19:15:18Z",
+        "agent": "autopilot",
+        "msg": "T46 done: butterflies + day cycle verified via drive.py real-time shot (8/8 bloomed)"
+      },
+      {
+        "at": "2026-07-15T19:15:58Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T19:18:00Z",
+        "agent": "autopilot",
+        "msg": "T49: fixed middle-lancet/rose collision (clamped ly0); validating"
+      },
+      {
+        "at": "2026-07-15T19:21:04Z",
+        "agent": "autopilot",
+        "msg": "T49 done: all lancets fill, demo 83-100% telemetry, canonical drive.py shot"
       }
     ]
   }
