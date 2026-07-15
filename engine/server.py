@@ -9,12 +9,35 @@ Routes:
   /projects/*  -> the creative projects
 """
 import json
+import os
 import sys
+import threading
+import time
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 import board
 import build_dashboard
 import lib
+
+RESTART = threading.Event()
+
+
+def watch_engine(httpd, interval=2.0):
+    """Re-exec the server when any engine/*.py changes — a long-running process
+    otherwise serves stale imports silently (bit us: compose edits invisible)."""
+    def stamps():
+        return {p: p.stat().st_mtime for p in (lib.ROOT / "engine").glob("*.py")}
+    before = stamps()
+    while True:
+        time.sleep(interval)
+        try:
+            if stamps() != before:
+                print("engine/*.py changed -> restarting server")
+                RESTART.set()
+                httpd.shutdown()
+                return
+        except OSError:
+            pass  # file mid-write; retry next tick
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -83,7 +106,16 @@ class Handler(SimpleHTTPRequestHandler):
 def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8787
     print(f"CreativeWorld dashboard -> http://localhost:{port}")
-    ThreadingHTTPServer(("0.0.0.0", port), Handler).serve_forever()
+    httpd = ThreadingHTTPServer(("0.0.0.0", port), Handler)
+    threading.Thread(target=watch_engine, args=(httpd,), daemon=True).start()
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        return
+    finally:
+        httpd.server_close()
+    if RESTART.is_set():
+        os.execv(sys.executable, [sys.executable, os.path.abspath(__file__)] + sys.argv[1:])
 
 
 if __name__ == "__main__":

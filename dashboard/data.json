@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-15T09:33:26Z",
+  "generated_at": "2026-07-15T09:35:17Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2131825,
+    "used": 2269877,
     "window_used": 571191,
-    "rolling_used": 2131825,
+    "rolling_used": 2269877,
     "budget": 4798485,
-    "pct": 44.4,
+    "pct": 47.3,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T13:10:14Z",
-    "seconds_to_reset": 13007,
+    "seconds_to_reset": 12897,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -44,7 +44,7 @@
       "kind": "meta",
       "status": "active",
       "description": "The autonomous engine itself: budget tracking, board, boot/wrap-up flow, CI cron. Permanent epic \u2014 always improvable.",
-      "cost": 426260
+      "cost": 540931
     },
     {
       "id": "E2",
@@ -542,7 +542,7 @@
       "claimed_by": "opus",
       "issue": "14",
       "cost": 149967,
-      "commit": null
+      "commit": "46ba8ab"
     },
     {
       "id": "T39",
@@ -550,16 +550,18 @@
       "title": "server.py: auto-restart on engine module change",
       "acceptance": "server watches mtimes of engine/*.py it imports and re-execs itself when they change (or serves via importlib.reload); editing build_dashboard.py no longer silently serves stale compose",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T09:22:30Z",
+      "status": "done",
+      "handoff": "mtime watcher thread re-execs server on engine/*.py change; verified live: compose edit appeared and disappeared in /api/state with zero manual restarts",
+      "updated": "2026-07-15T09:35:14Z",
+      "claimed_by": "opus",
+      "issue": "15",
+      "cost": 114671,
       "commit": null
     }
   ],
   "queue": {
     "in_progress": null,
     "next": [
-      "T39",
       "T36"
     ],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
@@ -679,10 +681,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T38",
-    "current_action": "rolling 5h budget window",
+    "current_task": "T39",
+    "current_action": "server auto-restart on engine changes",
     "agent": "opus",
-    "updated": "2026-07-15T09:31:25Z",
+    "updated": "2026-07-15T09:33:39Z",
     "log": [
       {
         "at": "2026-07-15T04:06:41Z",

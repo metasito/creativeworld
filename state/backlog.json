@@ -467,9 +467,12 @@
       "title": "server.py: auto-restart on engine module change",
       "acceptance": "server watches mtimes of engine/*.py it imports and re-execs itself when they change (or serves via importlib.reload); editing build_dashboard.py no longer silently serves stale compose",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T09:22:30Z"
+      "status": "done",
+      "handoff": "mtime watcher thread re-execs server on engine/*.py change; verified live: compose edit appeared and disappeared in /api/state with zero manual restarts",
+      "updated": "2026-07-15T09:35:14Z",
+      "claimed_by": "opus",
+      "issue": "15",
+      "cost": 114671
     }
   ],
   "next_ids": {
