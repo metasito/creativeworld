@@ -382,9 +382,9 @@
       "title": "Dashboard: fix false IDLE when agent is quietly working",
       "acceptance": "when a task is in_progress and heartbeat is stale, panel shows 'working - quiet Xm' (amber) instead of 'IDLE (no agent)'; true idle unchanged",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T08:31:10Z",
+      "status": "done",
+      "handoff": "stale heartbeat + task in_progress now shows amber 'WORKING - quiet Xm' instead of false IDLE; verified with aged heartbeat",
+      "updated": "2026-07-15T09:05:08Z",
       "issue": "10"
     },
     {

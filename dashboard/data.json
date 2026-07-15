@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T09:03:52Z",
+  "generated_at": "2026-07-15T09:05:10Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
     "used": 0,
@@ -7,7 +7,7 @@
     "pct": 0.0,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T14:22:33Z",
-    "seconds_to_reset": 19120,
+    "seconds_to_reset": 19042,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -440,7 +440,7 @@
       "handoff": "tab title shows pct+verdict; canvas favicon dot green/amber/red with fill-level pie; verified via dump-dom",
       "updated": "2026-07-15T09:03:50Z",
       "issue": "9",
-      "commit": null
+      "commit": "d9996bb"
     },
     {
       "id": "T31",
@@ -448,9 +448,9 @@
       "title": "Dashboard: fix false IDLE when agent is quietly working",
       "acceptance": "when a task is in_progress and heartbeat is stale, panel shows 'working - quiet Xm' (amber) instead of 'IDLE (no agent)'; true idle unchanged",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T08:31:10Z",
+      "status": "done",
+      "handoff": "stale heartbeat + task in_progress now shows amber 'WORKING - quiet Xm' instead of false IDLE; verified with aged heartbeat",
+      "updated": "2026-07-15T09:05:08Z",
       "issue": "10",
       "commit": null
     },
@@ -517,7 +517,6 @@
       "T8",
       "T23",
       "T28",
-      "T31",
       "T33"
     ],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
@@ -622,10 +621,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T30",
-    "current_action": "live tab title + verdict favicon",
+    "current_task": "T31",
+    "current_action": "quiet-state verified",
     "agent": "opus",
-    "updated": "2026-07-15T08:56:38Z",
+    "updated": "2026-07-15T09:04:59Z",
     "log": [
       {
         "at": "2026-07-15T04:06:41Z",

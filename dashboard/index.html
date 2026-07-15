@@ -238,7 +238,7 @@ function render(d) {
   $("m85").style.left = b.wrap_up_pct + "%"; $("m95").style.left = b.stop_pct + "%";
   $("blabel").textContent = "budget " + fmt(b.budget) + " (⚑" + b.wrap_up_pct + "% wrap · ⚑" + b.stop_pct + "% stop)";
 
-  renderAgent(d.activity, b);
+  renderAgent(d.activity, b, d.queue.in_progress);
 
   const working = b.verdict === "CONTINUE" && d.queue.in_progress;
   const st = $("status");
@@ -325,20 +325,23 @@ $("addform").addEventListener("submit", async e => {
   if (j.ok) { $("f-title").value = ""; $("f-accept").value = ""; $("f-newtitle").value = ""; $("f-newslug").value = ""; }
 });
 
-function renderAgent(a, b) {
+function renderAgent(a, b, inprog) {
   a = a || {engine_status: "idle", log: []};
   const upd = a.updated ? new Date(a.updated) : null;
   const ageSec = upd ? (Date.now() - upd) / 1000 : Infinity;
-  // "live" only if a heartbeat landed in the last 90s; otherwise fall back to budget verdict
+  // heartbeat fresh (<90s) = live. Stale + a task in_progress = agent quietly
+  // mid-task (heartbeats land at milestones, not continuously) — NOT idle.
   let status = a.engine_status || "idle";
-  if (status === "working" && ageSec > 90) status = "stale";
+  if (status === "working" && ageSec > 90) status = inprog ? "quiet" : "stale";
   const pulse = $("a-pulse");
-  pulse.className = status === "working" ? "live" : status === "napping" ? "nap" : "";
+  pulse.className = status === "working" ? "live" : status === "napping" || status === "quiet" ? "nap" : "";
   $("a-status").textContent = status === "working" ? "● WORKING"
+    : status === "quiet" ? `● WORKING — quiet ${Math.round(ageSec / 60)}m`
     : status === "napping" ? "◌ NAPPING"
     : status === "stale" ? "○ IDLE (no agent)" : "○ IDLE";
-  $("a-status").style.color = status === "working" ? "var(--good)" : status === "napping" ? "var(--warn)" : "var(--muted)";
-  $("a-task").textContent = a.current_task ? `on ${a.current_task}` : "";
+  $("a-status").style.color = status === "working" ? "var(--good)"
+    : status === "quiet" || status === "napping" ? "var(--warn)" : "var(--muted)";
+  $("a-task").textContent = a.current_task ? `on ${a.current_task}` : inprog && status === "quiet" ? `on ${inprog}` : "";
   $("a-action").textContent = a.current_action || (status === "stale" || status === "idle" ? "no autopilot running — launch: python engine/autopilot.py" : "");
   $("a-when").textContent = upd ? "heartbeat " + timeago(ageSec) : "no heartbeat yet";
   $("a-log").innerHTML = (a.log || []).slice().reverse().map(e =>
