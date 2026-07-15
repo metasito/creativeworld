@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-15T19:21:30Z",
+  "generated_at": "2026-07-15T19:28:20Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 1333799,
-    "window_used": 1167080,
-    "rolling_used": 1333799,
+    "used": 792711,
+    "window_used": 233653,
+    "rolling_used": 792711,
     "budget": 4798485,
-    "pct": 27.8,
-    "rate_per_hour": 266775,
-    "eta_hours": 13.0,
-    "window_started_at": "2026-07-15T14:22:33Z",
-    "resets_at": "2026-07-15T19:21:31Z",
-    "seconds_to_reset": 1,
+    "pct": 16.5,
+    "rate_per_hour": 158541,
+    "eta_hours": 25.3,
+    "window_started_at": "2026-07-15T19:22:33Z",
+    "resets_at": "2026-07-15T19:28:20Z",
+    "seconds_to_reset": 0,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -40,6 +40,11 @@
       {
         "started_at": "2026-07-15T09:22:33Z",
         "used": 3430689,
+        "budget": 4798485
+      },
+      {
+        "started_at": "2026-07-15T14:22:33Z",
+        "used": 1211233,
         "budget": 4798485
       }
     ]
@@ -155,10 +160,10 @@
       "id": "E13",
       "title": "Abyss Lantern",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Deep-sea bioluminescence scene: anglerfish lantern follows cursor, luring glowing creature swarms out of the dark",
       "slug": "abyss-lantern",
-      "cost": 0
+      "cost": 233654
     }
   ],
   "tasks": [
@@ -734,7 +739,7 @@
       "status": "done",
       "handoff": "v1 verified: seeded CA builds glowing rose window + 3 lancets; demo autopilot title telemetry; lancet/rose collision fixed",
       "updated": "2026-07-15T19:21:04Z",
-      "commit": null
+      "commit": "eee0e11"
     },
     {
       "id": "T50",
@@ -753,9 +758,12 @@
       "title": "Abyss Lantern v1",
       "acceptance": "projects/abyss-lantern/index.html: pitch-black deep sea; cursor is an anglerfish lure emitting light halo; bioluminescent creatures (jellies, eels, plankton trails) drift toward light with flocking, scatter on click; ?demo=1 moves lure on a path with state in document.title, ?seed= deterministic; shot.png shows glowing swarm around lure",
       "size": "M",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T10:03:44Z",
+      "updated": "2026-07-15T19:28:16Z",
+      "claimed_by": "unknown",
+      "issue": "27",
+      "cost": 233654,
       "commit": null
     },
     {
@@ -820,7 +828,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T51",
       "T53",
       "T50",
       "T52",
@@ -963,14 +970,14 @@
       "id": "E13",
       "title": "Abyss Lantern",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Deep-sea bioluminescence scene: anglerfish lantern follows cursor, luring glowing creature swarms out of the dark",
       "slug": "abyss-lantern",
-      "built": false,
-      "shot": false,
-      "updated": null,
-      "cost": 0,
-      "url": null
+      "built": true,
+      "shot": true,
+      "updated": "2026-07-15T19:25:56Z",
+      "cost": 233654,
+      "url": "/projects/abyss-lantern/"
     }
   ],
   "sessions": [
@@ -1008,26 +1015,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T49",
-    "current_action": "resume Sandfall Cathedral v1",
+    "current_task": "T51",
+    "current_action": "building Abyss Lantern v1",
     "agent": "autopilot",
-    "updated": "2026-07-15T19:21:04Z",
+    "updated": "2026-07-15T19:28:00Z",
     "log": [
-      {
-        "at": "2026-07-15T19:03:35Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-15T19:05:39Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-15T19:05:39Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
       {
         "at": "2026-07-15T19:07:47Z",
         "agent": "autopilot",
@@ -1072,6 +1064,21 @@
         "at": "2026-07-15T19:21:04Z",
         "agent": "autopilot",
         "msg": "T49 done: all lancets fill, demo 83-100% telemetry, canonical drive.py shot"
+      },
+      {
+        "at": "2026-07-15T19:22:01Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T19:24:00Z",
+        "agent": "autopilot",
+        "msg": "T51: abyss-lantern index.html written; validating with drive.py"
+      },
+      {
+        "at": "2026-07-15T19:28:00Z",
+        "agent": "autopilot",
+        "msg": "T51: validated (seed determinism, swarm shot, no console errors); checkpointing"
       }
     ]
   }

@@ -98,7 +98,7 @@
       "id": "E13",
       "title": "Abyss Lantern",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Deep-sea bioluminescence scene: anglerfish lantern follows cursor, luring glowing creature swarms out of the dark",
       "slug": "abyss-lantern"
     }
@@ -647,9 +647,12 @@
       "title": "Abyss Lantern v1",
       "acceptance": "projects/abyss-lantern/index.html: pitch-black deep sea; cursor is an anglerfish lure emitting light halo; bioluminescent creatures (jellies, eels, plankton trails) drift toward light with flocking, scatter on click; ?demo=1 moves lure on a path with state in document.title, ?seed= deterministic; shot.png shows glowing swarm around lure",
       "size": "M",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T10:03:44Z"
+      "updated": "2026-07-15T19:28:16Z",
+      "claimed_by": "unknown",
+      "issue": "27",
+      "cost": 233654
     },
     {
       "id": "T52",

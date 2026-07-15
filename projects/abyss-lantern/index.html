@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Abyss Lantern</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#000;cursor:none}
+  canvas{display:block;width:100vw;height:100vh;touch-action:none}
+  #hint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);
+    font:12px/1.4 system-ui,sans-serif;color:#3a7a8a;letter-spacing:.14em;
+    text-transform:uppercase;pointer-events:none;text-align:center;
+    text-shadow:0 0 8px #041014;opacity:.85}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hint">Abyss Lantern &mdash; move the lure, the deep follows &middot; click to scatter</div>
+<script>
+'use strict';
+// ---------- seeded PRNG ----------
+const Q = new URLSearchParams(location.search);
+const SEED = parseInt(Q.get('seed') || '7', 10);
+const DEMO = Q.get('demo') === '1';
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;
+  let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;
+  return((t^t>>>14)>>>0)/4294967296;}}
+const rnd = mulberry32(SEED);
+
+// ---------- canvas ----------
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+let W, H;
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
+resize(); addEventListener('resize', resize);
+
+const TAU = Math.PI*2;
+// palette: abyssal teal / plankton cyan / jelly violet / eel seafoam / lure gold
+const C_PLANK='#8ef7ff', C_JELLY='#c99bff', C_EEL='#7dffd4', C_LURE='#ffe9a8';
+
+// ---------- lure ----------
+const lure = {x:W*0.5, y:H*0.45, tx:W*0.5, ty:H*0.45, moved:false};
+addEventListener('pointermove', e=>{lure.tx=e.clientX;lure.ty=e.clientY;lure.moved=true;});
+let scatterT = 0, scX = 0, scY = 0;
+addEventListener('pointerdown', e=>{
+  scatterT = 1; scX = e.clientX; scY = e.clientY;
+  lure.tx=e.clientX; lure.ty=e.clientY; lure.moved=true;
+});
+
+// ---------- creatures ----------
+function spawn(margin){return {x:rnd()*W, y:rnd()*H,
+  vx:(rnd()-.5)*margin, vy:(rnd()-.5)*margin, ph:rnd()*TAU};}
+
+const NP = 260, NJ = 10, NE = 5;
+const plank = [], jellies = [], eels = [];
+for(let i=0;i<NP;i++){const p=spawn(20); p.hue=rnd(); plank.push(p);}
+for(let i=0;i<NJ;i++){const j=spawn(6); j.r=14+rnd()*16; j.pulse=.6+rnd()*.8; jellies.push(j);}
+for(let i=0;i<NE;i++){
+  const e=spawn(10); e.segs=[]; e.len=16+((rnd()*8)|0);
+  for(let s=0;s<e.len;s++) e.segs.push({x:e.x,y:e.y});
+  e.speed=42+rnd()*26; eels.push(e);
+}
+
+// steering toward lure with per-creature wander; scatter impulse on click
+function steer(o, dt, pull, maxV, wander){
+  const dx=lure.x-o.x, dy=lure.y-o.y, d=Math.hypot(dx,dy)+1;
+  let ax=dx/d*pull, ay=dy/d*pull;
+  o.ph+=dt*(0.4+wander); ax+=Math.cos(o.ph*1.7)*wander*30; ay+=Math.sin(o.ph)*wander*30;
+  if(scatterT>0){const sx=o.x-scX, sy=o.y-scY, sd=Math.hypot(sx,sy)+1;
+    const f=scatterT*900/Math.max(sd,40); ax+=sx/sd*f; ay+=sy/sd*f;}
+  o.vx+=ax*dt; o.vy+=ay*dt;
+  const v=Math.hypot(o.vx,o.vy);
+  if(v>maxV){o.vx*=maxV/v; o.vy*=maxV/v;}
+  o.x+=o.vx*dt; o.y+=o.vy*dt;
+  // soft wrap
+  if(o.x<-40)o.x=W+40; if(o.x>W+40)o.x=-40;
+  if(o.y<-40)o.y=H+40; if(o.y>H+40)o.y=-40;
+}
+
+// ---------- demo path ----------
+const t0 = performance.now();
+function demoPath(t){
+  lure.tx = W*0.5 + Math.cos(t*0.17)*W*0.26;
+  lure.ty = H*0.45 + Math.sin(t*0.26)*H*0.22;
+  if(DEMO && t>14 && t<14.12 && scatterT<=0){scatterT=1; scX=lure.tx; scY=lure.ty;}
+}
+
+// ---------- render ----------
+let last = t0, titleT = 0;
+function frame(now){
+  const dt = Math.min((now-last)/1000, 0.05); last = now;
+  const t = (now-t0)/1000;
+  if(DEMO || !lure.moved) demoPath(t);
+  lure.x += (lure.tx-lure.x)*Math.min(1,dt*4);
+  lure.y += (lure.ty-lure.y)*Math.min(1,dt*4);
+  if(scatterT>0) scatterT -= dt*1.4;
+
+  // trail fade to pitch black
+  ctx.globalCompositeOperation='source-over';
+  ctx.fillStyle='rgba(0,2,6,0.10)'; ctx.fillRect(0,0,W,H);
+
+  ctx.globalCompositeOperation='lighter';
+
+  // light halo around lure
+  const halo = ctx.createRadialGradient(lure.x,lure.y,0,lure.x,lure.y,240);
+  halo.addColorStop(0,'rgba(120,180,190,0.20)');
+  halo.addColorStop(0.4,'rgba(40,90,110,0.08)');
+  halo.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=halo; ctx.beginPath(); ctx.arc(lure.x,lure.y,240,0,TAU); ctx.fill();
+
+  let near = 0;
+  // plankton: tiny motes, brightness by distance to light
+  for(const p of plank){
+    steer(p, dt, 110, 100+50*Math.sin(p.ph), 0.7);
+    const d=Math.hypot(p.x-lure.x,p.y-lure.y);
+    if(d<240) near++;
+    const b=Math.max(0.10, 1-d/380);
+    ctx.globalAlpha=Math.min(1, b*(0.7+0.5*Math.sin(p.ph*3)));
+    ctx.fillStyle=C_PLANK;
+    const s=1.4+b*1.6;
+    ctx.fillRect(p.x, p.y, s, s);
+  }
+
+  // jellies: pulsing bells with trailing tentacle glow
+  for(const j of jellies){
+    steer(j, dt, 26, 24, 0.35);
+    j.y -= Math.sin(j.ph*j.pulse*3)*8*dt; // pulse thrust upward-ish
+    const d=Math.hypot(j.x-lure.x,j.y-lure.y);
+    if(d<240) near++;
+    const b=Math.max(0.05, 1-d/520);
+    const r=j.r*(1+0.18*Math.sin(j.ph*j.pulse*3));
+    const g=ctx.createRadialGradient(j.x,j.y,0,j.x,j.y,r*2.2);
+    g.addColorStop(0,'rgba(201,155,255,'+(0.55*b)+')');
+    g.addColorStop(0.5,'rgba(120,80,200,'+(0.18*b)+')');
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.globalAlpha=1; ctx.fillStyle=g;
+    ctx.beginPath(); ctx.arc(j.x,j.y,r*2.2,0,TAU); ctx.fill();
+    // bell rim
+    ctx.globalAlpha=b*0.9; ctx.strokeStyle=C_JELLY; ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.arc(j.x,j.y,r,Math.PI*0.15,Math.PI*0.85,true); ctx.stroke();
+    // tentacles
+    ctx.globalAlpha=b*0.5; ctx.lineWidth=0.8;
+    for(let k=-2;k<=2;k++){
+      ctx.beginPath(); ctx.moveTo(j.x+k*r*0.3, j.y+r*0.3);
+      ctx.quadraticCurveTo(j.x+k*r*0.5+Math.sin(j.ph*2+k)*6, j.y+r*1.6,
+                           j.x+k*r*0.4+Math.sin(j.ph*3+k)*9, j.y+r*2.6);
+      ctx.stroke();
+    }
+  }
+
+  // eels: sinuous segment chains, head steers, body follows
+  for(const e of eels){
+    steer(e, dt, 60, e.speed, 0.5);
+    const d=Math.hypot(e.x-lure.x,e.y-lure.y);
+    if(d<240) near++;
+    const b=Math.max(0.08, 1-d/560);
+    const segs=e.segs; segs[0].x=e.x; segs[0].y=e.y;
+    for(let s=1;s<segs.length;s++){
+      const a=segs[s-1], q=segs[s];
+      const dx=q.x-a.x, dy=q.y-a.y, dd=Math.hypot(dx,dy)||1, gap=7;
+      q.x=a.x+dx/dd*gap; q.y=a.y+dy/dd*gap;
+    }
+    ctx.globalAlpha=1;
+    for(let s=0;s<segs.length-1;s++){
+      const w=(1-s/segs.length)*3.2+0.4;
+      const fade=b*(1-s/segs.length*0.7);
+      ctx.strokeStyle=C_EEL; ctx.globalAlpha=fade*0.8; ctx.lineWidth=w;
+      ctx.beginPath(); ctx.moveTo(segs[s].x,segs[s].y);
+      ctx.lineTo(segs[s+1].x,segs[s+1].y); ctx.stroke();
+    }
+    // eyes glint at head
+    ctx.globalAlpha=b; ctx.fillStyle='#eaffff';
+    ctx.beginPath(); ctx.arc(segs[0].x,segs[0].y,1.6,0,TAU); ctx.fill();
+  }
+
+  // the lure itself: dangling filament + hot glowing bulb
+  ctx.globalAlpha=1;
+  const bob=Math.sin(t*2.1)*4;
+  const bx=lure.x, by=lure.y+bob;
+  ctx.strokeStyle='rgba(180,200,200,0.25)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(bx-14,by-34);
+  ctx.quadraticCurveTo(bx-4,by-22,bx,by-6); ctx.stroke();
+  const lg=ctx.createRadialGradient(bx,by,0,bx,by,26);
+  lg.addColorStop(0,'rgba(255,240,190,0.95)');
+  lg.addColorStop(0.3,'rgba(255,210,120,0.45)');
+  lg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=lg; ctx.beginPath(); ctx.arc(bx,by,26,0,TAU); ctx.fill();
+  ctx.fillStyle=C_LURE; ctx.beginPath(); ctx.arc(bx,by,3.2,0,TAU); ctx.fill();
+
+  // vignette
+  ctx.globalCompositeOperation='source-over';
+  const v=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.35,W/2,H/2,Math.max(W,H)*0.72);
+  v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,0.55)');
+  ctx.fillStyle=v; ctx.fillRect(0,0,W,H);
+
+  // demo telemetry in title (throttled)
+  titleT+=dt;
+  if(DEMO && titleT>0.25){
+    titleT=0;
+    document.title='abyss t='+t.toFixed(1)+'s near='+near+'/'+(NP+NJ+NE)+
+      ' lure='+(lure.x|0)+','+(lure.y|0)+(scatterT>0?' SCATTER':'');
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
