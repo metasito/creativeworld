@@ -61,6 +61,30 @@
       "status": "shipped",
       "description": "A bootable fake retro OS with a working command prompt, scanlines, and hidden mini-commands",
       "slug": "crt-os"
+    },
+    {
+      "id": "E9",
+      "title": "Paper Storm",
+      "kind": "project",
+      "status": "planned",
+      "description": "A murmuration of thousands of origami birds swirling over a gradient dusk sky; the flock follows and dodges the cursor, folding/unfolding mid-flight",
+      "slug": "paper-storm"
+    },
+    {
+      "id": "E10",
+      "title": "Shatter Type",
+      "kind": "project",
+      "status": "planned",
+      "description": "Kinetic typography playground: giant letters built from physics particles explode as you type and magnetically reassemble into the new word",
+      "slug": "shatter-type"
+    },
+    {
+      "id": "E11",
+      "title": "Clockwork Garden",
+      "kind": "project",
+      "status": "planned",
+      "description": "A steampunk generative garden: brass gear-flowers bloom along spiral stems on hover, each procedurally unique, ticking like watch movements",
+      "slug": "clockwork-garden"
     }
   ],
   "tasks": [
@@ -476,10 +500,90 @@
       "claimed_by": "opus",
       "issue": "15",
       "cost": 114671
+    },
+    {
+      "id": "T41",
+      "epic": "E9",
+      "title": "Paper Storm v1: boids origami murmuration",
+      "acceptance": "projects/paper-storm/index.html: canvas boids flock (1500+ birds) as folded-triangle sprites over dusk gradient; flock steers toward/away from cursor; birds visibly fold/unfold in flight; ?demo=1 auto-moves a virtual cursor and mirrors state in title; ?seed= deterministic; 60fps-ish; screenshot shot.png; registered in backlog",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T09:40:26Z"
+    },
+    {
+      "id": "T42",
+      "epic": "E10",
+      "title": "Shatter Type v1: physics particle typography",
+      "acceptance": "projects/shatter-type/index.html: type a word, giant letters rendered as particles; on new keystroke particles explode then magnetically reassemble into new word; canvas 2D, no deps; ?demo=1 auto-types a word sequence with state in title; ?seed= deterministic scatter; screenshot shot.png; registered in backlog",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T09:40:26Z"
+    },
+    {
+      "id": "T43",
+      "epic": "E11",
+      "title": "Clockwork Garden v1: procedural gear-flowers",
+      "acceptance": "projects/clockwork-garden/index.html: spiral brass stems, hover (or ?demo=1 autoplay) blooms procedurally-unique gear-flowers that rotate/tick; each flower distinct (teeth count, radius, palette); ?seed= deterministic; screenshot shot.png; registered in backlog",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T09:40:26Z"
+    },
+    {
+      "id": "T44",
+      "epic": "E9",
+      "title": "Paper Storm polish: dive-bomb + wind gusts",
+      "acceptance": "predator-dive interaction on click scatters flock; periodic wind gust waves ripple through murmuration; still 60fps; updated shot.png",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T09:40:27Z"
+    },
+    {
+      "id": "T45",
+      "epic": "E10",
+      "title": "Shatter Type polish: color themes + shockwave",
+      "acceptance": "3 cyclable color themes; explosion emits shockwave ring distorting nearby particles; updated shot.png",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T09:40:27Z"
+    },
+    {
+      "id": "T46",
+      "epic": "E11",
+      "title": "Clockwork Garden polish: butterflies + day cycle",
+      "acceptance": "clockwork butterflies visit bloomed flowers; slow day/night brass-patina lighting cycle; updated shot.png",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T09:40:27Z"
+    },
+    {
+      "id": "T47",
+      "epic": "E1",
+      "title": "Engine: board.py brief shows rolling-window burn rate",
+      "acceptance": "brief output includes tokens/hour over trailing 5h window and ETA to cap; test_engine.py passes",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T09:40:27Z"
+    },
+    {
+      "id": "T48",
+      "epic": "E2",
+      "title": "Dashboard: epic gallery shows shot.png thumbnails",
+      "acceptance": "dashboard lists shipped project epics with their shot.png thumbnail linking to the project page; verified by screenshot",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T09:40:27Z"
     }
   ],
   "next_ids": {
-    "epic": 9,
-    "task": 41
+    "epic": 12,
+    "task": 49
   }
 }
