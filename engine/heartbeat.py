@@ -22,8 +22,12 @@ def load():
                 "agent": None, "updated": None, "log": []}
 
 
+STATUSES = ("working", "napping", "idle")
+
+
 def opt(args, flag, default=None):
-    return args[args.index(flag) + 1] if flag in args else default
+    i = args.index(flag) if flag in args else -1
+    return args[i + 1] if 0 <= i < len(args) - 1 else default
 
 
 def main():
@@ -34,6 +38,8 @@ def main():
     cmd = args[0]
 
     if cmd == "status":
+        if len(args) < 2 or args[1] not in STATUSES:
+            sys.exit(f"status must be one of {STATUSES}\n\n" + __doc__)
         a["engine_status"] = args[1]
         a["current_task"] = opt(args, "--task", a.get("current_task"))
         a["current_action"] = opt(args, "--action", a.get("current_action"))
@@ -42,9 +48,11 @@ def main():
         if args[1] == "idle":
             a["current_task"] = a["current_action"] = None
     elif cmd == "log":
+        if len(args) < 2 or args[1].startswith("--"):
+            sys.exit("log needs a message\n\n" + __doc__)
         a["log"].append({"at": lib.iso(lib.now()), "agent": opt(args, "--agent", a.get("agent")),
                          "msg": args[1]})
-        a["log"] = a["log"][-40:]
+        a["log"] = a["log"][-100:]
         a["updated"] = lib.iso(lib.now())
     elif cmd == "show":
         print(json.dumps(a, indent=2))

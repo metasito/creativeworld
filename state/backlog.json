@@ -418,9 +418,12 @@
       "title": "heartbeat.py robustness: usage on bad args + trim log",
       "acceptance": "heartbeat.py status with no arg prints usage instead of traceback; log kept to last 100 entries; heartbeat.py show still works",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T09:22:30Z"
+      "status": "done",
+      "handoff": "usage on bad/missing args (no tracebacks), log trimmed to 100, opt() guards trailing flags; show works",
+      "updated": "2026-07-15T09:29:28Z",
+      "claimed_by": "opus",
+      "issue": "12",
+      "cost": 82235
     },
     {
       "id": "T35",
