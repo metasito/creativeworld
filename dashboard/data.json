@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T09:21:22Z",
+  "generated_at": "2026-07-15T09:24:00Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
     "used": 0,
@@ -7,7 +7,7 @@
     "pct": 0.0,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T14:22:33Z",
-    "seconds_to_reset": 18070,
+    "seconds_to_reset": 17912,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -460,9 +460,10 @@
       "title": "Per-task token cost attribution",
       "acceptance": "board.py claim/done snapshot window usage into the task (cost_start/cost); done tasks store real weighted cost; data.json exposes it; board cards + project gallery show cost; learnings sizing (S/M/L) can be checked against reals",
       "size": "M",
-      "status": "backlog",
-      "handoff": "",
-      "updated": "2026-07-15T08:12:53Z",
+      "status": "done",
+      "handoff": "claim/done snapshot total_usage into cost_start/cost; dashboard cards + gallery show measured cost; T32's own figure approximate (attribution landed mid-task), future tasks measure clean",
+      "updated": "2026-07-15T09:24:00Z",
+      "cost": 120000,
       "commit": null
     },
     {
@@ -484,9 +485,9 @@
       "title": "heartbeat.py robustness: usage on bad args + trim log",
       "acceptance": "heartbeat.py status with no arg prints usage instead of traceback; log kept to last 100 entries; heartbeat.py show still works",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T08:12:53Z",
+      "updated": "2026-07-15T09:22:30Z",
       "commit": null
     },
     {
@@ -495,9 +496,9 @@
       "title": "Engine smoke test",
       "acceptance": "python engine/test_engine.py runs add-epic/add/claim/done/sync on a temp STATE dir + budget math sanity; exits 0; documented in CLAUDE.md work loop as pre-commit check for engine changes",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T08:12:53Z",
+      "updated": "2026-07-15T09:22:30Z",
       "commit": null
     },
     {
@@ -506,9 +507,9 @@
       "title": "GitHub labels two-way sync",
       "acceptance": "github.py sync also pulls: label/status edits made on GitHub issues update the board task (closed issue -> done, size label edit -> size); ran on boot; conflicts resolved board-wins",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "locked-api smoke test ok",
-      "updated": "2026-07-15T09:19:50Z",
+      "updated": "2026-07-15T09:22:30Z",
       "commit": null
     },
     {
@@ -517,9 +518,9 @@
       "title": "Rolling 5h budget window (match real subscription cap)",
       "acceptance": "lib budget math computes usage over the TRAILING 5h from all transcripts instead of discrete anchored windows; brief/budget_check/dashboard use it; discrete history kept for the bars; validated against the 04:22Z limit-hit-at-457k incident",
       "size": "M",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T09:21:21Z",
+      "updated": "2026-07-15T09:22:30Z",
       "commit": null
     },
     {
@@ -528,16 +529,21 @@
       "title": "server.py: auto-restart on engine module change",
       "acceptance": "server watches mtimes of engine/*.py it imports and re-execs itself when they change (or serves via importlib.reload); editing build_dashboard.py no longer silently serves stale compose",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T09:21:21Z",
+      "updated": "2026-07-15T09:22:30Z",
       "commit": null
     }
   ],
   "queue": {
     "in_progress": null,
     "next": [
-      "T8"
+      "T8",
+      "T34",
+      "T35",
+      "T38",
+      "T39",
+      "T36"
     ],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
   },
@@ -552,6 +558,7 @@
       "built": true,
       "shot": true,
       "updated": "2026-07-14T19:19:22Z",
+      "cost": 0,
       "url": "/projects/phone-decompose/"
     },
     {
@@ -564,6 +571,7 @@
       "built": true,
       "shot": true,
       "updated": "2026-07-14T14:32:33Z",
+      "cost": 0,
       "url": "/projects/neon-arcade/"
     },
     {
@@ -576,6 +584,7 @@
       "built": true,
       "shot": true,
       "updated": "2026-07-14T14:34:43Z",
+      "cost": 0,
       "url": "/projects/genart-01/"
     },
     {
@@ -588,6 +597,7 @@
       "built": true,
       "shot": true,
       "updated": "2026-07-14T23:51:27Z",
+      "cost": 0,
       "url": "/projects/liquid-chrome/"
     },
     {
@@ -600,6 +610,7 @@
       "built": true,
       "shot": true,
       "updated": "2026-07-14T23:59:48Z",
+      "cost": 0,
       "url": "/projects/gravity-well/"
     },
     {
@@ -612,6 +623,7 @@
       "built": true,
       "shot": true,
       "updated": "2026-07-15T04:16:18Z",
+      "cost": 0,
       "url": "/projects/crt-os/"
     }
   ],
@@ -650,10 +662,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T33",
-    "current_action": "atomic state writes + claimed_by",
+    "current_task": "T32",
+    "current_action": "per-task token cost attribution",
     "agent": "opus",
-    "updated": "2026-07-15T09:17:09Z",
+    "updated": "2026-07-15T09:21:36Z",
     "log": [
       {
         "at": "2026-07-15T04:06:41Z",

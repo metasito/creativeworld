@@ -71,11 +71,14 @@ def update_task(b, tid, status=None, handoff=None, pr=None, issue=None, order=No
         assert status in STATUSES, f"status must be one of {STATUSES}"
         was = t["status"]
         t["status"] = status
-        if status != was:  # mirror board moves onto GitHub
+        if status != was:  # mirror board moves onto GitHub + cost snapshots
             epics = {e["id"]: e["title"] for e in b["epics"]}
             if status == "in_progress":
+                t.setdefault("cost_start", lib.total_usage())
                 gh_safe(lambda gh: gh.ensure_task_issue(t, epics.get(t["epic"], t["epic"])))
             elif status == "done":
+                if t.get("cost_start") is not None:
+                    t["cost"] = max(0, lib.total_usage() - t.pop("cost_start"))
                 gh_safe(lambda gh: gh.close_task_issue(t, gh.ship_comment(t)))
     if handoff is not None:
         t["handoff"] = handoff.strip()
@@ -206,6 +209,7 @@ def main():
             t = find(b, q["next"][0])
             t["status"] = "in_progress"
             t["claimed_by"] = agent
+            t["cost_start"] = lib.total_usage()  # for real per-task cost at done
             touch(t)
             lib.save("backlog.json", b)
             sync_queue(b)
@@ -218,6 +222,9 @@ def main():
         t = find(b, args[1])
         t["status"] = "done"
         t["handoff"] = " ".join(args[2:])
+        if t.get("cost_start") is not None:
+            t["cost"] = max(0, lib.total_usage() - t.pop("cost_start"))
+            print(f"  cost: ~{t['cost']:,} weighted tokens [{t['size']}]")
         touch(t)
         gh_safe(lambda gh: gh.close_task_issue(t, gh.ship_comment(t)))
         print(f"done {t['id']}")

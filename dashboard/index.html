@@ -279,7 +279,7 @@ function render(d) {
     return `<div class="col ${cls}" data-status="${s}"><h3>${label} <span class="n">${ts.length}</span></h3>` +
       ts.map(t => `<div class="task${live ? " draggable" : ""}"${live ? " draggable=\"true\"" : ""} data-id="${esc(t.id)}">
         <div class="t">${esc(t.title)}</div>
-        <div class="m">${esc(t.id)} · ${esc(t.size)} · ${esc(epicsById[t.epic] || t.epic)}</div>
+        <div class="m">${esc(t.id)} · ${esc(t.size)} · ${esc(epicsById[t.epic] || t.epic)}${t.cost ? ` · <b title="measured weighted tokens">${fmt(t.cost)}</b>` : ""}</div>
         ${t.handoff && s !== "done" ? `<div class="h">${esc(t.handoff)}</div>` : ""}
         <div class="links">${issueLink(t)}${commitLink(t)}${t.pr ? `<a class="pr" href="${esc(t.pr)}" target="_blank" rel="noopener">↗ merge request</a>` : ""}</div></div>`).join("") + "</div>";
   }).join("");
@@ -290,7 +290,7 @@ function render(d) {
     return `<div class="card proj">
     ${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener" title="open ${esc(p.title)} live">${img}</a>` : img}
     <div class="t">${esc(p.title)}</div>
-    <div class="st">${esc(p.status)}${upd ? ` · updated ${upd}` : ""}</div>
+    <div class="st">${esc(p.status)}${upd ? ` · updated ${upd}` : ""}${p.cost ? ` · ${fmt(p.cost)} tok` : ""}</div>
     <div class="d">${esc(p.description)}</div>
     ${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">open live ↗</a>` : ""}</div>`;
   }).join("");

@@ -20,6 +20,12 @@ def compose(live=False):
         activity = {"engine_status": "idle", "current_task": None, "current_action": None,
                     "agent": None, "updated": None, "log": []}
 
+    # real token cost per epic = sum of its done tasks' measured costs
+    cost_by_epic = {}
+    for t in backlog["tasks"]:
+        if t.get("cost"):
+            cost_by_epic[t["epic"]] = cost_by_epic.get(t["epic"], 0) + t["cost"]
+
     projects = []
     for e in backlog["epics"]:
         if e["kind"] != "project":
@@ -30,6 +36,7 @@ def compose(live=False):
         built = bool(idx and idx.exists())
         updated = lib.iso(datetime.fromtimestamp(idx.stat().st_mtime, tz=timezone.utc)) if built else None
         projects.append({**e, "built": built, "shot": shot, "updated": updated,
+                         "cost": cost_by_epic.get(e["id"], 0),
                          "url": f"/projects/{slug}/" if built else None})
 
     # Wire each task to the real commit that shipped it (named "<id>: ...").

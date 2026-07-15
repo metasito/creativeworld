@@ -224,6 +224,15 @@ def scan_transcripts(weights, since=None):
     return per_session, earliest
 
 
+def total_usage():
+    """All-time weighted usage across this project's transcripts. Monotonic, so
+    task cost = total_at_done - total_at_claim survives window rolls. With two
+    agents working at once the bystander's tokens bleed in — treat as ceiling."""
+    tokens = load("tokens.json")
+    per_session, _ = scan_transcripts(tokens["config"]["weights"])
+    return round(sum(per_session.values()))
+
+
 def window_end(tokens):
     started = tokens["window"].get("started_at")
     if not started:
