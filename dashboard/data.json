@@ -1,15 +1,17 @@
 {
-  "generated_at": "2026-07-15T09:58:07Z",
+  "generated_at": "2026-07-15T10:01:37Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 3144487,
-    "window_used": 1605828,
-    "rolling_used": 3144487,
+    "used": 3265239,
+    "window_used": 1726580,
+    "rolling_used": 3265239,
     "budget": 4798485,
-    "pct": 65.5,
+    "pct": 68.0,
+    "rate_per_hour": 1758983,
+    "eta_hours": 0.9,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T13:10:14Z",
-    "seconds_to_reset": 11527,
+    "seconds_to_reset": 11317,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -44,7 +46,7 @@
       "kind": "meta",
       "status": "active",
       "description": "The autonomous engine itself: budget tracking, board, boot/wrap-up flow, CI cron. Permanent epic \u2014 always improvable.",
-      "cost": 688529
+      "cost": 768062
     },
     {
       "id": "E2",
@@ -628,7 +630,7 @@
       "claimed_by": "unknown",
       "issue": "20",
       "cost": 185574,
-      "commit": null
+      "commit": "4e1e936"
     },
     {
       "id": "T44",
@@ -669,9 +671,12 @@
       "title": "Engine: board.py brief shows rolling-window burn rate",
       "acceptance": "brief output includes tokens/hour over trailing 5h window and ETA to cap; test_engine.py passes",
       "size": "S",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T09:40:27Z",
+      "updated": "2026-07-15T10:01:29Z",
+      "claimed_by": "unknown",
+      "issue": "21",
+      "cost": 79533,
       "commit": null
     },
     {
@@ -689,7 +694,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T47",
       "T48",
       "T44",
       "T45",
@@ -851,26 +855,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T43",
-    "current_action": "building Clockwork Garden v1",
+    "current_task": "T47",
+    "current_action": "claiming",
     "agent": "autopilot",
-    "updated": "2026-07-15T09:54:36Z",
+    "updated": "2026-07-15T10:01:28Z",
     "log": [
-      {
-        "at": "2026-07-15T04:22:32Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-15T04:22:33Z",
-        "agent": "autopilot",
-        "msg": "REAL usage limit hit \u2014 napping until 2026-07-15T09:22:33Z"
-      },
-      {
-        "at": "2026-07-15T08:44:57Z",
-        "agent": "opus",
-        "msg": "T27 shipped: GitHub issue automation live, 10 issues backfilled, #6 closed by its own machinery"
-      },
       {
         "at": "2026-07-15T09:29:18Z",
         "agent": "opus",
@@ -915,6 +904,21 @@
         "at": "2026-07-15T09:54:36Z",
         "agent": "autopilot",
         "msg": "T43: wrote index.html, verifying in Chromium"
+      },
+      {
+        "at": "2026-07-15T09:58:07Z",
+        "agent": "autopilot",
+        "msg": "T43 done: clockwork garden verified 8/8 bloomed via drive.py"
+      },
+      {
+        "at": "2026-07-15T09:58:41Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T10:01:28Z",
+        "agent": "autopilot",
+        "msg": "T47 verified: burn line in brief, test_engine OK"
       }
     ]
   }

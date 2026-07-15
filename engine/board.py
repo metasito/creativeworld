@@ -156,6 +156,9 @@ def main():
         s = lib.budget_summary(tokens)
         name, _ = lib.verdict(s)
         print(f"budget: {name} {s['pct']}% of {s['budget']} · resets {s['resets_at']}")
+        if s.get("rate_per_hour"):
+            eta = f" · cap in ~{s['eta_hours']}h" if s.get("eta_hours") is not None else " · over cap"
+            print(f"burn: {s['rate_per_hour']:,} tok/h (trailing {tokens['config']['window_hours']}h){eta}")
         changes = gh_safe(lambda gh: gh.pull(b)) or []
         if changes:
             lib.save("backlog.json", b)

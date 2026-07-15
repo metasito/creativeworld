@@ -52,6 +52,7 @@ def main():
               "window": {"started_at": None, "by_session": {"a": 96}}}
         s = lib.budget_summary(tk)
         assert s["pct"] == 96.0 and lib.verdict(s)[0] == "STOP"
+        assert s["rate_per_hour"] is None and s["eta_hours"] is None, "burn rate needs weights"
         s["pct"] = 90.0
         assert lib.verdict(s)[0] == "WRAP_UP"
         s["pct"] = 50.0

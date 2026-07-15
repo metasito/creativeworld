@@ -309,14 +309,19 @@ def budget_summary(tokens):
     cfg = tokens["config"]
     win_used = round(sum(tokens["window"].get("by_session", {}).values()))
     used, roll_used, roll_end = win_used, None, None
+    rate, eta_h = None, None
     if cfg.get("weights"):  # rolling needs transcript access (tests may omit it)
         span_start = now() - timedelta(hours=cfg["window_hours"])
         per, _, first_in = scan_transcripts(cfg["weights"], since=span_start)
         roll_used = round(sum(per.values()))
         if first_in:
             roll_end = first_in + timedelta(hours=cfg["window_hours"])
+            hours = max((now() - first_in).total_seconds() / 3600.0, 0.1)
+            rate = round(roll_used / hours)
         used = max(win_used, roll_used)
     budget = cfg["budget_per_window"]
+    if rate and used < budget:
+        eta_h = round((budget - used) / rate, 1)
     pct = 100.0 * used / budget if budget else 0.0
     end = window_end(tokens)
     # nap target follows whichever measure is binding
@@ -328,6 +333,8 @@ def budget_summary(tokens):
         "rolling_used": roll_used,
         "budget": budget,
         "pct": round(pct, 1),
+        "rate_per_hour": rate,
+        "eta_hours": eta_h,
         "window_started_at": tokens["window"].get("started_at"),
         "resets_at": iso(end) if end else None,
         "seconds_to_reset": max(0, int((end - now()).total_seconds())) if end else None,
