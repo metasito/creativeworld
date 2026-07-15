@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-15T10:01:37Z",
+  "generated_at": "2026-07-15T10:09:41Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 3265239,
-    "window_used": 1726580,
-    "rolling_used": 3265239,
+    "used": 3482954,
+    "window_used": 1944295,
+    "rolling_used": 3482954,
     "budget": 4798485,
-    "pct": 68.0,
-    "rate_per_hour": 1758983,
-    "eta_hours": 0.9,
+    "pct": 72.6,
+    "rate_per_hour": 1749510,
+    "eta_hours": 0.8,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T13:10:14Z",
-    "seconds_to_reset": 11317,
+    "seconds_to_reset": 10833,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -54,7 +54,7 @@
       "kind": "meta",
       "status": "active",
       "description": "The realtime PM dashboard. Permanent epic \u2014 always improvable.",
-      "cost": 120158
+      "cost": 263044
     },
     {
       "id": "E3",
@@ -136,6 +136,24 @@
       "description": "A steampunk generative garden: brass gear-flowers bloom along spiral stems on hover, each procedurally unique, ticking like watch movements",
       "slug": "clockwork-garden",
       "cost": 185574
+    },
+    {
+      "id": "E12",
+      "title": "Sandfall Cathedral",
+      "kind": "project",
+      "status": "planned",
+      "description": "Falling-sand physics automaton that gradually builds a glowing stained-glass cathedral window",
+      "slug": "sandfall-cathedral",
+      "cost": 0
+    },
+    {
+      "id": "E13",
+      "title": "Abyss Lantern",
+      "kind": "project",
+      "status": "planned",
+      "description": "Deep-sea bioluminescence scene: anglerfish lantern follows cursor, luring glowing creature swarms out of the dark",
+      "slug": "abyss-lantern",
+      "cost": 0
     }
   ],
   "tasks": [
@@ -677,7 +695,7 @@
       "claimed_by": "unknown",
       "issue": "21",
       "cost": 79533,
-      "commit": null
+      "commit": "20926af"
     },
     {
       "id": "T48",
@@ -685,19 +703,79 @@
       "title": "Dashboard: epic gallery shows shot.png thumbnails",
       "acceptance": "dashboard lists shipped project epics with their shot.png thumbnail linking to the project page; verified by screenshot",
       "size": "S",
+      "status": "done",
+      "handoff": "",
+      "updated": "2026-07-15T10:09:36Z",
+      "claimed_by": "unknown",
+      "issue": "22",
+      "cost": 142886,
+      "commit": null
+    },
+    {
+      "id": "T49",
+      "epic": "E12",
+      "title": "Sandfall Cathedral v1",
+      "acceptance": "projects/sandfall-cathedral/index.html: falling-sand cellular automaton on canvas; sand streams in stained-glass palette pour and pile to form a rose-window cathedral silhouette (mask emerges as sand settles); click spawns new pour, ?seed= deterministic, ?demo=1 auto-pours and mirrors progress into document.title; screenshot shot.png shows recognizable glowing window",
+      "size": "M",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T09:40:27Z",
+      "updated": "2026-07-15T10:03:44Z",
+      "commit": null
+    },
+    {
+      "id": "T50",
+      "epic": "E12",
+      "title": "Sandfall Cathedral polish: light rays + bell toll",
+      "acceptance": "volumetric light shafts through completed glass sections; subtle chime + screen shimmer when a section completes; still single-file, demo mode covers it",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-15T10:03:37Z",
+      "commit": null
+    },
+    {
+      "id": "T51",
+      "epic": "E13",
+      "title": "Abyss Lantern v1",
+      "acceptance": "projects/abyss-lantern/index.html: pitch-black deep sea; cursor is an anglerfish lure emitting light halo; bioluminescent creatures (jellies, eels, plankton trails) drift toward light with flocking, scatter on click; ?demo=1 moves lure on a path with state in document.title, ?seed= deterministic; shot.png shows glowing swarm around lure",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T10:03:44Z",
+      "commit": null
+    },
+    {
+      "id": "T52",
+      "epic": "E13",
+      "title": "Abyss Lantern polish: predator event + depth parallax",
+      "acceptance": "occasional leviathan silhouette sweep scatters creatures; 3-layer parallax marine snow; demo mode triggers one sweep",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-15T10:03:37Z",
+      "commit": null
+    },
+    {
+      "id": "T53",
+      "epic": "E1",
+      "title": "Engine: test_engine.py covers brief burn-rate + queue-thin warning",
+      "acceptance": "test_engine.py exercises board.py brief output paths (burn rate line, thin-queue WARN, resume line) with a temp state dir; exit 0; run passes locally",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T10:03:44Z",
       "commit": null
     }
   ],
   "queue": {
     "in_progress": null,
     "next": [
-      "T48",
       "T44",
       "T45",
-      "T46"
+      "T46",
+      "T49",
+      "T51",
+      "T53"
     ],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
   },
@@ -818,6 +896,32 @@
       "updated": "2026-07-15T09:57:06Z",
       "cost": 185574,
       "url": "/projects/clockwork-garden/"
+    },
+    {
+      "id": "E12",
+      "title": "Sandfall Cathedral",
+      "kind": "project",
+      "status": "planned",
+      "description": "Falling-sand physics automaton that gradually builds a glowing stained-glass cathedral window",
+      "slug": "sandfall-cathedral",
+      "built": false,
+      "shot": false,
+      "updated": null,
+      "cost": 0,
+      "url": null
+    },
+    {
+      "id": "E13",
+      "title": "Abyss Lantern",
+      "kind": "project",
+      "status": "planned",
+      "description": "Deep-sea bioluminescence scene: anglerfish lantern follows cursor, luring glowing creature swarms out of the dark",
+      "slug": "abyss-lantern",
+      "built": false,
+      "shot": false,
+      "updated": null,
+      "cost": 0,
+      "url": null
     }
   ],
   "sessions": [
@@ -855,21 +959,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T47",
-    "current_action": "claiming",
+    "current_task": "T48",
+    "current_action": "dashboard epic gallery thumbnails",
     "agent": "autopilot",
-    "updated": "2026-07-15T10:01:28Z",
+    "updated": "2026-07-15T10:09:02Z",
     "log": [
-      {
-        "at": "2026-07-15T09:29:18Z",
-        "agent": "opus",
-        "msg": "T34 verification ping"
-      },
-      {
-        "at": "2026-07-15T09:39:08Z",
-        "agent": "opus",
-        "msg": "user paused session mid-pm: E9-E11 epics added, not yet sliced/committed"
-      },
       {
         "at": "2026-07-15T09:42:26Z",
         "agent": "autopilot",
@@ -919,6 +1013,16 @@
         "at": "2026-07-15T10:01:28Z",
         "agent": "autopilot",
         "msg": "T47 verified: burn line in brief, test_engine OK"
+      },
+      {
+        "at": "2026-07-15T10:02:18Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T10:09:02Z",
+        "agent": "autopilot",
+        "msg": "T48: gallery verified via screenshot - all 9 shipped epics show shot.png thumbs linking live; added lazy-loading"
       }
     ]
   }

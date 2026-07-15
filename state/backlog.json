@@ -605,9 +605,12 @@
       "title": "Dashboard: epic gallery shows shot.png thumbnails",
       "acceptance": "dashboard lists shipped project epics with their shot.png thumbnail linking to the project page; verified by screenshot",
       "size": "S",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T09:40:27Z"
+      "updated": "2026-07-15T10:09:36Z",
+      "claimed_by": "unknown",
+      "issue": "22",
+      "cost": 142886
     },
     {
       "id": "T49",
