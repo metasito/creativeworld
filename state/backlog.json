@@ -337,10 +337,90 @@
       "status": "backlog",
       "handoff": "",
       "updated": "2026-07-14T23:42:46Z"
+    },
+    {
+      "id": "T28",
+      "epic": "E2",
+      "title": "Dashboard: render budget history bars (used vs budget per past window, limit-hits marked red)",
+      "acceptance": "dashboard/index.html renders budget.history (already in data.json) as a small bar strip under the gauge; limit-hit windows visually flagged; auto-raised budget visible; verified with screenshot",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T08:31:09Z"
+    },
+    {
+      "id": "T29",
+      "epic": "E2",
+      "title": "Dashboard: escape HTML in all injected strings",
+      "acceptance": "titles, handoffs, acceptance, log msgs, learnings pass through an esc() helper before innerHTML; a task titled '<img src=x onerror=alert(1)>' renders as text; board still renders correctly",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T08:31:09Z"
+    },
+    {
+      "id": "T30",
+      "epic": "E2",
+      "title": "Dashboard: live tab title + favicon with budget % and verdict",
+      "acceptance": "document.title shows e.g. '38% CONTINUE - CreativeWorld'; canvas-drawn favicon dot green/amber/red by verdict; updates each poll",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T08:31:09Z"
+    },
+    {
+      "id": "T31",
+      "epic": "E2",
+      "title": "Dashboard: fix false IDLE when agent is quietly working",
+      "acceptance": "when a task is in_progress and heartbeat is stale, panel shows 'working - quiet Xm' (amber) instead of 'IDLE (no agent)'; true idle unchanged",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T08:31:10Z"
+    },
+    {
+      "id": "T32",
+      "epic": "E1",
+      "title": "Per-task token cost attribution",
+      "acceptance": "board.py claim/done snapshot window usage into the task (cost_start/cost); done tasks store real weighted cost; data.json exposes it; board cards + project gallery show cost; learnings sizing (S/M/L) can be checked against reals",
+      "size": "M",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-15T08:12:53Z"
+    },
+    {
+      "id": "T33",
+      "epic": "E1",
+      "title": "Multi-agent safety: atomic state writes + claimed_by",
+      "acceptance": "lib.save writes tmp+os.replace with a lockfile retry; claim stamps claimed_by/agent; second claim by another agent refuses; observed race (2 agents editing same project) can no longer corrupt state json",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T08:31:10Z"
+    },
+    {
+      "id": "T34",
+      "epic": "E1",
+      "title": "heartbeat.py robustness: usage on bad args + trim log",
+      "acceptance": "heartbeat.py status with no arg prints usage instead of traceback; log kept to last 100 entries; heartbeat.py show still works",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-15T08:12:53Z"
+    },
+    {
+      "id": "T35",
+      "epic": "E1",
+      "title": "Engine smoke test",
+      "acceptance": "python engine/test_engine.py runs add-epic/add/claim/done/sync on a temp STATE dir + budget math sanity; exits 0; documented in CLAUDE.md work loop as pre-commit check for engine changes",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-15T08:12:53Z"
     }
   ],
   "next_ids": {
     "epic": 9,
-    "task": 28
+    "task": 36
   }
 }
