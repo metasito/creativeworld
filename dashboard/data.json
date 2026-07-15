@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-15T10:09:41Z",
+  "generated_at": "2026-07-15T10:15:18Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 3482954,
-    "window_used": 1944295,
-    "rolling_used": 3482954,
+    "used": 3676714,
+    "window_used": 2138055,
+    "rolling_used": 3676714,
     "budget": 4798485,
-    "pct": 72.6,
-    "rate_per_hour": 1749510,
-    "eta_hours": 0.8,
+    "pct": 76.6,
+    "rate_per_hour": 1763919,
+    "eta_hours": 0.6,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T13:10:14Z",
-    "seconds_to_reset": 10833,
+    "seconds_to_reset": 10496,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -117,7 +117,7 @@
       "status": "shipped",
       "description": "A murmuration of thousands of origami birds swirling over a gradient dusk sky; the flock follows and dodges the cursor, folding/unfolding mid-flight",
       "slug": "paper-storm",
-      "cost": 133534
+      "cost": 275686
     },
     {
       "id": "E10",
@@ -656,9 +656,12 @@
       "title": "Paper Storm polish: dive-bomb + wind gusts",
       "acceptance": "predator-dive interaction on click scatters flock; periodic wind gust waves ripple through murmuration; still 60fps; updated shot.png",
       "size": "S",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T09:40:27Z",
+      "updated": "2026-07-15T10:15:09Z",
+      "claimed_by": "unknown",
+      "issue": "23",
+      "cost": 142152,
       "commit": null
     },
     {
@@ -709,7 +712,7 @@
       "claimed_by": "unknown",
       "issue": "22",
       "cost": 142886,
-      "commit": null
+      "commit": "692d6ac"
     },
     {
       "id": "T49",
@@ -770,7 +773,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T44",
       "T45",
       "T46",
       "T49",
@@ -867,8 +869,8 @@
       "slug": "paper-storm",
       "built": true,
       "shot": true,
-      "updated": "2026-07-15T09:42:19Z",
-      "cost": 133534,
+      "updated": "2026-07-15T10:13:07Z",
+      "cost": 275686,
       "url": "/projects/paper-storm/"
     },
     {
@@ -959,26 +961,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T48",
-    "current_action": "dashboard epic gallery thumbnails",
+    "current_task": "T44",
+    "current_action": "Paper Storm polish: dive-bomb + wind gusts",
     "agent": "autopilot",
-    "updated": "2026-07-15T10:09:02Z",
+    "updated": "2026-07-15T10:13:12Z",
     "log": [
-      {
-        "at": "2026-07-15T09:42:26Z",
-        "agent": "autopilot",
-        "msg": "paper-storm index.html written, verifying with drive.py"
-      },
-      {
-        "at": "2026-07-15T09:45:31Z",
-        "agent": "autopilot",
-        "msg": "preview.png looks striking; waiting on chromedriver download for real-time verify"
-      },
-      {
-        "at": "2026-07-15T09:47:32Z",
-        "agent": "autopilot",
-        "msg": "T41 shipped, committed, pushed (chromedriver kept local, gitignored)"
-      },
       {
         "at": "2026-07-15T09:47:50Z",
         "agent": "autopilot",
@@ -1023,6 +1010,21 @@
         "at": "2026-07-15T10:09:02Z",
         "agent": "autopilot",
         "msg": "T48: gallery verified via screenshot - all 9 shipped epics show shot.png thumbs linking live; added lazy-loading"
+      },
+      {
+        "at": "2026-07-15T10:10:04Z",
+        "agent": "autopilot",
+        "msg": "T48 done: gallery verified, lazy-load shipped, pushed"
+      },
+      {
+        "at": "2026-07-15T10:10:20Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T10:13:12Z",
+        "agent": "autopilot",
+        "msg": "T44: dive-bomb + gust code in; verifying with drive.py"
       }
     ]
   }

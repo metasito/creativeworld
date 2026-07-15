@@ -21,7 +21,7 @@
 <body>
 <canvas id="c"></canvas>
 <div id="title">PAPER STORM<small>origami murmuration</small></div>
-<div id="hint">move to lead the flock &middot; hold near them to scatter</div>
+<div id="hint">move to lead the flock &middot; click to send a hawk diving</div>
 <script>
 'use strict';
 const Q = new URLSearchParams(location.search);
@@ -81,6 +81,23 @@ let mx = -9999, my = -9999, live = false;
 addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; live = true; });
 addEventListener('pointerleave', () => { live = false; });
 
+// ---- predator: click sends a hawk diving through that point ----
+const pred = { on: false, x: 0, y: 0, vx: 0, vy: 0 };
+let dives = 0, nextDive = 5;
+function dive(tx, ty) {
+  pred.x = tx > W / 2 ? -90 : W + 90;
+  pred.y = -70;
+  const dx = tx - pred.x, dy = ty - pred.y, d = Math.hypot(dx, dy) || 1;
+  pred.vx = dx / d * 13; pred.vy = dy / d * 13;
+  pred.on = true; dives++;
+}
+addEventListener('pointerdown', e => dive(e.clientX, e.clientY));
+
+// ---- wind gusts: a front that sweeps across and ripples the flock ----
+let gustX = -1e4, gustDir = 1, gusts = 0, nextGust = 3;
+const GUSTW = 150;
+function gustOn() { return gustX > -300 && gustX < W + 300; }
+
 // ---- sky ----
 let sky = null, stars = null;
 function drawSky() {
@@ -119,7 +136,15 @@ function step(t) {
   buildGrid();
   const cw = 1 / CELL;
   const mActive = live || DEMO;
+  // advance predator + gust front
+  if (pred.on) {
+    pred.x += pred.vx; pred.y += pred.vy;
+    if (pred.x < -140 || pred.x > W + 140 || pred.y > H + 140) pred.on = false;
+  }
+  const gust = gustOn();
+  if (gust) gustX += gustDir * 9;
   for (let i = 0; i < N; i++) {
+    let panic = false;
     const x = px[i], y = py[i];
     let ax = 0, ay = 0, cxs = 0, cys = 0, avx = 0, avy = 0, n = 0, sx = 0, sy = 0;
     const c0x = Math.max(0, ((x * cw) | 0) - 1), c1x = Math.min(gw - 1, ((x * cw) | 0) + 1);
@@ -153,6 +178,24 @@ function step(t) {
         ax += dx * f; ay += dy * f;
       }
     }
+    // predator: flee hard, panic speed
+    if (pred.on) {
+      const dx = x - pred.x, dy = y - pred.y, d2 = dx * dx + dy * dy;
+      if (d2 < 180 * 180 && d2 > 1) {
+        const d = Math.sqrt(d2), f = 5 * (1 - d / 180) / d;
+        ax += dx * f; ay += dy * f; panic = true;
+      }
+    }
+    // wind gust: push along the moving front, ripple the flap
+    if (gust) {
+      const dxf = x - gustX;
+      if (dxf > -GUSTW && dxf < GUSTW) {
+        const k = 1 - Math.abs(dxf) / GUSTW;
+        ax += gustDir * 0.5 * k;
+        ay += Math.sin(y * 0.02 + t * 0.004) * 0.14 * k;
+        ph[i] += 0.15 * k;
+      }
+    }
     // soft walls
     const M = 60;
     if (x < M) ax += (M - x) * 0.004; else if (x > W - M) ax -= (x - W + M) * 0.004;
@@ -160,7 +203,8 @@ function step(t) {
 
     let nvx = vx[i] + ax, nvy = vy[i] + ay;
     const sp2 = nvx * nvx + nvy * nvy;
-    if (sp2 > MAXS * MAXS) { const k = MAXS / Math.sqrt(sp2); nvx *= k; nvy *= k; }
+    const cap = panic ? 5.6 : MAXS;
+    if (sp2 > cap * cap) { const k = cap / Math.sqrt(sp2); nvx *= k; nvy *= k; }
     else if (sp2 < MINS * MINS) { const k = MINS / Math.sqrt(sp2 || 1); nvx *= k; nvy *= k; }
     vx[i] = nvx; vy[i] = nvy;
     px[i] = x + nvx; py[i] = y + nvy;
@@ -171,6 +215,17 @@ function step(t) {
 
 function draw() {
   drawSky();
+  // gust front: faint slanted streak lines riding the wave
+  if (gustOn()) {
+    cx.strokeStyle = 'rgba(255,240,220,.16)'; cx.lineWidth = 1.5;
+    cx.beginPath();
+    for (let j = 0; j < 7; j++) {
+      const yy = H * (0.08 + j * 0.13), xx = gustX + Math.sin(j * 2.1) * 40;
+      cx.moveTo(xx - gustDir * 55, yy + 12);
+      cx.quadraticCurveTo(xx, yy - 8, xx + gustDir * 55, yy + 4);
+    }
+    cx.stroke();
+  }
   for (let i = 0; i < N; i++) {
     const x = px[i], y = py[i];
     const vX = vx[i], vY = vy[i];
@@ -197,6 +252,20 @@ function draw() {
     cx.lineTo(bx - dx * 2, by - dy * 2);
     cx.fill();
   }
+  // hawk: big dark dart with swept wings
+  if (pred.on) {
+    const d = Math.hypot(pred.vx, pred.vy) || 1;
+    const dx = pred.vx / d, dy = pred.vy / d, nx = -dy, ny = dx;
+    cx.fillStyle = '#241028';
+    cx.beginPath();
+    cx.moveTo(pred.x + dx * 18, pred.y + dy * 18);
+    cx.lineTo(pred.x - dx * 12 + nx * 14, pred.y - dy * 12 + ny * 14);
+    cx.lineTo(pred.x - dx * 5, pred.y - dy * 5);
+    cx.lineTo(pred.x - dx * 12 - nx * 14, pred.y - dy * 12 - ny * 14);
+    cx.fill();
+    cx.fillStyle = 'rgba(36,16,40,.35)';
+    cx.beginPath(); cx.arc(pred.x - dx * 24, pred.y - dy * 24, 6, 0, 6.2832); cx.fill();
+  }
   // cursor beacon in demo so screenshots show the leader point
   if (DEMO) {
     cx.beginPath(); cx.arc(mx, my, 5, 0, 6.2832);
@@ -211,6 +280,12 @@ function loop(t) {
   if (DEMO) { // virtual cursor: slow lissajous sweep
     mx = W * (0.5 + 0.38 * Math.sin(el * 0.55));
     my = H * (0.45 + 0.3 * Math.sin(el * 0.83 + 1.7));
+    if (el > nextDive) { dive(W * (0.3 + rnd() * 0.4), H * (0.3 + rnd() * 0.4)); nextDive = el + 6; }
+  }
+  if (el > nextGust) {
+    gustDir = rnd() < 0.5 ? -1 : 1;
+    gustX = gustDir > 0 ? -200 : W + 200;
+    gusts++; nextGust = el + 9 + rnd() * 5;
   }
   step(t);
   draw();
@@ -221,7 +296,7 @@ function loop(t) {
       // mirror live state for headless assertions
       let mvx = 0, mvy = 0;
       for (let i = 0; i < N; i += 50) { mvx += vx[i]; mvy += vy[i]; }
-      document.title = `PaperStorm demo birds=${N} fps=${fps} t=${el.toFixed(1)} flow=${(mvx * mvx + mvy * mvy).toFixed(0)}`;
+      document.title = `PaperStorm demo birds=${N} fps=${fps} t=${el.toFixed(1)} flow=${(mvx * mvx + mvy * mvy).toFixed(0)} dives=${dives} gusts=${gusts}`;
     }
   }
 }
