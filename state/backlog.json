@@ -58,7 +58,7 @@
       "id": "E8",
       "title": "CRT Terminal OS",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "A bootable fake retro OS with a working command prompt, scanlines, and hidden mini-commands",
       "slug": "crt-os"
     }
@@ -271,9 +271,9 @@
       "title": "CRT terminal OS v1",
       "acceptance": "projects/crt-os/index.html: fake boot sequence then interactive prompt with help/ls/clear + one hidden mini-command; CRT scanline/glow aesthetic; single file; screenshot saved.",
       "size": "M",
-      "status": "in_progress",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-14T23:45:04Z"
+      "updated": "2026-07-15T04:17:19Z"
     },
     {
       "id": "T22",

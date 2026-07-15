@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-15T00:00:29Z",
+  "generated_at": "2026-07-15T04:17:19Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2123376,
+    "used": 236860,
     "budget": 4670000,
-    "pct": 45.5,
-    "window_started_at": "2026-07-14T23:10:00Z",
-    "resets_at": "2026-07-15T04:10:00Z",
-    "seconds_to_reset": 14970,
+    "pct": 5.1,
+    "window_started_at": "2026-07-15T04:10:00Z",
+    "resets_at": "2026-07-15T09:10:00Z",
+    "seconds_to_reset": 17560,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -20,6 +20,11 @@
       {
         "started_at": "2026-07-14T18:10:00Z",
         "used": 3524406,
+        "budget": 4670000
+      },
+      {
+        "started_at": "2026-07-14T23:10:00Z",
+        "used": 2157643,
         "budget": 4670000
       }
     ]
@@ -83,7 +88,7 @@
       "id": "E8",
       "title": "CRT Terminal OS",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "A bootable fake retro OS with a working command prompt, scanlines, and hidden mini-commands",
       "slug": "crt-os"
     }
@@ -308,7 +313,7 @@
       "status": "done",
       "handoff": "",
       "updated": "2026-07-15T00:00:29Z",
-      "commit": null
+      "commit": "84edd4a"
     },
     {
       "id": "T21",
@@ -316,9 +321,9 @@
       "title": "CRT terminal OS v1",
       "acceptance": "projects/crt-os/index.html: fake boot sequence then interactive prompt with help/ls/clear + one hidden mini-command; CRT scanline/glow aesthetic; single file; screenshot saved.",
       "size": "M",
-      "status": "in_progress",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-14T23:45:04Z",
+      "updated": "2026-07-15T04:17:19Z",
       "commit": null
     },
     {
@@ -392,7 +397,7 @@
     }
   ],
   "queue": {
-    "in_progress": "T21",
+    "in_progress": null,
     "next": [
       "T25",
       "T12",
@@ -462,12 +467,12 @@
       "id": "E8",
       "title": "CRT Terminal OS",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "A bootable fake retro OS with a working command prompt, scanlines, and hidden mini-commands",
       "slug": "crt-os",
-      "built": false,
-      "shot": false,
-      "url": null
+      "built": true,
+      "shot": true,
+      "url": "/projects/crt-os/"
     }
   ],
   "sessions": [
@@ -502,70 +507,70 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T20",
-    "current_action": "presets + mobile for gravity well",
+    "current_task": "T21",
+    "current_action": "building CRT terminal OS",
     "agent": "autopilot",
-    "updated": "2026-07-15T00:00:21Z",
+    "updated": "2026-07-15T04:12:33Z",
     "log": [
       {
-        "at": "2026-07-14T23:31:33Z",
+        "at": "2026-07-15T03:58:20Z",
         "agent": "autopilot",
-        "msg": "T24 recovery: verifying GitHub traceability before committing prior session's work"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-14T23:38:01Z",
-        "agent": "autopilot",
-        "msg": "T26: wired tasks to real commit URLs; verifying in Chromium"
-      },
-      {
-        "at": "2026-07-14T23:43:27Z",
-        "agent": "autopilot",
-        "msg": "T26 done: real commit-link traceability shipped; T27 filed for gh-API automation"
-      },
-      {
-        "at": "2026-07-14T23:47:51Z",
-        "agent": "autopilot",
-        "msg": "built liquid-chrome index.html, verifying"
-      },
-      {
-        "at": "2026-07-14T23:49:33Z",
-        "agent": "opus",
-        "msg": "liquid-chrome verified, screenshot accepted"
-      },
-      {
-        "at": "2026-07-14T23:50:15Z",
-        "agent": "opus",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-14T23:51:40Z",
-        "agent": "autopilot",
-        "msg": "T18: tint+touch coded, verifying in Chromium"
-      },
-      {
-        "at": "2026-07-14T23:52:29Z",
+        "at": "2026-07-15T04:00:33Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-14T23:54:05Z",
+        "at": "2026-07-15T04:00:33Z",
         "agent": "autopilot",
-        "msg": "T19 built + verified 60fps, checkpointing"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-14T23:55:01Z",
+        "at": "2026-07-15T04:02:35Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-14T23:56:47Z",
+        "at": "2026-07-15T04:02:35Z",
         "agent": "autopilot",
-        "msg": "T20: presets + trail slider + mobile CSS built; verifying in Chromium"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-15T00:00:21Z",
+        "at": "2026-07-15T04:04:38Z",
         "agent": "autopilot",
-        "msg": "T20 verified: binary + solar presets orbit stably, mobile 390px layout OK"
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T04:04:38Z",
+        "agent": "autopilot",
+        "msg": "agent error rc=1 \u2014 120s backoff"
+      },
+      {
+        "at": "2026-07-15T04:06:41Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T04:06:41Z",
+        "agent": "autopilot",
+        "msg": "agent error rc=1 \u2014 120s backoff"
+      },
+      {
+        "at": "2026-07-15T04:08:49Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T04:08:49Z",
+        "agent": "autopilot",
+        "msg": "agent error rc=1 \u2014 120s backoff"
+      },
+      {
+        "at": "2026-07-15T04:12:33Z",
+        "agent": "autopilot",
+        "msg": "crt-os index.html written, verifying"
       }
     ]
   }

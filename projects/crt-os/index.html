@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRT-OS</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; background:#0a0a08; overflow:hidden; }
+  body { display:flex; align-items:center; justify-content:center; font-family:'Courier New',Courier,monospace; }
+
+  .bezel {
+    width:min(96vw,1100px); height:min(94vh,780px);
+    background:#1c1a17; border-radius:28px; padding:22px;
+    box-shadow: inset 0 2px 8px rgba(255,255,255,.06), 0 30px 80px rgba(0,0,0,.9);
+  }
+  .screen {
+    position:relative; width:100%; height:100%;
+    background: radial-gradient(ellipse at center, #0d1f0d 0%, #050f05 75%, #020802 100%);
+    border-radius:18px / 26px; overflow:hidden;
+    box-shadow: inset 0 0 90px rgba(0,0,0,.85), inset 0 0 12px rgba(51,255,102,.12);
+  }
+  /* scanlines */
+  .screen::before {
+    content:''; position:absolute; inset:0; z-index:4; pointer-events:none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0px, rgba(0,0,0,.28) 1px, transparent 2px, transparent 4px);
+  }
+  /* vignette + rgb fringe */
+  .screen::after {
+    content:''; position:absolute; inset:0; z-index:5; pointer-events:none;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%);
+  }
+  .flicker {
+    position:absolute; inset:0; z-index:3; pointer-events:none;
+    background:rgba(140,255,170,.03); opacity:0; animation:flick 4s infinite steps(1);
+  }
+  @keyframes flick {
+    0%,93%,100% { opacity:0; }
+    94% { opacity:1; } 95% { opacity:0; } 96.5% { opacity:.8; } 97% { opacity:0; }
+  }
+  .glowband {
+    position:absolute; left:0; right:0; height:140px; z-index:2; pointer-events:none;
+    background:linear-gradient(180deg, transparent, rgba(120,255,160,.045), transparent);
+    animation:sweep 7s linear infinite;
+  }
+  @keyframes sweep { from { top:-160px; } to { top:110%; } }
+
+  #term {
+    position:absolute; inset:0; z-index:1; padding:26px 30px;
+    color:#41ff77; font-size:16px; line-height:1.45;
+    text-shadow: 0 0 6px rgba(65,255,119,.75), 0 0 18px rgba(65,255,119,.28);
+    white-space:pre-wrap; word-break:break-word; overflow-y:auto;
+  }
+  #term::-webkit-scrollbar { width:0; }
+  .dim   { color:#1e8c44; text-shadow:0 0 5px rgba(30,140,68,.6); }
+  .amber { color:#ffb347; text-shadow:0 0 7px rgba(255,179,71,.7); }
+  .err   { color:#ff5f56; text-shadow:0 0 7px rgba(255,95,86,.7); }
+  .cursor {
+    display:inline-block; width:9px; height:1.1em; vertical-align:text-bottom;
+    background:#41ff77; box-shadow:0 0 8px rgba(65,255,119,.9);
+    animation:blink 1.05s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity:0; } }
+
+  .hint {
+    position:absolute; right:16px; bottom:12px; z-index:6; pointer-events:none;
+    color:rgba(65,255,119,.4); font-size:11px; letter-spacing:.14em;
+    font-family:'Courier New',monospace; text-transform:uppercase;
+  }
+  @media (max-width:520px) {
+    .bezel { width:100vw; height:100vh; border-radius:0; padding:10px; }
+    #term { font-size:11px; padding:16px 12px; }
+    .hint { font-size:9px; }
+  }
+</style>
+</head>
+<body>
+<div class="bezel"><div class="screen">
+  <div id="term"></div>
+  <div class="glowband"></div>
+  <div class="flicker"></div>
+  <div class="hint">CRT-OS · type help</div>
+</div></div>
+<input id="kb" style="position:absolute;opacity:0;left:-999px" autocomplete="off">
+<script>
+(function(){
+  const term = document.getElementById('term');
+  const kb = document.getElementById('kb');
+  const DEMO = /[?&]demo=1/.test(location.search);
+  let booted = false, buf = '', history = [], hIdx = -1;
+  let lines = []; // committed output lines (html strings)
+
+  const FILES = {
+    'readme.txt':  'CRT-OS v1.3 — a terminal that never shipped.\nBuilt 1987, booted 2026. Everything is fine.',
+    'todo.txt':    '[x] invent OS\n[ ] invent users\n[ ] fix Y2K (someday)',
+    'secrets.dat': 'ACCESS DENIED — encrypted with ROT26.',
+    'poem.txt':    'phosphor ghosts on curved glass,\nevery keystroke glows, then fades —\nthe cursor waits, patient.'
+  };
+
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function render(showPrompt){
+    let html = lines.join('\n');
+    if (showPrompt) html += (html?'\n':'') + promptHtml() + esc(buf) + '<span class="cursor"></span>';
+    term.innerHTML = html;
+    term.scrollTop = term.scrollHeight;
+  }
+  function promptHtml(){ return '<span class="amber">guest@crt-os</span><span class="dim">:~$ </span>'; }
+  function print(s, cls){
+    s.split('\n').forEach(l => lines.push(cls ? '<span class="'+cls+'">'+esc(l)+'</span>' : esc(l)));
+  }
+  function printHtml(h){ lines.push(h); }
+
+  // ---- boot sequence ----
+  const BOOT = [
+    ['CRT-OS BIOS v1.3 (c) 1987 Phosphor Systems', 90, 'dim'],
+    ['MEM CHECK: 640K OK ... should be enough for anybody', 220, 'dim'],
+    ['DETECTING DRIVES: fd0 hd0 crt0', 160, 'dim'],
+    ['LOADING KERNEL ████████████████ OK', 380, ''],
+    ['MOUNTING /home/guest ... OK', 180, ''],
+    ['STARTING PHOSPHOR DAEMON ... OK', 180, ''],
+    ['', 120, ''],
+    ['  ██████ ██████  ████████        ██████  ███████', 40, 'amber'],
+    [' ██      ██   ██    ██          ██    ██ ██     ', 40, 'amber'],
+    [' ██      ██████     ██    █████ ██    ██ ███████', 40, 'amber'],
+    [' ██      ██   ██    ██          ██    ██      ██', 40, 'amber'],
+    ['  ██████ ██   ██    ██           ██████  ███████', 40, 'amber'],
+    ['', 100, ''],
+    ['Welcome, guest. Type "help" to begin.', 200, ''],
+  ];
+  let bi = 0;
+  function bootStep(){
+    if (bi >= BOOT.length){
+      booted = true;
+      document.title = 'CRT-OS ready';
+      render(true); focusKb();
+      if (DEMO) runDemo();
+      return;
+    }
+    const [txt, delay, cls] = BOOT[bi++];
+    print(txt, cls);
+    render(false);
+    setTimeout(bootStep, DEMO ? 25 : delay);
+  }
+
+  // ---- commands ----
+  let matrixTimer = null;
+  const CMDS = {
+    help(){
+      print('AVAILABLE COMMANDS:', 'amber');
+      print('  help          this list\n  ls            list files\n  cat <file>    read a file\n  clear         wipe the screen\n  date          system clock\n  whoami        identity check\n  reboot        start over');
+      print('  ...one command is not on this list.', 'dim');
+    },
+    ls(){
+      printHtml(Object.keys(FILES).map(f=>'<span class="amber">'+f+'</span>').join('   '));
+    },
+    cat(arg){
+      if (!arg) return print('usage: cat <file>', 'err');
+      if (FILES[arg]) print(FILES[arg]);
+      else print('cat: '+arg+': no such file', 'err');
+    },
+    clear(){ lines = []; },
+    date(){ print(new Date().toString()); },
+    whoami(){ print('guest — but the CRT remembers everyone.', 'dim'); },
+    reboot(){
+      lines = []; booted = false; bi = 0; document.title='CRT-OS';
+      render(false); setTimeout(bootStep, 300);
+      return 'async';
+    },
+    matrix(){ // hidden mini-command
+      print('WAKE UP... FOLLOW THE GREEN GLOW.', 'amber');
+      let n = 0;
+      matrixTimer = setInterval(()=>{
+        let row = '';
+        for (let i=0;i<48;i++) row += Math.random()<.5 ? String.fromCharCode(0x30A0+Math.random()*96|0) : (Math.random()*10|0);
+        print(row, Math.random()<.3 ? '' : 'dim');
+        if (lines.length > 200) lines.splice(0, lines.length-200);
+        render(true);
+        if (++n >= 24){ clearInterval(matrixTimer); matrixTimer=null; print('...the CRT-OS has you.', 'amber'); render(true); }
+      }, 70);
+      return 'async';
+    }
+  };
+
+  function exec(raw){
+    const line = raw.trim();
+    printHtml(promptHtml() + esc(raw));
+    if (line){
+      history.push(line); hIdx = history.length;
+      const [cmd, ...rest] = line.split(/\s+/);
+      const fn = CMDS[cmd.toLowerCase()];
+      if (fn){ if (fn(rest.join(' ')) === 'async') return; }
+      else print(cmd + ': command not found (try "help")', 'err');
+      document.title = 'CRT-OS ran:' + cmd.toLowerCase();
+    }
+    render(true);
+  }
+
+  // ---- input ----
+  function focusKb(){ kb.focus(); }
+  document.addEventListener('pointerdown', focusKb);
+  document.addEventListener('keydown', e=>{
+    if (!booted || matrixTimer) return;
+    if (e.key === 'Enter'){ const c = buf; buf=''; exec(c); }
+    else if (e.key === 'Backspace'){ buf = buf.slice(0,-1); render(true); }
+    else if (e.key === 'ArrowUp'){ if (hIdx>0){ hIdx--; buf = history[hIdx]||''; render(true);} e.preventDefault(); }
+    else if (e.key === 'ArrowDown'){ if (hIdx<history.length){ hIdx++; buf = history[hIdx]||''; render(true);} e.preventDefault(); }
+    else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey){ buf += e.key; render(true); }
+  });
+  // mobile: mirror hidden input
+  kb.addEventListener('input', ()=>{ if(booted && !matrixTimer){ buf = kb.value; render(true);} });
+  kb.addEventListener('keydown', e=>{ if(e.key==='Enter'){ kb.value=''; } });
+  kb.addEventListener('keyup', ()=>{ if(kb.value==='' && buf!=='' && booted){} });
+
+  // ---- demo autopilot ----
+  function runDemo(){
+    const script = ['help','ls','cat poem.txt','whoami','matrix'];
+    let i = 0;
+    (function next(){
+      if (i >= script.length){ document.title = 'CRT-OS demo-done'; return; }
+      const cmd = script[i++]; buf = cmd; render(true);
+      setTimeout(()=>{ buf=''; exec(cmd); setTimeout(next, cmd==='matrix'?2400:500); }, 350);
+    })();
+  }
+
+  document.title = 'CRT-OS';
+  setTimeout(bootStep, DEMO ? 50 : 350);
+})();
+</script>
+</body>
+</html>
