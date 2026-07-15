@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-14T23:54:31Z",
+  "generated_at": "2026-07-15T00:00:29Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 1902891,
+    "used": 2123376,
     "budget": 4670000,
-    "pct": 40.7,
+    "pct": 45.5,
     "window_started_at": "2026-07-14T23:10:00Z",
     "resets_at": "2026-07-15T04:10:00Z",
-    "seconds_to_reset": 15328,
+    "seconds_to_reset": 14970,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -297,7 +297,7 @@
       "status": "done",
       "handoff": "",
       "updated": "2026-07-14T23:54:05Z",
-      "commit": null
+      "commit": "6d8cb2a"
     },
     {
       "id": "T20",
@@ -305,9 +305,9 @@
       "title": "Gravity well: presets + mobile",
       "acceptance": "Add binary-star and solar-system presets, trail-fade tuning, touch support at 390px.",
       "size": "S",
-      "status": "in_progress",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-14T23:45:07Z",
+      "updated": "2026-07-15T00:00:29Z",
       "commit": null
     },
     {
@@ -392,7 +392,7 @@
     }
   ],
   "queue": {
-    "in_progress": "T20",
+    "in_progress": "T21",
     "next": [
       "T25",
       "T12",
@@ -502,26 +502,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T19",
-    "current_action": "building gravity well sandbox v1",
+    "current_task": "T20",
+    "current_action": "presets + mobile for gravity well",
     "agent": "autopilot",
-    "updated": "2026-07-14T23:54:05Z",
+    "updated": "2026-07-15T00:00:21Z",
     "log": [
-      {
-        "at": "2026-07-14T21:20:05Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-14T21:20:10Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-14T23:24:34Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-14T23:31:33Z",
         "agent": "autopilot",
@@ -566,6 +551,21 @@
         "at": "2026-07-14T23:54:05Z",
         "agent": "autopilot",
         "msg": "T19 built + verified 60fps, checkpointing"
+      },
+      {
+        "at": "2026-07-14T23:55:01Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-14T23:56:47Z",
+        "agent": "autopilot",
+        "msg": "T20: presets + trail slider + mobile CSS built; verifying in Chromium"
+      },
+      {
+        "at": "2026-07-15T00:00:21Z",
+        "agent": "autopilot",
+        "msg": "T20 verified: binary + solar presets orbit stably, mobile 390px layout OK"
       }
     ]
   }

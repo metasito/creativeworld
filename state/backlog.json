@@ -261,9 +261,9 @@
       "title": "Gravity well: presets + mobile",
       "acceptance": "Add binary-star and solar-system presets, trail-fade tuning, touch support at 390px.",
       "size": "S",
-      "status": "in_progress",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-14T23:45:07Z"
+      "updated": "2026-07-15T00:00:29Z"
     },
     {
       "id": "T21",

@@ -15,14 +15,38 @@
   #hud b { color: #e8f0ff; font-weight: 600; }
   #stats { position: fixed; bottom: 10px; left: 14px; color: #4a5b7a;
     font: 11px 'Segoe UI', system-ui, sans-serif; pointer-events: none; }
+  #bar {
+    position: fixed; top: 10px; right: 12px; display: flex; gap: 6px;
+    align-items: center; flex-wrap: wrap; justify-content: flex-end;
+    font: 12px 'Segoe UI', system-ui, sans-serif;
+  }
+  #bar button {
+    background: rgba(20,30,55,0.75); color: #8fa3c8; border: 1px solid #2a3a5f;
+    border-radius: 6px; padding: 5px 10px; font: inherit; cursor: pointer;
+  }
+  #bar button.on { color: #e8f0ff; border-color: #6f8fd0; background: rgba(40,60,110,0.8); }
+  #bar label { color: #4a5b7a; display: flex; align-items: center; gap: 4px; }
+  #bar input[type=range] { width: 70px; accent-color: #6f8fd0; }
+  @media (max-width: 430px) {
+    #hud { font-size: 10px; top: auto; bottom: 28px; }
+    #hud br + * { display: inline; }
+    #stats { bottom: 8px; }
+    #bar { left: 10px; right: 10px; justify-content: flex-start; }
+    #bar button { padding: 7px 12px; }
+  }
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <div id="hud"><b>Gravity Well Sandbox</b><br>
-click — drop a star &nbsp;·&nbsp; drag — fling it with velocity<br>
-double-click — clear stars</div>
+tap — drop a star &nbsp;·&nbsp; drag — fling it with velocity</div>
 <div id="stats"></div>
+<div id="bar">
+  <button id="pFree">Free</button>
+  <button id="pBinary">Binary</button>
+  <button id="pSolar">Solar</button>
+  <label>trail <input id="trail" type="range" min="4" max="45" value="16"></label>
+</div>
 <script>
 'use strict';
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
@@ -38,24 +62,70 @@ const bodies = [];         // massive stars
 const parts = new Float32Array(N * 4);  // x, y, vx, vy
 const hue = new Float32Array(N);
 
-function spawnParticle(i, cx, cy) {
-  // ring around (cx,cy) with tangential orbital velocity
+function spawnParticle(i, cx, cy, m, rMax, cvx, cvy) {
+  // ring around (cx,cy) with tangential orbital velocity, inheriting center velocity
   const a = Math.random() * Math.PI * 2;
-  const r = 60 + Math.random() * Math.min(W, H) * 0.38;
+  const r = 60 + Math.random() * (rMax || Math.min(W, H) * 0.38);
   const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
-  const m = bodies.length ? bodies[0].m : 900;
+  m = m || (bodies.length ? bodies[0].m : 900);
   const v = Math.sqrt(G * m / r) * (0.85 + Math.random() * 0.3);
   parts[i*4] = x; parts[i*4+1] = y;
-  parts[i*4+2] = -Math.sin(a) * v; parts[i*4+3] = Math.cos(a) * v;
+  parts[i*4+2] = -Math.sin(a) * v + (cvx || 0);
+  parts[i*4+3] = Math.cos(a) * v + (cvy || 0);
   hue[i] = 190 + Math.random() * 120; // cyan → violet
 }
 
-function reset() {
+// --- presets ---
+const presets = {
+  free() {
+    bodies.push({ x: W/2, y: H/2, vx: 0, vy: 0, m: 900 });
+    for (let i = 0; i < N; i++) spawnParticle(i, W/2, H/2);
+  },
+  binary() {
+    // two equal stars in circular orbit around their barycenter
+    const m = 800, d = Math.min(W, H) * 0.28;
+    const v = Math.sqrt(G * m / (2 * d));   // circular two-body speed
+    bodies.push({ x: W/2 - d/2, y: H/2, vx: 0, vy:  v, m });
+    bodies.push({ x: W/2 + d/2, y: H/2, vx: 0, vy: -v, m });
+    for (let i = 0; i < N; i++) {
+      const b = bodies[i & 1];
+      spawnParticle(i, b.x, b.y, m, d * 0.32, b.vx, b.vy);
+    }
+  },
+  solar() {
+    // heavy sun + planets on circular orbits, particle disc
+    const M = 2400;
+    bodies.push({ x: W/2, y: H/2, vx: 0, vy: 0, m: M });
+    const rMax = Math.min(W, H) * 0.44;
+    for (let p = 0; p < 5; p++) {
+      const r = rMax * (0.28 + p * 0.17), a = Math.random() * Math.PI * 2;
+      const v = Math.sqrt(G * M / r);
+      bodies.push({
+        x: W/2 + Math.cos(a) * r, y: H/2 + Math.sin(a) * r,
+        vx: -Math.sin(a) * v, vy: Math.cos(a) * v, m: 40 + p * 25,
+      });
+    }
+    for (let i = 0; i < N; i++) spawnParticle(i, W/2, H/2, M, rMax);
+  },
+};
+
+let mode = 'free';
+function reset(name) {
+  mode = name || mode;
   bodies.length = 0;
-  bodies.push({ x: W/2, y: H/2, vx: 0, vy: 0, m: 900 });
-  for (let i = 0; i < N; i++) spawnParticle(i, W/2, H/2);
+  presets[mode]();
+  for (const el of document.querySelectorAll('#bar button'))
+    el.classList.toggle('on', el.id === 'p' + mode[0].toUpperCase() + mode.slice(1));
 }
-reset();
+reset(presets[location.hash.slice(1)] ? location.hash.slice(1) : 'free');
+for (const name of ['free', 'binary', 'solar'])
+  document.getElementById('p' + name[0].toUpperCase() + name.slice(1))
+    .addEventListener('click', () => reset(name));
+
+let fade = 0.16;
+document.getElementById('trail').addEventListener('input', e => {
+  fade = e.target.value / 100;   // low = long trails, high = crisp
+});
 
 // --- input: click drops a body, drag sets its initial velocity ---
 let drag = null;
@@ -130,7 +200,7 @@ function frame(now) {
 
   // fade previous frame → motion trails
   ctx.globalCompositeOperation = 'source-over';
-  ctx.fillStyle = 'rgba(4,6,14,0.16)';
+  ctx.fillStyle = `rgba(4,6,14,${fade})`;
   ctx.fillRect(0, 0, W, H);
 
   ctx.globalCompositeOperation = 'lighter';
