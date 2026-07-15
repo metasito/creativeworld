@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T08:56:26Z",
+  "generated_at": "2026-07-15T09:03:52Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
     "used": 0,
@@ -7,7 +7,7 @@
     "pct": 0.0,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T14:22:33Z",
-    "seconds_to_reset": 19566,
+    "seconds_to_reset": 19120,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -428,7 +428,7 @@
       "handoff": "esc() helper; all innerHTML sites escaped (board, gallery, feed, learnings, agent log, modal trace, form options); verified live with onerror-injection task",
       "updated": "2026-07-15T08:56:24Z",
       "issue": "8",
-      "commit": null
+      "commit": "709bcb2"
     },
     {
       "id": "T30",
@@ -436,9 +436,9 @@
       "title": "Dashboard: live tab title + favicon with budget % and verdict",
       "acceptance": "document.title shows e.g. '38% CONTINUE - CreativeWorld'; canvas-drawn favicon dot green/amber/red by verdict; updates each poll",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T08:31:09Z",
+      "status": "done",
+      "handoff": "tab title shows pct+verdict; canvas favicon dot green/amber/red with fill-level pie; verified via dump-dom",
+      "updated": "2026-07-15T09:03:50Z",
       "issue": "9",
       "commit": null
     },
@@ -517,7 +517,6 @@
       "T8",
       "T23",
       "T28",
-      "T30",
       "T31",
       "T33"
     ],
@@ -623,10 +622,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T29",
-    "current_action": "dashboard: escape HTML injection",
+    "current_task": "T30",
+    "current_action": "live tab title + verdict favicon",
     "agent": "opus",
-    "updated": "2026-07-15T08:50:10Z",
+    "updated": "2026-07-15T08:56:38Z",
     "log": [
       {
         "at": "2026-07-15T04:06:41Z",

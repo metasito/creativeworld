@@ -371,9 +371,9 @@
       "title": "Dashboard: live tab title + favicon with budget % and verdict",
       "acceptance": "document.title shows e.g. '38% CONTINUE - CreativeWorld'; canvas-drawn favicon dot green/amber/red by verdict; updates each poll",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T08:31:09Z",
+      "status": "done",
+      "handoff": "tab title shows pct+verdict; canvas favicon dot green/amber/red with fill-level pie; verified via dump-dom",
+      "updated": "2026-07-15T09:03:50Z",
       "issue": "9"
     },
     {

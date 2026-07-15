@@ -273,7 +273,26 @@ function render(d) {
 
   $("learn").innerHTML = d.learnings.map(l => `<li>${esc(l)}</li>`).join("");
   syncForm(d);
+  updateTab(b);
   $("updated").textContent = (live ? "live · " : "static snapshot · ") + new Date().toLocaleTimeString();
+}
+
+/* ---- background-tab monitoring: budget in the title, verdict as favicon dot ---- */
+const favLink = document.createElement("link");
+favLink.rel = "icon";
+document.head.appendChild(favLink);
+function updateTab(b) {
+  document.title = `${b.pct.toFixed(0)}% ${b.verdict} — CreativeWorld`;
+  const c = document.createElement("canvas"); c.width = c.height = 32;
+  const x = c.getContext("2d");
+  x.beginPath(); x.arc(16, 16, 13, 0, 7);
+  x.fillStyle = b.verdict === "CONTINUE" ? "#0ca30c" : b.verdict === "WRAP_UP" ? "#fab219" : "#d03b3b";
+  x.fill();
+  // fill level as a darker pie from 12 o'clock
+  x.beginPath(); x.moveTo(16, 16);
+  x.arc(16, 16, 13, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * Math.min(1, b.pct / 100));
+  x.closePath(); x.fillStyle = "rgba(0,0,0,.45)"; x.fill();
+  favLink.href = c.toDataURL("image/png");
 }
 
 /* ---- add-task form (only in live server mode) ---- */
