@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T08:44:25Z",
+  "generated_at": "2026-07-15T08:49:12Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
     "used": 0,
@@ -7,7 +7,7 @@
     "pct": 0.0,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T14:22:33Z",
-    "seconds_to_reset": 20287,
+    "seconds_to_reset": 20000,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -228,9 +228,9 @@
       "title": "Cross-platform engine: browser + python detection for Windows/local runs",
       "acceptance": "engine scripts and skills work on Windows (chrome.exe path, python vs python3); documented in CLAUDE.md env notes; verified by running server + a screenshot locally.",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-14T18:45:00Z",
+      "status": "done",
+      "handoff": "lib.browser_path() + shot.py CLI + drive.py graceful chromedriver detection; CLAUDE.md env notes updated; verified: live dashboard screenshot on Windows",
+      "updated": "2026-07-15T08:49:10Z",
       "issue": "3",
       "commit": null
     },
@@ -404,7 +404,7 @@
       "handoff": "issues auto-open on claim/in_progress, auto-close with commit link on done; github.py sync backfills; two-way label sync split to follow-up task",
       "updated": "2026-07-15T08:43:30Z",
       "issue": "6",
-      "commit": null
+      "commit": "22341fa"
     },
     {
       "id": "T28",
@@ -514,7 +514,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T12",
       "T8",
       "T22",
       "T23",
@@ -626,16 +625,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T27",
-    "current_action": "GitHub API automation: issues + close-keywords",
+    "current_task": "T12",
+    "current_action": "cross-platform browser/python detection",
     "agent": "opus",
-    "updated": "2026-07-15T08:40:17Z",
+    "updated": "2026-07-15T08:46:51Z",
     "log": [
-      {
-        "at": "2026-07-15T04:04:38Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
       {
         "at": "2026-07-15T04:06:41Z",
         "agent": "autopilot",
@@ -690,6 +684,11 @@
         "at": "2026-07-15T04:22:33Z",
         "agent": "autopilot",
         "msg": "REAL usage limit hit \u2014 napping until 2026-07-15T09:22:33Z"
+      },
+      {
+        "at": "2026-07-15T08:44:57Z",
+        "agent": "opus",
+        "msg": "T27 shipped: GitHub issue automation live, 10 issues backfilled, #6 closed by its own machinery"
       }
     ]
   }

@@ -60,5 +60,6 @@ You are the CreativeWorld engine: an autonomous team that continuously builds sm
 
 ## Environment notes
 
+- Screenshots: `python engine/shot.py <url-or-file> <out.png>` — finds the right browser on any platform (`lib.browser_path()`, override with `$BROWSER`). Real-time driving (games/animation): `engine/drive.py` — needs chromedriver on PATH or in `tools/`; it tells you where to get it if missing.
 - Cloud (Claude Code web container): Chromium at `/opt/pw-browsers/chromium`; always pass `--headless --no-sandbox --disable-gpu`. chromedriver needs `--disable-build-check`.
-- Windows (local): browser at `C:\Program Files\Google\Chrome\Application\chrome.exe`; use `python` instead of `python3`.
+- Windows (local): use `python` instead of `python3` (both work in Git Bash if aliased; scripts themselves are version-agnostic).

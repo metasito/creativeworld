@@ -181,9 +181,9 @@
       "title": "Cross-platform engine: browser + python detection for Windows/local runs",
       "acceptance": "engine scripts and skills work on Windows (chrome.exe path, python vs python3); documented in CLAUDE.md env notes; verified by running server + a screenshot locally.",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-14T18:45:00Z",
+      "status": "done",
+      "handoff": "lib.browser_path() + shot.py CLI + drive.py graceful chromedriver detection; CLAUDE.md env notes updated; verified: live dashboard screenshot on Windows",
+      "updated": "2026-07-15T08:49:10Z",
       "issue": "3"
     },
     {

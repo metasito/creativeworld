@@ -10,25 +10,35 @@ games/animations actually play. Actions run in argv order after page load.
 """
 import base64
 import json
-import os
+import shutil
 import subprocess
 import sys
 import time
 import urllib.request
 
+import lib
+
 DRIVER = "http://127.0.0.1:9515"
-BROWSER_CANDIDATES = [
-    "/opt/pw-browsers/chromium",                                        # cloud container
-    r"C:\Program Files\Google\Chrome\Application\chrome.exe",           # windows chrome
-    r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",    # windows edge
-]
 
 
 def browser_binary():
-    for p in BROWSER_CANDIDATES:
-        if os.path.exists(p):
-            return p
-    sys.exit("no known browser binary found; edit BROWSER_CANDIDATES in drive.py")
+    p = lib.browser_path()
+    if not p:
+        sys.exit("no browser found — set $BROWSER or install Chrome/Chromium")
+    return p
+
+
+def chromedriver_binary():
+    """chromedriver from PATH or tools/, or a clear next step (not a traceback)."""
+    for c in [shutil.which("chromedriver"),
+              str(lib.ROOT / "tools" / "chromedriver.exe"),
+              str(lib.ROOT / "tools" / "chromedriver")]:
+        if c and shutil.which(c):
+            return c
+    sys.exit("chromedriver not found (PATH or tools/). Real-time driving needs it.\n"
+             "Fallback for static pages: python engine/shot.py <url> <out.png>\n"
+             "Get it: https://googlechromelabs.github.io/chrome-for-testing/ "
+             "(match your Chrome version, drop the exe into tools/)")
 
 
 def req(method, path, body=None):
@@ -42,7 +52,7 @@ def req(method, path, body=None):
 def main():
     args = sys.argv[1:]
     url = args[0]
-    proc = subprocess.Popen(["chromedriver", "--port=9515", "--disable-build-check"],
+    proc = subprocess.Popen([chromedriver_binary(), "--port=9515", "--disable-build-check"],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
         for _ in range(50):

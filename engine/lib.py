@@ -9,6 +9,31 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 STATE = ROOT / "state"
+
+# Known headless-capable browsers, first hit wins. Override with $BROWSER.
+BROWSER_CANDIDATES = [
+    "/opt/pw-browsers/chromium",                                      # cloud container
+    r"C:\Program Files\Google\Chrome\Application\chrome.exe",         # windows chrome
+    str(Path.home() / r"AppData\Local\Google\Chrome\Application\chrome.exe"),
+    r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",  # windows edge
+    "/usr/bin/chromium-browser", "/usr/bin/chromium", "/usr/bin/google-chrome",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",   # macOS
+]
+
+
+def browser_path():
+    """Path to a headless-capable browser on THIS machine, or None.
+
+    $BROWSER wins if set; otherwise first existing candidate. Central so
+    drive.py / shot.py / skills stay platform-agnostic (cloud vs Windows vs mac).
+    """
+    env = os.environ.get("BROWSER")
+    if env and Path(env).exists():
+        return env
+    for p in BROWSER_CANDIDATES:
+        if Path(p).exists():
+            return p
+    return None
 TRANSCRIPTS = Path(os.environ.get("CLAUDE_TRANSCRIPTS_DIR", Path.home() / ".claude" / "projects"))
 
 
