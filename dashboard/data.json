@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-15T19:34:02Z",
+  "generated_at": "2026-07-15T19:41:54Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 916873,
-    "window_used": 443098,
-    "rolling_used": 916873,
+    "used": 1209921,
+    "window_used": 736146,
+    "rolling_used": 1209921,
     "budget": 4798485,
-    "pct": 19.1,
-    "rate_per_hour": 184583,
-    "eta_hours": 21.0,
+    "pct": 25.2,
+    "rate_per_hour": 242280,
+    "eta_hours": 14.8,
     "window_started_at": "2026-07-15T19:22:33Z",
-    "resets_at": "2026-07-15T19:35:59Z",
-    "seconds_to_reset": 117,
+    "resets_at": "2026-07-15T19:42:16Z",
+    "seconds_to_reset": 21,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -154,7 +154,7 @@
       "status": "shipped",
       "description": "Falling-sand physics automaton that gradually builds a glowing stained-glass cathedral window",
       "slug": "sandfall-cathedral",
-      "cost": 0
+      "cost": 249436
     },
     {
       "id": "E13",
@@ -765,9 +765,12 @@
       "title": "Sandfall Cathedral polish: light rays + bell toll",
       "acceptance": "volumetric light shafts through completed glass sections; subtle chime + screen shimmer when a section completes; still single-file, demo mode covers it",
       "size": "S",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T14:19:35Z",
+      "updated": "2026-07-15T19:41:50Z",
+      "claimed_by": "unknown",
+      "issue": "29",
+      "cost": 249436,
       "commit": null
     },
     {
@@ -807,7 +810,7 @@
       "claimed_by": "unknown",
       "issue": "28",
       "cost": 161823,
-      "commit": null
+      "commit": "a1e547b"
     },
     {
       "id": "T54",
@@ -904,7 +907,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T50",
       "T52",
       "T56",
       "T57",
@@ -1040,8 +1042,8 @@
       "slug": "sandfall-cathedral",
       "built": true,
       "shot": true,
-      "updated": "2026-07-15T19:17:46Z",
-      "cost": 0,
+      "updated": "2026-07-15T19:39:27Z",
+      "cost": 249436,
       "url": "/projects/sandfall-cathedral/"
     },
     {
@@ -1119,26 +1121,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T53",
-    "current_action": "writing brief-output tests in test_engine.py",
+    "current_task": "T50",
+    "current_action": "Sandfall Cathedral polish: light rays + bell toll",
     "agent": "autopilot",
-    "updated": "2026-07-15T19:33:57Z",
+    "updated": "2026-07-15T19:41:50Z",
     "log": [
-      {
-        "at": "2026-07-15T19:09:52Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-15T19:13:11Z",
-        "agent": "autopilot",
-        "msg": "T46: prior session's butterfly+daycycle code found intact; validating with screenshots"
-      },
-      {
-        "at": "2026-07-15T19:15:18Z",
-        "agent": "autopilot",
-        "msg": "T46 done: butterflies + day cycle verified via drive.py real-time shot (8/8 bloomed)"
-      },
       {
         "at": "2026-07-15T19:15:58Z",
         "agent": "autopilot",
@@ -1183,6 +1170,21 @@
         "at": "2026-07-15T19:33:57Z",
         "agent": "autopilot",
         "msg": "T53: brief output tests green (burn line, WARN, RESUME, no-weights path)"
+      },
+      {
+        "at": "2026-07-15T19:34:41Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-15T19:38:23Z",
+        "agent": "autopilot",
+        "msg": "T50: shafts+chime+shimmer coded; validating with drive.py"
+      },
+      {
+        "at": "2026-07-15T19:41:50Z",
+        "agent": "autopilot",
+        "msg": "T50 validated: shafts in shot, live sec 3->6 proves chime/shimmer path, no console errors"
       }
     ]
   }

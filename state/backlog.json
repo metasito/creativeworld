@@ -653,9 +653,12 @@
       "title": "Sandfall Cathedral polish: light rays + bell toll",
       "acceptance": "volumetric light shafts through completed glass sections; subtle chime + screen shimmer when a section completes; still single-file, demo mode covers it",
       "size": "S",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T14:19:35Z"
+      "updated": "2026-07-15T19:41:50Z",
+      "claimed_by": "unknown",
+      "issue": "29",
+      "cost": 249436
     },
     {
       "id": "T51",

@@ -42,6 +42,8 @@ Whenever you fix a bug, find an algorithm/palette pattern that elevated a piece,
 
 ## Lessons Learned
 
+- 2026-07-15: drive.py's URL is the FIRST positional arg (flags after) — flags-first gives a confusing chromedriver HTTP 400; also `--js "return document.title"` is the cheapest live-telemetry probe (sample it twice in one run to prove events fire after warm start).
+- 2026-07-15: per-pane "completion" in CA fills: precompute ~12 EMPTY probe cells per pane at build, pane done when ≥90% are sand — cheap O(panes) check every ~24 frames, robust to churn near emitters.
 - 2026-07-15: swarm-follows-target pieces: the demo path must move SLOWER than the followers' max speed, or the canonical shot shows a lagging comet-tail instead of a swarm — slow the path period until followers converge within the `--wait` window (verify with a near-count in the demo title).
 - 2026-07-15: same-seed md5 hash equality fails for ANIMATED pieces (capture lands on different frames) — verify determinism by eyeballing structure of the two shots, not hashes.
 - 2026-07-15: drive.py takes a full URL only — pass `file:///C:/...?seed=7&demo=1` (relative paths give chromedriver HTTP 400); masks built from fixed geometry must be clearance-checked across aspect ratios (a lancet arch landed inside the rose ring at 1280x800 and its pane never filled).

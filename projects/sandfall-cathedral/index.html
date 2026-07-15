@@ -66,6 +66,11 @@ function line(x0,y0,x1,y1){ // thick-ish bresenham for spokes
     wall(x,y); wall(x+1,y); wall(x,y+1);
   }
 }
+// sections: one per pane; complete when probe cells ~full => light shaft + chime
+const sections = []; // {probes, sx, sy, color, done, at, phase}
+function addSection(sx, sy, color, probes){
+  if (probes.length >= 6) sections.push({probes, sx, sy, color, done:false, at:0, phase: rnd()*6.283});
+}
 function buildCathedral(){
   const cx = GW>>1, cy = Math.round(GH*0.34), R = Math.round(Math.min(GW*0.32, GH*0.26));
   const hub = Math.round(R*0.22);
@@ -98,8 +103,32 @@ function buildCathedral(){
     }
     for (let x=lx-hw; x<=lx+hw; x++) wall(x, ly1+1); // sill
     emitters.push({x: lx, y: ly0 - Math.round(hw*1.6) + 4, color: 2+ci%5, rate: 3});
+    const probes = [];
+    for (const px of [lx-hw+4, lx, lx+hw-4]) for (let k=0;k<5;k++){
+      const y = ly0 + 5 + Math.round((ly1-ly0-9)*k/4);
+      if (grid[y*GW+px] === EMPTY) probes.push(y*GW+px);
+    }
+    addSection(lx, Math.round((ly0+ly1)/2), 2+ci%5, probes);
   });
   for (let x=0;x<GW;x++) wall(x, GH-1); // floor
+  for (let i=0;i<SP;i++){ // petal probes: 4 radii x 3 angles inside the sector
+    const probes = [];
+    for (const rf of [0.35,0.55,0.75,0.9]) for (const af of [0.3,0.5,0.7]){
+      const a = (i+af)/SP*2*Math.PI - Math.PI/2, rr = hub + (R-hub)*rf;
+      const x = Math.round(cx+Math.cos(a)*rr), y = Math.round(cy+Math.sin(a)*rr);
+      if (grid[y*GW+x] === EMPTY) probes.push(y*GW+x);
+    }
+    const am = (i+0.5)/SP*2*Math.PI - Math.PI/2, rm = (hub+R)/2;
+    addSection(Math.round(cx+Math.cos(am)*rm), Math.round(cy+Math.sin(am)*rm), 2+(i%5), probes);
+  }
+  { const probes = []; // hub
+    for (let k=0;k<8;k++){
+      const a = k/8*2*Math.PI, x = Math.round(cx+Math.cos(a)*hub*0.45), y = Math.round(cy+Math.sin(a)*hub*0.45);
+      if (grid[y*GW+x] === EMPTY) probes.push(y*GW+x);
+    }
+    if (grid[cy*GW+cx] === EMPTY) probes.push(cy*GW+cx);
+    addSection(cx, cy, 7, probes);
+  }
 }
 buildCathedral();
 
@@ -142,8 +171,31 @@ function step(){
   frame++;
 }
 
+// ---- section completion: shaft of light + chime + screen shimmer ----
+let shimmer = 0, completedCount = 0, AC = null;
+function chime(n){ try{
+  AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+  if (AC.state === "suspended") AC.resume();
+  const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
+  o.type = "sine"; o.frequency.value = [523.25,587.33,659.25,783.99,880][n%5];
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.07, t+0.03);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+1.8);
+  o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t+1.9);
+}catch(_){} }
+function checkSections(quiet){
+  for (const sec of sections){
+    if (sec.done) continue;
+    let f = 0; for (const i of sec.probes) if (grid[i] > WALL) f++;
+    if (f >= sec.probes.length*0.9){
+      sec.done = true; sec.at = frame; completedCount++;
+      if (!quiet){ shimmer = 1; chime(completedCount); }
+    }
+  }
+}
+
 // warm start: the first paint already shows a half-built glowing window
 for (let i=0;i<520;i++) step();
+checkSections(true); // panes filled during warm start light up silently
 
 // ---- render: grid -> imagedata, then bloom pass ----
 function paint(){
@@ -165,6 +217,31 @@ function paint(){
   ctx.globalAlpha = 0.45; ctx.filter = "blur(10px)";
   ctx.drawImage(lo, ox, oy, dw, dh);
   ctx.restore();
+  // volumetric shafts: completed panes cast diverging colored light into the nave
+  const tnow = performance.now()/1000;
+  ctx.save(); ctx.globalCompositeOperation = "lighter";
+  for (const sec of sections){
+    if (!sec.done) continue;
+    const fade = Math.min(1, (frame - sec.at)/120);
+    const xs = ox + sec.sx*s, ys = oy + sec.sy*s;
+    const slant = (sec.sx - GW/2)*s*0.9, w0 = 6*s, w1 = 24*s, yb = H + 10;
+    const a = Math.max(0, fade*(0.16 + 0.05*Math.sin(tnow*0.8 + sec.phase)));
+    const c = PAL[sec.color-2];
+    const g2 = ctx.createLinearGradient(xs, ys, xs+slant, yb);
+    g2.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},${a.toFixed(3)})`);
+    g2.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = g2;
+    ctx.beginPath();
+    ctx.moveTo(xs-w0, ys); ctx.lineTo(xs+w0, ys);
+    ctx.lineTo(xs+slant+w1, yb); ctx.lineTo(xs+slant-w1, yb);
+    ctx.closePath(); ctx.fill();
+  }
+  if (shimmer > 0.01){ // brief gold flash when a pane completes
+    ctx.fillStyle = `rgba(255,240,200,${(0.22*shimmer).toFixed(3)})`;
+    ctx.fillRect(0,0,W,H);
+    shimmer *= 0.93;
+  }
+  ctx.restore();
   // vignette
   const g = ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.3, W/2,H/2,Math.max(W,H)*.75);
   g.addColorStop(0,"rgba(0,0,0,0)"); g.addColorStop(1,"rgba(0,0,0,.55)");
@@ -176,6 +253,7 @@ addEventListener("pointerdown", e => {
   const s = Math.min(W/GW, H/GH), ox = (W-GW*s)/2;
   const gx = Math.max(1, Math.min(GW-2, Math.round((e.clientX-ox)/s)));
   clickPours.push({x: gx, life: 140, color: 2 + (clickPours.length % 5)});
+  if (AC && AC.state === "suspended") AC.resume();
 }, {passive:true});
 
 let lastTitle = 0;
@@ -184,9 +262,10 @@ function loop(){
   if (DEMO && frame % 90 === 0){ // demo autopilot: periodic pours across the nave
     clickPours.push({x: 20 + ((rnd()*(GW-40))|0), life: 100, color: 2 + (frame/90|0) % 5});
   }
+  if (frame % 24 === 0) checkSections(false);
   paint();
   if (DEMO && frame - lastTitle >= 30){
-    document.title = `sandfall ${Math.min(100, Math.round(100*settled/capacity))}% f=${frame}`;
+    document.title = `sandfall ${Math.min(100, Math.round(100*settled/capacity))}% sec=${completedCount}/${sections.length} f=${frame}`;
     lastTitle = frame;
   }
   requestAnimationFrame(loop);
