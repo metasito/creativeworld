@@ -113,12 +113,42 @@ def ship_comment(t):
     return "Shipped (commit link lands on next push)."
 
 
+def pull(b):
+    """GitHub -> board: issue closed there marks the task done; size-label edits
+    update the task's size. Board wins conflicts: a task actively claimed
+    (in_progress) is never auto-closed from GitHub. Returns list of changes."""
+    if not enabled():
+        return []
+    changed = []
+    for t in b["tasks"]:
+        iss = str(t.get("issue") or "").strip()
+        if not iss or t["status"] == "done":
+            continue
+        try:
+            info = api("GET", f"/repos/{repo_path()}/issues/{iss}")
+        except Exception:
+            continue  # offline / deleted issue — board stays the truth
+        for lb in (l["name"] for l in info.get("labels", [])):
+            if lb.startswith("size:") and lb[5:] in ("S", "M", "L") and lb[5:] != t.get("size"):
+                t["size"] = lb[5:]
+                changed.append(f"{t['id']}: size -> {t['size']} (GitHub label)")
+        if info.get("state") == "closed":
+            if t["status"] == "in_progress":
+                changed.append(f"{t['id']}: issue #{iss} closed on GitHub but task is claimed — board wins")
+            else:
+                t["status"] = "done"
+                changed.append(f"{t['id']}: -> done (issue #{iss} closed on GitHub)")
+    return changed
+
+
 def sync():
     """Backfill: open tasks get real issues; done tasks with issues get closed."""
     if not enabled():
         print("github sync disabled (no token or remote)")
         return
     b = lib.load("backlog.json")
+    for c in pull(b):  # GitHub -> board first, so backfill sees fresh statuses
+        print("  " + c)
     epics = {e["id"]: e["title"] for e in b["epics"]}
     made = closed = 0
     for t in b["tasks"]:

@@ -156,6 +156,11 @@ def main():
         s = lib.budget_summary(tokens)
         name, _ = lib.verdict(s)
         print(f"budget: {name} {s['pct']}% of {s['budget']} · resets {s['resets_at']}")
+        changes = gh_safe(lambda gh: gh.pull(b)) or []
+        if changes:
+            lib.save("backlog.json", b)
+            for c in changes:
+                print(f"github: {c}")
         q = sync_queue(b)
         epics = {e["id"]: e for e in b["epics"]}
         if q["in_progress"]:

@@ -444,9 +444,12 @@
       "title": "GitHub labels two-way sync",
       "acceptance": "github.py sync also pulls: label/status edits made on GitHub issues update the board task (closed issue -> done, size label edit -> size); ran on boot; conflicts resolved board-wins",
       "size": "S",
-      "status": "next",
-      "handoff": "locked-api smoke test ok",
-      "updated": "2026-07-15T09:22:30Z"
+      "status": "done",
+      "handoff": "pull(): closed issue -> done, size labels -> size, claimed tasks immune (board wins); wired into brief (boot) and sync; verified with live GitHub edits on #16/#17",
+      "updated": "2026-07-15T09:38:08Z",
+      "claimed_by": "opus",
+      "issue": "16",
+      "cost": 147598
     },
     {
       "id": "T38",
@@ -477,6 +480,6 @@
   ],
   "next_ids": {
     "epic": 9,
-    "task": 40
+    "task": 41
   }
 }

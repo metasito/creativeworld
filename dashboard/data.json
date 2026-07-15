@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-15T09:35:17Z",
+  "generated_at": "2026-07-15T09:38:10Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2269877,
-    "window_used": 571191,
-    "rolling_used": 2269877,
+    "used": 2438501,
+    "window_used": 852300,
+    "rolling_used": 2438501,
     "budget": 4798485,
-    "pct": 47.3,
+    "pct": 50.8,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T13:10:14Z",
-    "seconds_to_reset": 12897,
+    "seconds_to_reset": 12723,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -44,7 +44,7 @@
       "kind": "meta",
       "status": "active",
       "description": "The autonomous engine itself: budget tracking, board, boot/wrap-up flow, CI cron. Permanent epic \u2014 always improvable.",
-      "cost": 540931
+      "cost": 688529
     },
     {
       "id": "E2",
@@ -525,9 +525,12 @@
       "title": "GitHub labels two-way sync",
       "acceptance": "github.py sync also pulls: label/status edits made on GitHub issues update the board task (closed issue -> done, size label edit -> size); ran on boot; conflicts resolved board-wins",
       "size": "S",
-      "status": "next",
-      "handoff": "locked-api smoke test ok",
-      "updated": "2026-07-15T09:22:30Z",
+      "status": "done",
+      "handoff": "pull(): closed issue -> done, size labels -> size, claimed tasks immune (board wins); wired into brief (boot) and sync; verified with live GitHub edits on #16/#17",
+      "updated": "2026-07-15T09:38:08Z",
+      "claimed_by": "opus",
+      "issue": "16",
+      "cost": 147598,
       "commit": null
     },
     {
@@ -556,14 +559,12 @@
       "claimed_by": "opus",
       "issue": "15",
       "cost": 114671,
-      "commit": null
+      "commit": "4e6ef41"
     }
   ],
   "queue": {
     "in_progress": null,
-    "next": [
-      "T36"
-    ],
+    "next": [],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
   },
   "projects": [
@@ -681,10 +682,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T39",
-    "current_action": "server auto-restart on engine changes",
+    "current_task": "T36",
+    "current_action": "GitHub->board pull sync",
     "agent": "opus",
-    "updated": "2026-07-15T09:33:39Z",
+    "updated": "2026-07-15T09:35:50Z",
     "log": [
       {
         "at": "2026-07-15T04:06:41Z",
