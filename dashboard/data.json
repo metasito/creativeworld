@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T08:50:07Z",
+  "generated_at": "2026-07-15T08:56:26Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
     "used": 0,
@@ -7,7 +7,7 @@
     "pct": 0.0,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T14:22:33Z",
-    "seconds_to_reset": 19945,
+    "seconds_to_reset": 19566,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -344,7 +344,7 @@
       "handoff": "brief now prints queue depth + WARN under 5",
       "updated": "2026-07-15T08:50:05Z",
       "issue": "4",
-      "commit": null
+      "commit": "44cffb3"
     },
     {
       "id": "T23",
@@ -424,9 +424,9 @@
       "title": "Dashboard: escape HTML in all injected strings",
       "acceptance": "titles, handoffs, acceptance, log msgs, learnings pass through an esc() helper before innerHTML; a task titled '<img src=x onerror=alert(1)>' renders as text; board still renders correctly",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T08:31:09Z",
+      "status": "done",
+      "handoff": "esc() helper; all innerHTML sites escaped (board, gallery, feed, learnings, agent log, modal trace, form options); verified live with onerror-injection task",
+      "updated": "2026-07-15T08:56:24Z",
       "issue": "8",
       "commit": null
     },
@@ -517,7 +517,6 @@
       "T8",
       "T23",
       "T28",
-      "T29",
       "T30",
       "T31",
       "T33"
@@ -624,10 +623,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T22",
-    "current_action": "brief: queue depth + WARN",
+    "current_task": "T29",
+    "current_action": "dashboard: escape HTML injection",
     "agent": "opus",
-    "updated": "2026-07-15T08:49:38Z",
+    "updated": "2026-07-15T08:50:10Z",
     "log": [
       {
         "at": "2026-07-15T04:06:41Z",

@@ -360,9 +360,9 @@
       "title": "Dashboard: escape HTML in all injected strings",
       "acceptance": "titles, handoffs, acceptance, log msgs, learnings pass through an esc() helper before innerHTML; a task titled '<img src=x onerror=alert(1)>' renders as text; board still renders correctly",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T08:31:09Z",
+      "status": "done",
+      "handoff": "esc() helper; all innerHTML sites escaped (board, gallery, feed, learnings, agent log, modal trace, form options); verified live with onerror-injection task",
+      "updated": "2026-07-15T08:56:24Z",
       "issue": "8"
     },
     {
@@ -441,6 +441,6 @@
   ],
   "next_ids": {
     "epic": 9,
-    "task": 37
+    "task": 38
   }
 }

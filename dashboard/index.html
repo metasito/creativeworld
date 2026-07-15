@@ -194,6 +194,8 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
 
 <script>
 const $ = id => document.getElementById(id);
+// every state string that reaches innerHTML goes through esc() — task titles etc. are user/agent input
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt = n => n >= 1e6 ? (n/1e6).toFixed(2)+"M" : n >= 1e3 ? Math.round(n/1e3)+"k" : String(n);
 const hms = s => s == null ? "–" : s <= 0 ? "now" : `${Math.floor(s/3600)}h ${Math.floor(s%3600/60)}m`;
 let resetsAt = null, live = true;
@@ -205,12 +207,12 @@ function newIssueUrl(t) {
 }
 function issueLink(t) {
   if (!repoUrl) return "";
-  if (t.issue) return `<a class="gh" href="${repoUrl}/issues/${t.issue}" target="_blank" rel="noopener">● #${t.issue}</a>`;
+  if (t.issue) return `<a class="gh" href="${repoUrl}/issues/${esc(t.issue)}" target="_blank" rel="noopener">● #${esc(t.issue)}</a>`;
   return `<a class="gh new" href="${newIssueUrl(t)}" target="_blank" rel="noopener">＋ open issue</a>`;
 }
 function commitLink(t) {
   if (!repoUrl || !t.commit) return "";
-  return `<a class="pr commit" href="${repoUrl}/commit/${t.commit}" target="_blank" rel="noopener" title="commit ${t.commit}">⎇ ${t.commit}</a>`;
+  return `<a class="pr commit" href="${repoUrl}/commit/${esc(t.commit)}" target="_blank" rel="noopener" title="commit ${esc(t.commit)}">⎇ ${esc(t.commit)}</a>`;
 }
 
 async function fetchState() {
@@ -254,22 +256,22 @@ function render(d) {
     if (s === "next") ts.sort((a, z) => (order[a.id] ?? 99) - (order[z.id] ?? 99));
     if (s === "done") ts = ts.slice(-6).reverse();
     return `<div class="col ${cls}" data-status="${s}"><h3>${label} <span class="n">${ts.length}</span></h3>` +
-      ts.map(t => `<div class="task${live ? " draggable" : ""}"${live ? " draggable=\"true\"" : ""} data-id="${t.id}">
-        <div class="t">${t.title}</div>
-        <div class="m">${t.id} · ${t.size} · ${epicsById[t.epic] || t.epic}</div>
-        ${t.handoff && s !== "done" ? `<div class="h">${t.handoff}</div>` : ""}
-        <div class="links">${issueLink(t)}${commitLink(t)}${t.pr ? `<a class="pr" href="${t.pr}" target="_blank" rel="noopener">↗ merge request</a>` : ""}</div></div>`).join("") + "</div>";
+      ts.map(t => `<div class="task${live ? " draggable" : ""}"${live ? " draggable=\"true\"" : ""} data-id="${esc(t.id)}">
+        <div class="t">${esc(t.title)}</div>
+        <div class="m">${esc(t.id)} · ${esc(t.size)} · ${esc(epicsById[t.epic] || t.epic)}</div>
+        ${t.handoff && s !== "done" ? `<div class="h">${esc(t.handoff)}</div>` : ""}
+        <div class="links">${issueLink(t)}${commitLink(t)}${t.pr ? `<a class="pr" href="${esc(t.pr)}" target="_blank" rel="noopener">↗ merge request</a>` : ""}</div></div>`).join("") + "</div>";
   }).join("");
 
   $("gallery").innerHTML = d.projects.map(p => `<div class="card proj">
-    ${p.shot ? `<img src="/projects/${p.slug}/shot.png?${Date.now() % 1e5}" alt="${p.title}">` : `<div class="ph">not built yet</div>`}
-    <div class="t">${p.title}</div><div class="st">${p.status}</div><div class="d">${p.description}</div>
-    ${p.url ? `<a href="${p.url}" target="_blank">open ↗</a>` : ""}</div>`).join("");
+    ${p.shot ? `<img src="/projects/${esc(p.slug)}/shot.png?${Date.now() % 1e5}" alt="${esc(p.title)}">` : `<div class="ph">not built yet</div>`}
+    <div class="t">${esc(p.title)}</div><div class="st">${esc(p.status)}</div><div class="d">${esc(p.description)}</div>
+    ${p.url ? `<a href="${esc(p.url)}" target="_blank">open ↗</a>` : ""}</div>`).join("");
 
   $("feed").innerHTML = d.sessions.slice().reverse().map(s => `<li>
-    <div>${s.did}</div><div class="w">${s.started}${s.ended ? " → " + s.ended : " · ongoing"}${s.stopped_because ? " · stopped: " + s.stopped_because : ""}</div></li>`).join("");
+    <div>${esc(s.did)}</div><div class="w">${esc(s.started)}${s.ended ? " → " + esc(s.ended) : " · ongoing"}${s.stopped_because ? " · stopped: " + esc(s.stopped_because) : ""}</div></li>`).join("");
 
-  $("learn").innerHTML = d.learnings.map(l => `<li>${l}</li>`).join("");
+  $("learn").innerHTML = d.learnings.map(l => `<li>${esc(l)}</li>`).join("");
   syncForm(d);
   $("updated").textContent = (live ? "live · " : "static snapshot · ") + new Date().toLocaleTimeString();
 }
@@ -280,7 +282,7 @@ function syncForm(d) {
   $("addcard").style.display = live ? "" : "none";
   if (!live) return;
   const cur = fEpic.value;
-  fEpic.innerHTML = d.epics.map(e => `<option value="${e.id}">${e.title}</option>`).join("")
+  fEpic.innerHTML = d.epics.map(e => `<option value="${esc(e.id)}">${esc(e.title)}</option>`).join("")
     + `<option value="__new__">➕ new project…</option>`;
   if ([...fEpic.options].some(o => o.value === cur)) fEpic.value = cur;
 }
@@ -322,7 +324,7 @@ function renderAgent(a, b) {
   $("a-when").textContent = upd ? "heartbeat " + timeago(ageSec) : "no heartbeat yet";
   $("a-log").innerHTML = (a.log || []).slice().reverse().map(e =>
     `<li><span class="t">${e.at ? new Date(e.at).toLocaleTimeString() : ""}</span>
-     <span class="ag">${e.agent || "engine"}</span><span>${e.msg}</span></li>`).join("");
+     <span class="ag">${esc(e.agent || "engine")}</span><span>${esc(e.msg)}</span></li>`).join("");
 }
 const timeago = s => s === Infinity ? "never" : s < 60 ? Math.round(s)+"s ago" : Math.round(s/60)+"m ago";
 
@@ -388,10 +390,10 @@ function openModal(t) {
   const trace = $("m-trace");
   if (repoUrl) {
     const iss = t.issue
-      ? `<a href="${repoUrl}/issues/${t.issue}" target="_blank" rel="noopener">issue #${t.issue}</a>`
+      ? `<a href="${repoUrl}/issues/${esc(t.issue)}" target="_blank" rel="noopener">issue #${esc(t.issue)}</a>`
       : `<a href="${newIssueUrl(t)}" target="_blank" rel="noopener">＋ open a GitHub issue for this task</a>`;
-    const pr = t.pr ? ` → <a href="${t.pr}" target="_blank" rel="noopener">merge request ↗</a>` : "";
-    const commit = t.commit ? ` · shipped in <a href="${repoUrl}/commit/${t.commit}" target="_blank" rel="noopener">${t.commit} ⎇</a>` : "";
+    const pr = t.pr ? ` → <a href="${esc(t.pr)}" target="_blank" rel="noopener">merge request ↗</a>` : "";
+    const commit = t.commit ? ` · shipped in <a href="${repoUrl}/commit/${esc(t.commit)}" target="_blank" rel="noopener">${esc(t.commit)} ⎇</a>` : "";
     trace.innerHTML = "GitHub: " + iss + pr + commit;
   } else trace.textContent = "";
   const link = $("m-open");
