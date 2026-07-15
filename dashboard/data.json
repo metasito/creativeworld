@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T09:06:34Z",
+  "generated_at": "2026-07-15T09:17:06Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
     "used": 0,
@@ -7,7 +7,7 @@
     "pct": 0.0,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T14:22:33Z",
-    "seconds_to_reset": 18958,
+    "seconds_to_reset": 18326,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -352,9 +352,9 @@
       "title": "Dashboard: gallery cards link live + show last-updated",
       "acceptance": "Each shipped-project gallery card links to its live index.html and shows a last-updated timestamp; verified in browser.",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-14T19:12:01Z",
+      "status": "done",
+      "handoff": "gallery shots are live links, cards show last-updated from index.html mtime; server restarted to load new compose",
+      "updated": "2026-07-15T09:17:04Z",
       "issue": "5",
       "commit": null
     },
@@ -416,7 +416,7 @@
       "handoff": "history bar strip under gauge: amber=overran/auto-raise, red=limit hit, dashed=current; tooltips with spend/budget; verified live screenshot",
       "updated": "2026-07-15T09:06:32Z",
       "issue": "7",
-      "commit": null
+      "commit": "730bcb5"
     },
     {
       "id": "T29",
@@ -515,7 +515,6 @@
     "in_progress": null,
     "next": [
       "T8",
-      "T23",
       "T33"
     ],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
@@ -530,6 +529,7 @@
       "description": "Landing page where a phone explodes into its internal layers as you scroll \u2014 3D layer separation with annotations.",
       "built": true,
       "shot": true,
+      "updated": "2026-07-14T19:19:22Z",
       "url": "/projects/phone-decompose/"
     },
     {
@@ -541,6 +541,7 @@
       "description": "A playable single-file neon-styled mini game with juice: particles, screenshake, sound via WebAudio.",
       "built": true,
       "shot": true,
+      "updated": "2026-07-14T14:32:33Z",
       "url": "/projects/neon-arcade/"
     },
     {
@@ -552,6 +553,7 @@
       "description": "Interactive canvas artwork producing a unique composition every visit; seeded randomness, exportable as PNG.",
       "built": true,
       "shot": true,
+      "updated": "2026-07-14T14:34:43Z",
       "url": "/projects/genart-01/"
     },
     {
@@ -563,6 +565,7 @@
       "slug": "liquid-chrome",
       "built": true,
       "shot": true,
+      "updated": "2026-07-14T23:51:27Z",
       "url": "/projects/liquid-chrome/"
     },
     {
@@ -574,6 +577,7 @@
       "slug": "gravity-well",
       "built": true,
       "shot": true,
+      "updated": "2026-07-14T23:59:48Z",
       "url": "/projects/gravity-well/"
     },
     {
@@ -585,6 +589,7 @@
       "slug": "crt-os",
       "built": true,
       "shot": true,
+      "updated": "2026-07-15T04:16:18Z",
       "url": "/projects/crt-os/"
     }
   ],
@@ -620,10 +625,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T28",
-    "current_action": "budget history bars",
+    "current_task": "T23",
+    "current_action": "gallery: live links + last-updated",
     "agent": "opus",
-    "updated": "2026-07-15T09:05:13Z",
+    "updated": "2026-07-15T09:06:37Z",
     "log": [
       {
         "at": "2026-07-15T04:06:41Z",

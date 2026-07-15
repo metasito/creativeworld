@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Compose dashboard data from state/. Writes dashboard/data.json (also used live by server.py)."""
 import json
+from datetime import datetime, timezone
 
 import lib
 
@@ -24,9 +25,11 @@ def compose(live=False):
         if e["kind"] != "project":
             continue
         slug = e.get("slug")
+        idx = (lib.ROOT / "projects" / slug / "index.html") if slug else None
         shot = bool(slug and (lib.ROOT / "projects" / slug / "shot.png").exists())
-        built = bool(slug and (lib.ROOT / "projects" / slug / "index.html").exists())
-        projects.append({**e, "built": built, "shot": shot,
+        built = bool(idx and idx.exists())
+        updated = lib.iso(datetime.fromtimestamp(idx.stat().st_mtime, tz=timezone.utc)) if built else None
+        projects.append({**e, "built": built, "shot": shot, "updated": updated,
                          "url": f"/projects/{slug}/" if built else None})
 
     # Wire each task to the real commit that shipped it (named "<id>: ...").

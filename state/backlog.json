@@ -294,9 +294,9 @@
       "title": "Dashboard: gallery cards link live + show last-updated",
       "acceptance": "Each shipped-project gallery card links to its live index.html and shows a last-updated timestamp; verified in browser.",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-14T19:12:01Z",
+      "status": "done",
+      "handoff": "gallery shots are live links, cards show last-updated from index.html mtime; server restarted to load new compose",
+      "updated": "2026-07-15T09:17:04Z",
       "issue": "5"
     },
     {

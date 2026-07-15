@@ -284,10 +284,16 @@ function render(d) {
         <div class="links">${issueLink(t)}${commitLink(t)}${t.pr ? `<a class="pr" href="${esc(t.pr)}" target="_blank" rel="noopener">↗ merge request</a>` : ""}</div></div>`).join("") + "</div>";
   }).join("");
 
-  $("gallery").innerHTML = d.projects.map(p => `<div class="card proj">
-    ${p.shot ? `<img src="/projects/${esc(p.slug)}/shot.png?${Date.now() % 1e5}" alt="${esc(p.title)}">` : `<div class="ph">not built yet</div>`}
-    <div class="t">${esc(p.title)}</div><div class="st">${esc(p.status)}</div><div class="d">${esc(p.description)}</div>
-    ${p.url ? `<a href="${esc(p.url)}" target="_blank">open ↗</a>` : ""}</div>`).join("");
+  $("gallery").innerHTML = d.projects.map(p => {
+    const img = p.shot ? `<img src="/projects/${esc(p.slug)}/shot.png?${Date.now() % 1e5}" alt="${esc(p.title)}">` : `<div class="ph">not built yet</div>`;
+    const upd = p.updated ? new Date(p.updated).toLocaleString([], {month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"}) : null;
+    return `<div class="card proj">
+    ${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener" title="open ${esc(p.title)} live">${img}</a>` : img}
+    <div class="t">${esc(p.title)}</div>
+    <div class="st">${esc(p.status)}${upd ? ` · updated ${upd}` : ""}</div>
+    <div class="d">${esc(p.description)}</div>
+    ${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">open live ↗</a>` : ""}</div>`;
+  }).join("");
 
   $("feed").innerHTML = d.sessions.slice().reverse().map(s => `<li>
     <div>${esc(s.did)}</div><div class="w">${esc(s.started)}${s.ended ? " → " + esc(s.ended) : " · ongoing"}${s.stopped_because ? " · stopped: " + esc(s.stopped_because) : ""}</div></li>`).join("");
