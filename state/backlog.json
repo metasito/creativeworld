@@ -349,9 +349,9 @@
       "title": "Dashboard: render budget history bars (used vs budget per past window, limit-hits marked red)",
       "acceptance": "dashboard/index.html renders budget.history (already in data.json) as a small bar strip under the gauge; limit-hit windows visually flagged; auto-raised budget visible; verified with screenshot",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T08:31:09Z",
+      "status": "done",
+      "handoff": "history bar strip under gauge: amber=overran/auto-raise, red=limit hit, dashed=current; tooltips with spend/budget; verified live screenshot",
+      "updated": "2026-07-15T09:06:32Z",
       "issue": "7"
     },
     {

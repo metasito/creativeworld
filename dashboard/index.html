@@ -40,6 +40,13 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
 .gauge .fill { position: absolute; inset: 0 auto 0 0; width: 0%; background: var(--accent); border-radius: 7px; transition: width .6s ease; }
 .gauge .mark { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--muted); }
 .gauge .labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; margin-top: 4px; }
+/* budget history: one bar per past 5h window */
+.hist { display: flex; gap: 4px; align-items: flex-end; height: 46px; margin-top: 12px; }
+.hist .b { flex: 1; max-width: 28px; min-height: 3px; background: var(--accent); border-radius: 3px 3px 0 0; opacity: .85; }
+.hist .b.over { background: var(--warn); }
+.hist .b.lim { background: var(--crit); }
+.hist .b.now { opacity: .45; outline: 1px dashed var(--muted); outline-offset: -1px; }
+.hist-label { color: var(--muted); font-size: 11px; margin-top: 4px; }
 /* kanban */
 .board { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
 .col h3 { font-size: 12px; color: var(--ink-2); font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between; }
@@ -120,6 +127,8 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
     <div class="bar"><div class="fill" id="fill"></div><div class="mark" id="m85"></div><div class="mark" id="m95"></div></div>
     <div class="labels"><span>0</span><span id="blabel"></span></div>
   </div>
+  <div class="hist" id="hist"></div>
+  <div class="hist-label" id="hist-label"></div>
 </div>
 
 <div class="card" id="agentcard" style="margin-top:14px">
@@ -237,6 +246,18 @@ function render(d) {
   $("fill").style.background = b.pct >= b.stop_pct ? "var(--crit)" : b.pct >= b.wrap_up_pct ? "var(--warn)" : "var(--accent)";
   $("m85").style.left = b.wrap_up_pct + "%"; $("m95").style.left = b.stop_pct + "%";
   $("blabel").textContent = "budget " + fmt(b.budget) + " (⚑" + b.wrap_up_pct + "% wrap · ⚑" + b.stop_pct + "% stop)";
+
+  // history bars: each past window's spend; red = real limit hit, amber = overran
+  // the then-budget (what auto-raises the estimate), dashed = current window.
+  const hist = (b.history || []).concat([{started_at: b.window_started_at, used: b.used, budget: b.budget, now: true}]);
+  const maxV = Math.max(1, ...hist.map(h => Math.max(h.used || 0, h.budget || 0)));
+  $("hist").innerHTML = hist.map(h => {
+    const cls = h.limit_hit ? " lim" : (h.used > h.budget ? " over" : h.now ? " now" : "");
+    const when = h.started_at ? new Date(h.started_at).toLocaleString([], {month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"}) : "?";
+    const note = h.limit_hit ? " · LIMIT HIT" : h.used > h.budget ? " · overran → auto-raised budget" : h.now ? " · current window" : "";
+    return `<div class="b${cls}" style="height:${Math.max(4, Math.round(100 * (h.used || 0) / maxV))}%" title="${when} — ${fmt(h.used || 0)} of ${fmt(h.budget || 0)}${note}"></div>`;
+  }).join("");
+  $("hist-label").textContent = `last ${hist.length - 1} window(s) + current · bar = weighted spend`;
 
   renderAgent(d.activity, b, d.queue.in_progress);
 

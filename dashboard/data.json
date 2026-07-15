@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T09:05:10Z",
+  "generated_at": "2026-07-15T09:06:34Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
     "used": 0,
@@ -7,7 +7,7 @@
     "pct": 0.0,
     "window_started_at": "2026-07-15T09:22:33Z",
     "resets_at": "2026-07-15T14:22:33Z",
-    "seconds_to_reset": 19042,
+    "seconds_to_reset": 18958,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -412,9 +412,9 @@
       "title": "Dashboard: render budget history bars (used vs budget per past window, limit-hits marked red)",
       "acceptance": "dashboard/index.html renders budget.history (already in data.json) as a small bar strip under the gauge; limit-hit windows visually flagged; auto-raised budget visible; verified with screenshot",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T08:31:09Z",
+      "status": "done",
+      "handoff": "history bar strip under gauge: amber=overran/auto-raise, red=limit hit, dashed=current; tooltips with spend/budget; verified live screenshot",
+      "updated": "2026-07-15T09:06:32Z",
       "issue": "7",
       "commit": null
     },
@@ -452,7 +452,7 @@
       "handoff": "stale heartbeat + task in_progress now shows amber 'WORKING - quiet Xm' instead of false IDLE; verified with aged heartbeat",
       "updated": "2026-07-15T09:05:08Z",
       "issue": "10",
-      "commit": null
+      "commit": "511bfd5"
     },
     {
       "id": "T32",
@@ -516,7 +516,6 @@
     "next": [
       "T8",
       "T23",
-      "T28",
       "T33"
     ],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
@@ -621,10 +620,10 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T31",
-    "current_action": "quiet-state verified",
+    "current_task": "T28",
+    "current_action": "budget history bars",
     "agent": "opus",
-    "updated": "2026-07-15T09:04:59Z",
+    "updated": "2026-07-15T09:05:13Z",
     "log": [
       {
         "at": "2026-07-15T04:06:41Z",
