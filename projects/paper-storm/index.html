@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paper Storm</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#1a1038}
+  canvas{display:block;width:100vw;height:100vh}
+  #hint{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+    font:13px/1.4 system-ui,sans-serif;color:#ffd9b0;opacity:.85;
+    background:rgba(20,10,40,.45);padding:6px 14px;border-radius:20px;
+    letter-spacing:.4px;pointer-events:none;white-space:nowrap}
+  #title{position:fixed;top:20px;left:24px;font:600 22px/1 system-ui,sans-serif;
+    color:#ffe8cf;letter-spacing:2px;pointer-events:none;opacity:.9;
+    text-shadow:0 2px 12px rgba(255,120,60,.35)}
+  #title small{display:block;font:400 11px/1 system-ui;letter-spacing:3px;
+    color:#e8a87c;margin-top:6px;text-transform:uppercase}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="title">PAPER STORM<small>origami murmuration</small></div>
+<div id="hint">move to lead the flock &middot; hold near them to scatter</div>
+<script>
+'use strict';
+const Q = new URLSearchParams(location.search);
+const DEMO = Q.get('demo') === '1';
+// mulberry32 seeded RNG for deterministic flocks (?seed=)
+let s = (parseInt(Q.get('seed'), 10) || 1337) >>> 0;
+const rnd = () => (s = s + 0x6D2B79F5 | 0,
+  ((Math.imul(s ^ s >>> 15, 1 | s) + 0x9E3779B9 ^ s) >>> 0) / 4294967296);
+
+const cv = document.getElementById('c'), cx = cv.getContext('2d');
+let W = 0, H = 0, DPR = 1;
+function resize() {
+  DPR = Math.min(devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight;
+  cv.width = W * DPR; cv.height = H * DPR;
+  cx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  sky = null; // rebuild gradient
+}
+addEventListener('resize', resize);
+
+// ---- flock state (typed arrays) ----
+const N = Math.max(1500, Math.min(2200, ((innerWidth * innerHeight) / 550) | 0));
+const px = new Float32Array(N), py = new Float32Array(N);
+const vx = new Float32Array(N), vy = new Float32Array(N);
+const ph = new Float32Array(N), pw = new Float32Array(N); // flap phase, speed
+const shade = new Uint8Array(N);
+// warm paper shades, lit by dusk
+const PAL = ['#ffe9d2', '#ffd9b8', '#f7c39a', '#e8a87c', '#c98a6b', '#8d5f63'];
+const DARK = ['#d9b493', '#c9a07a', '#b58a64', '#a1745a', '#8a5c50', '#5d4150'];
+
+for (let i = 0; i < N; i++) {
+  px[i] = rnd() * innerWidth; py[i] = rnd() * innerHeight;
+  const a = rnd() * 6.2832;
+  vx[i] = Math.cos(a) * 2; vy[i] = Math.sin(a) * 2;
+  ph[i] = rnd() * 6.2832; pw[i] = 0.18 + rnd() * 0.14;
+  shade[i] = (rnd() * PAL.length) | 0;
+}
+
+// ---- spatial grid (linked lists in typed arrays) ----
+const CELL = 42;
+let gw = 0, gh = 0, head, nxt = new Int32Array(N);
+function buildGrid() {
+  gw = Math.max(1, Math.ceil(W / CELL)); gh = Math.max(1, Math.ceil(H / CELL));
+  if (!head || head.length < gw * gh) head = new Int32Array(gw * gh);
+  head.fill(-1);
+  for (let i = 0; i < N; i++) {
+    let cxi = (px[i] / CELL) | 0, cyi = (py[i] / CELL) | 0;
+    if (cxi < 0) cxi = 0; else if (cxi >= gw) cxi = gw - 1;
+    if (cyi < 0) cyi = 0; else if (cyi >= gh) cyi = gh - 1;
+    const c = cyi * gw + cxi;
+    nxt[i] = head[c]; head[c] = i;
+  }
+}
+
+// ---- cursor / demo autopilot ----
+let mx = -9999, my = -9999, live = false;
+addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; live = true; });
+addEventListener('pointerleave', () => { live = false; });
+
+// ---- sky ----
+let sky = null, stars = null;
+function drawSky() {
+  if (!sky) {
+    sky = cx.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0, '#120a33');
+    sky.addColorStop(0.45, '#3b1d5e');
+    sky.addColorStop(0.72, '#93386b');
+    sky.addColorStop(0.88, '#e26d4f');
+    sky.addColorStop(1, '#ffb347');
+    stars = [];
+    for (let i = 0; i < 90; i++)
+      stars.push([rnd() * 2000 % 1, rnd() * 0.55, 0.3 + rnd() * 0.9]);
+  }
+  cx.fillStyle = sky; cx.fillRect(0, 0, W, H);
+  // sun glow on horizon
+  const g = cx.createRadialGradient(W * 0.68, H * 0.97, 10, W * 0.68, H * 0.97, H * 0.5);
+  g.addColorStop(0, 'rgba(255,214,140,.85)');
+  g.addColorStop(0.4, 'rgba(255,150,90,.25)');
+  g.addColorStop(1, 'rgba(255,150,90,0)');
+  cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+  cx.fillStyle = 'rgba(255,240,220,.7)';
+  for (const [x, y, r] of stars) {
+    cx.globalAlpha = 0.25 + 0.5 * (1 - y / 0.55);
+    cx.fillRect(x * W, y * H, r, r);
+  }
+  cx.globalAlpha = 1;
+}
+
+// ---- boids ----
+const PER = 40, PER2 = PER * PER, SEP2 = 17 * 17;
+const MAXS = 3.4, MINS = 1.4;
+let frames = 0, fps = 0, lastFpsT = performance.now();
+
+function step(t) {
+  buildGrid();
+  const cw = 1 / CELL;
+  const mActive = live || DEMO;
+  for (let i = 0; i < N; i++) {
+    const x = px[i], y = py[i];
+    let ax = 0, ay = 0, cxs = 0, cys = 0, avx = 0, avy = 0, n = 0, sx = 0, sy = 0;
+    const c0x = Math.max(0, ((x * cw) | 0) - 1), c1x = Math.min(gw - 1, ((x * cw) | 0) + 1);
+    const c0y = Math.max(0, ((y * cw) | 0) - 1), c1y = Math.min(gh - 1, ((y * cw) | 0) + 1);
+    for (let cy2 = c0y; cy2 <= c1y; cy2++)
+      for (let cx2 = c0x; cx2 <= c1x; cx2++) {
+        for (let j = head[cy2 * gw + cx2]; j !== -1; j = nxt[j]) {
+          if (j === i) continue;
+          const dx = px[j] - x, dy = py[j] - y, d2 = dx * dx + dy * dy;
+          if (d2 > PER2) continue;
+          cxs += px[j]; cys += py[j]; avx += vx[j]; avy += vy[j]; n++;
+          if (d2 < SEP2 && d2 > 0.01) { const inv = 1 / d2; sx -= dx * inv; sy -= dy * inv; }
+          if (n > 14) break; // cap neighbor work
+        }
+        if (n > 14) break;
+      }
+    if (n) {
+      const inv = 1 / n;
+      ax += (cxs * inv - x) * 0.0045 + (avx * inv - vx[i]) * 0.055;
+      ay += (cys * inv - y) * 0.0045 + (avy * inv - vy[i]) * 0.055;
+      ax += sx * 26; ay += sy * 26;
+    }
+    // cursor: attract from afar, repel up close (the "dodge")
+    if (mActive) {
+      const dx = mx - x, dy = my - y, d2 = dx * dx + dy * dy;
+      if (d2 < 120 * 120 && d2 > 1) {
+        const d = Math.sqrt(d2), f = -3.2 * (1 - d / 120) / d;
+        ax += dx * f; ay += dy * f;
+      } else if (d2 > 1) {
+        const d = Math.sqrt(d2), f = 0.35 / d;
+        ax += dx * f; ay += dy * f;
+      }
+    }
+    // soft walls
+    const M = 60;
+    if (x < M) ax += (M - x) * 0.004; else if (x > W - M) ax -= (x - W + M) * 0.004;
+    if (y < M) ay += (M - y) * 0.004; else if (y > H - M) ay -= (y - H + M) * 0.004;
+
+    let nvx = vx[i] + ax, nvy = vy[i] + ay;
+    const sp2 = nvx * nvx + nvy * nvy;
+    if (sp2 > MAXS * MAXS) { const k = MAXS / Math.sqrt(sp2); nvx *= k; nvy *= k; }
+    else if (sp2 < MINS * MINS) { const k = MINS / Math.sqrt(sp2 || 1); nvx *= k; nvy *= k; }
+    vx[i] = nvx; vy[i] = nvy;
+    px[i] = x + nvx; py[i] = y + nvy;
+    // flap faster when turning/accelerating
+    ph[i] += pw[i] + Math.min(0.25, (ax * ax + ay * ay) * 0.4);
+  }
+}
+
+function draw() {
+  drawSky();
+  for (let i = 0; i < N; i++) {
+    const x = px[i], y = py[i];
+    const vX = vx[i], vY = vy[i];
+    const sp = Math.sqrt(vX * vX + vY * vY) || 1;
+    const dx = vX / sp, dy = vY / sp;          // heading
+    const nxn = -dy, nyn = dx;                  // normal
+    const fold = Math.sin(ph[i]);              // -1..1 wing fold
+    const wing = 2.2 + 4.6 * Math.abs(fold);   // wingspan: folds to a dart
+    const len = 8 + 2.5 * (1 - Math.abs(fold));
+    const bx = x - dx * len, by = y - dy * len; // tail base
+    const si = shade[i];
+    // left wing
+    cx.fillStyle = fold >= 0 ? PAL[si] : DARK[si];
+    cx.beginPath();
+    cx.moveTo(x + dx * 3, y + dy * 3);
+    cx.lineTo(bx + nxn * wing, by + nyn * wing);
+    cx.lineTo(bx - dx * 2, by - dy * 2);
+    cx.fill();
+    // right wing (counter-shaded => folded-paper look)
+    cx.fillStyle = fold >= 0 ? DARK[si] : PAL[si];
+    cx.beginPath();
+    cx.moveTo(x + dx * 3, y + dy * 3);
+    cx.lineTo(bx - nxn * wing, by - nyn * wing);
+    cx.lineTo(bx - dx * 2, by - dy * 2);
+    cx.fill();
+  }
+  // cursor beacon in demo so screenshots show the leader point
+  if (DEMO) {
+    cx.beginPath(); cx.arc(mx, my, 5, 0, 6.2832);
+    cx.fillStyle = 'rgba(255,235,200,.9)'; cx.fill();
+  }
+}
+
+let t0 = performance.now();
+function loop(t) {
+  requestAnimationFrame(loop);
+  const el = (t - t0) / 1000;
+  if (DEMO) { // virtual cursor: slow lissajous sweep
+    mx = W * (0.5 + 0.38 * Math.sin(el * 0.55));
+    my = H * (0.45 + 0.3 * Math.sin(el * 0.83 + 1.7));
+  }
+  step(t);
+  draw();
+  frames++;
+  if (t - lastFpsT > 1000) {
+    fps = frames; frames = 0; lastFpsT = t;
+    if (DEMO) {
+      // mirror live state for headless assertions
+      let mvx = 0, mvy = 0;
+      for (let i = 0; i < N; i += 50) { mvx += vx[i]; mvy += vy[i]; }
+      document.title = `PaperStorm demo birds=${N} fps=${fps} t=${el.toFixed(1)} flow=${(mvx * mvx + mvy * mvy).toFixed(0)}`;
+    }
+  }
+}
+resize();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

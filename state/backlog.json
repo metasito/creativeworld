@@ -66,7 +66,7 @@
       "id": "E9",
       "title": "Paper Storm",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "A murmuration of thousands of origami birds swirling over a gradient dusk sky; the flock follows and dodges the cursor, folding/unfolding mid-flight",
       "slug": "paper-storm"
     },
@@ -507,9 +507,12 @@
       "title": "Paper Storm v1: boids origami murmuration",
       "acceptance": "projects/paper-storm/index.html: canvas boids flock (1500+ birds) as folded-triangle sprites over dusk gradient; flock steers toward/away from cursor; birds visibly fold/unfold in flight; ?demo=1 auto-moves a virtual cursor and mirrors state in title; ?seed= deterministic; 60fps-ish; screenshot shot.png; registered in backlog",
       "size": "M",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T09:40:26Z"
+      "updated": "2026-07-15T09:46:33Z",
+      "claimed_by": "unknown",
+      "issue": "18",
+      "cost": 133534
     },
     {
       "id": "T42",
