@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-07-16T08:01:42Z",
+  "generated_at": "2026-07-16T08:07:56Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 617034,
-    "window_used": 617034,
-    "rolling_used": 617034,
+    "used": 870015,
+    "window_used": 870015,
+    "rolling_used": 870015,
     "binding": "window",
     "budget": 4798485,
-    "pct": 12.9,
-    "rate_per_hour": 2779428,
+    "pct": 18.1,
+    "rate_per_hour": 2669532,
     "eta_hours": 1.5,
     "burn_spark": [
       0,
@@ -22,13 +22,13 @@
       0,
       0,
       0,
-      617033
+      870015
     ],
     "window_started_at": "2026-07-16T05:22:33Z",
     "resets_at": "2026-07-16T10:22:33Z",
-    "seconds_to_reset": 8450,
+    "seconds_to_reset": 8076,
     "nap_until": "2026-07-16T10:22:33Z",
-    "nap_seconds": 8450,
+    "nap_seconds": 8076,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -223,10 +223,10 @@
       "id": "E17",
       "title": "Bubble Diver",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Drag a pearl diver through drifting whirlpools and jellyfish to reach the surface before air runs out",
       "slug": "bubble-diver",
-      "cost": 0
+      "cost": 215117
     },
     {
       "id": "E18",
@@ -1062,7 +1062,7 @@
       "claimed_by": "unknown",
       "issue": "39",
       "cost": 158669,
-      "commit": null
+      "commit": "df4bed2"
     },
     {
       "id": "T69",
@@ -1081,9 +1081,12 @@
       "title": "Bubble Diver v1",
       "acceptance": "Single index.html touch game: drag diver, drifting whirlpools push, air meter drains, reach surface to win / 0 air = lose; portrait, pointer events, win+lose states; shot.png",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T07:57:30Z",
+      "status": "done",
+      "handoff": "Bubble Diver v1 - drag-to-swim touch game: whirlpools shove, air drains, surface to win",
+      "updated": "2026-07-16T08:07:54Z",
+      "claimed_by": "unknown",
+      "issue": "40",
+      "cost": 215117,
       "commit": null
     },
     {
@@ -1123,7 +1126,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T70",
       "T72",
       "T58",
       "T60",
@@ -1319,14 +1321,14 @@
       "id": "E17",
       "title": "Bubble Diver",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Drag a pearl diver through drifting whirlpools and jellyfish to reach the surface before air runs out",
       "slug": "bubble-diver",
-      "built": false,
-      "shot": false,
-      "updated": null,
-      "cost": 0,
-      "url": null
+      "built": true,
+      "shot": true,
+      "updated": "2026-07-16T08:05:59Z",
+      "cost": 215117,
+      "url": "/projects/bubble-diver/"
     },
     {
       "id": "E18",
@@ -1377,26 +1379,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T68",
-    "current_action": "Prism Ricochet v1: laser-mirror puzzle",
+    "current_task": "T70",
+    "current_action": "Building Bubble Diver v1",
     "agent": "autopilot",
-    "updated": "2026-07-16T08:00:06Z",
+    "updated": "2026-07-16T08:07:51Z",
     "log": [
-      {
-        "at": "2026-07-16T00:26:25Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-16T00:28:32Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-16T00:30:35Z",
-        "agent": "autopilot",
-        "msg": "T57 comet-sling index.html written; validating"
-      },
       {
         "at": "2026-07-16T00:33:25Z",
         "agent": "autopilot",
@@ -1441,6 +1428,21 @@
         "at": "2026-07-16T08:00:06Z",
         "agent": "autopilot",
         "msg": "T68 built index.html; validating"
+      },
+      {
+        "at": "2026-07-16T08:02:02Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T08:04:03Z",
+        "agent": "autopilot",
+        "msg": "T70 bubble-diver index.html written; validating"
+      },
+      {
+        "at": "2026-07-16T08:07:51Z",
+        "agent": "autopilot",
+        "msg": "T70 verified: demo self-wins (WIN air:27% reached:100%), forceWin/forceLose hooks, no console errors, gameplay shot"
       }
     ]
   },

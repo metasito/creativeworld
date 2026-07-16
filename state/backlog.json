@@ -130,7 +130,7 @@
       "id": "E17",
       "title": "Bubble Diver",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Drag a pearl diver through drifting whirlpools and jellyfish to reach the surface before air runs out",
       "slug": "bubble-diver"
     },
@@ -919,9 +919,12 @@
       "title": "Bubble Diver v1",
       "acceptance": "Single index.html touch game: drag diver, drifting whirlpools push, air meter drains, reach surface to win / 0 air = lose; portrait, pointer events, win+lose states; shot.png",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T07:57:30Z"
+      "status": "done",
+      "handoff": "Bubble Diver v1 - drag-to-swim touch game: whirlpools shove, air drains, surface to win",
+      "updated": "2026-07-16T08:07:54Z",
+      "claimed_by": "unknown",
+      "issue": "40",
+      "cost": 215117
     },
     {
       "id": "T71",
