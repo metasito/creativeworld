@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-07-16T13:02:03Z",
+  "generated_at": "2026-07-16T13:06:23Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2319481,
-    "window_used": 1028335,
-    "rolling_used": 2319481,
+    "used": 2365393,
+    "window_used": 1250866,
+    "rolling_used": 2365393,
     "binding": "trailing",
     "budget": 4798485,
-    "pct": 48.3,
-    "rate_per_hour": 463881,
-    "eta_hours": 5.3,
+    "pct": 49.3,
+    "rate_per_hour": 473102,
+    "eta_hours": 5.1,
     "burn_spark": [
-      971394,
-      319752,
+      1016346,
+      98180,
       0,
       0,
       0,
@@ -22,12 +22,12 @@
       0,
       0,
       0,
-      1028335
+      1250866
     ],
     "window_started_at": "2026-07-16T10:22:33Z",
     "resets_at": "2026-07-16T15:22:33Z",
-    "seconds_to_reset": 8429,
-    "nap_until": "2026-07-16T13:02:02Z",
+    "seconds_to_reset": 8169,
+    "nap_until": "2026-07-16T13:06:24Z",
     "nap_seconds": 0,
     "wrap_up_pct": 85,
     "stop_pct": 95,
@@ -231,7 +231,7 @@
       "status": "shipped",
       "description": "Drag a pearl diver through drifting whirlpools and jellyfish to reach the surface before air runs out",
       "slug": "bubble-diver",
-      "cost": 215117
+      "cost": 392362
     },
     {
       "id": "E18",
@@ -1132,7 +1132,7 @@
       "claimed_by": "unknown",
       "issue": "50",
       "cost": 93876,
-      "commit": null
+      "commit": "172da53"
     },
     {
       "id": "T70",
@@ -1154,9 +1154,12 @@
       "title": "Bubble Diver polish: jellyfish hazard + bubbles",
       "acceptance": "Add jellyfish hazards and rising bubble particles; screenshot",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T12:48:02Z",
+      "status": "done",
+      "handoff": "Bubble Diver polish: pulsing jellyfish stingers (air drain + knockback + vibrate), rising bubble puff particles from the diver, sting flash; demo dodges both hazards and self-wins",
+      "updated": "2026-07-16T13:06:21Z",
+      "claimed_by": "unknown",
+      "issue": "51",
+      "cost": 177245,
       "commit": null
     },
     {
@@ -1337,7 +1340,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T71",
       "T73",
       "T75",
       "T77",
@@ -1538,8 +1540,8 @@
       "slug": "bubble-diver",
       "built": true,
       "shot": true,
-      "updated": "2026-07-16T08:05:59Z",
-      "cost": 215117,
+      "updated": "2026-07-16T13:04:34Z",
+      "cost": 392362,
       "url": "/projects/bubble-diver/"
     },
     {
@@ -1656,21 +1658,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T69",
-    "current_action": "Prism Ricochet polish: beam glow + level select",
+    "current_task": "T71",
+    "current_action": "Bubble Diver polish: jellyfish hazard + bubbles",
     "agent": "autopilot",
-    "updated": "2026-07-16T13:01:58Z",
+    "updated": "2026-07-16T13:03:11Z",
     "log": [
-      {
-        "at": "2026-07-16T12:39:53Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-16T12:39:53Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
       {
         "at": "2026-07-16T12:46:19Z",
         "agent": "autopilot",
@@ -1720,6 +1712,16 @@
         "at": "2026-07-16T13:01:58Z",
         "agent": "autopilot",
         "msg": "Prism Ricochet: added flowing photon beam trail + tappable level-select grid; demo self-wins, jumpTo verified"
+      },
+      {
+        "at": "2026-07-16T13:02:28Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T13:03:11Z",
+        "agent": "autopilot",
+        "msg": "T71: adding jellyfish hazards + rising bubble particles to bubble-diver"
       }
     ]
   },

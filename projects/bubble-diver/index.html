@@ -52,7 +52,7 @@
 
   <div class="overlay" id="ovStart">
     <h1>Bubble Diver</h1>
-    <p>Drag the diver to swim <b>up to the surface</b> before your air runs out. Dodge the swirling <b>whirlpools</b> — they shove you back down.</p>
+    <p>Drag the diver to swim <b>up to the surface</b> before your air runs out. Dodge the swirling <b>whirlpools</b> and the drifting <b>jellyfish</b> — a sting costs precious air.</p>
     <button id="btnStart">Dive</button>
   </div>
 
@@ -89,7 +89,10 @@
     depth:DEPTH,             // remaining depth to climb
     air:1,
     whirls:[],
+    jellies:[],
     bubbles:[],
+    puffs:[],                // rising bubble particles from the diver
+    sting:0,                 // sting flash timer (screen feedback)
     t:0,
     target:null,            // pointer target
     best: +(localStorage.getItem('bd_best')||0)
@@ -100,8 +103,10 @@
     state.diver.x = W/2; state.diver.y = H*0.62;
     state.diver.vx=0; state.diver.vy=0;
     state.depth = DEPTH; state.air = 1; state.t=0; state.target=null;
-    state.whirls = []; state.bubbles = [];
+    state.whirls = []; state.bubbles = []; state.jellies = []; state.puffs = [];
+    state.sting = 0;
     seedWhirls();
+    seedJellies();
     for(let i=0;i<26;i++) state.bubbles.push(mkBubble());
     ovEnd.classList.add('hide');
     ovStart.classList.remove('hide');
@@ -109,6 +114,15 @@
   }
   function mkBubble(){
     return { x:Math.random()*W, y:Math.random()*H, r:1+Math.random()*3, s:12+Math.random()*30 };
+  }
+  function emitPuffs(x,y,n,spread,fast){
+    for(let i=0;i<n;i++){
+      state.puffs.push({
+        x: x+(Math.random()-0.5)*spread, y: y+(Math.random()-0.5)*spread,
+        r: 1.4+Math.random()*(fast?3.4:2.2), s: (fast?40:22)+Math.random()*30,
+        life: 0.7+Math.random()*0.9, seed: Math.random()*6.28
+      });
+    }
   }
   function seedWhirls(){
     state.whirls = [];
@@ -122,6 +136,22 @@
         drift: (Math.random()<0.5?-1:1)*(18+Math.random()*26),
         spin: (Math.random()<0.5?-1:1)*(1.4+Math.random()),
         ph: Math.random()*6.28
+      });
+    }
+  }
+  function seedJellies(){
+    state.jellies = [];
+    // drifting jellyfish stingers tucked between the whirlpools
+    const n = 6;
+    for(let i=0;i<n;i++){
+      state.jellies.push({
+        depth: (i+0.28)/n * (DEPTH-260) + 190,
+        x: 50 + Math.random()*(Math.max(W,320)-100),
+        r: 22 + Math.random()*12,
+        drift: (Math.random()<0.5?-1:1)*(10+Math.random()*16),
+        ph: Math.random()*6.28,
+        pulse: 0.9 + Math.random()*0.6,
+        cool: 0                         // sting cooldown so it hits once per touch
       });
     }
   }
@@ -180,6 +210,14 @@
       b.y -= b.s*dt; b.x += Math.sin(state.t*0.6+b.y*0.05)*6*dt;
       if(b.y < -6){ b.y = H+6; b.x = Math.random()*W; }
     }
+    // rising bubble particles (puffs from the diver / stings) — always animate & fade
+    for(let i=state.puffs.length-1;i>=0;i--){
+      const p = state.puffs[i];
+      p.y -= p.s*dt; p.x += Math.sin(state.t*2+p.seed)*10*dt;
+      p.life -= dt;
+      if(p.life<=0 || p.y<-8) state.puffs.splice(i,1);
+    }
+    if(state.sting>0) state.sting = Math.max(0, state.sting - dt);
     if(state.phase!=='play') return;
 
     // air drains; faster the deeper you are
@@ -193,7 +231,8 @@
     if(demo){
       let ax = W/2, ay = -H*0.6;               // aim well above so the diver climbs hard
       let nearest=null, nd=1e9;
-      for(const w of state.whirls){
+      const haz = state.whirls.concat(state.jellies);
+      for(const w of haz){
         const sy = worldToScreen(w.depth);
         if(sy<-80||sy>H+80) continue;
         const dx=w.x-d.x, dy=sy-d.y, dist=Math.hypot(dx,dy);
@@ -231,6 +270,32 @@
         d.vx += (tx*160 + nx*40)*f*dt;
         d.vy += (ty*160 + ny*40 + 120)*f*dt;   // net downward shove
       }
+    }
+
+    // jellyfish: drift + pulse; sting on contact (air burst + knockback)
+    for(const j of state.jellies){
+      j.x += j.drift*dt;
+      if(j.x < j.r || j.x > W-j.r) j.drift*=-1;
+      j.x = Math.max(j.r, Math.min(W-j.r, j.x));
+      if(j.cool>0) j.cool -= dt;
+      const sy = worldToScreen(j.depth);
+      const dx = d.x-j.x, dy = d.y-sy, dist=Math.hypot(dx,dy)||1;
+      const hitR = j.r*0.95 + 18;
+      if(dist < hitR && j.cool<=0){
+        j.cool = 1.1;
+        state.air = Math.max(0, state.air - 0.12);   // sting drains air
+        state.sting = 0.5;
+        const nx=dx/dist, ny=dy/dist;
+        d.vx += nx*260; d.vy += ny*200 + 90;         // knock diver back/down
+        emitPuffs(d.x, d.y, 14, 20, true);
+        if(navigator.vibrate) navigator.vibrate(30);
+        if(state.air<=0){ state.air=0; end(false); return; }
+      }
+    }
+
+    // trailing bubble puffs while actively swimming
+    if(Math.hypot(d.vx,d.vy) > 40 && Math.random() < dt*22){
+      emitPuffs(d.x-Math.sign(d.vx)*4, d.y+12, 1, 8, false);
     }
 
     d.x += d.vx*dt; d.y += d.vy*dt;
@@ -282,6 +347,45 @@
       ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,6.283); ctx.fill();
     }
 
+    // rising bubble puffs (from diver / stings)
+    for(const p of state.puffs){
+      const a = Math.min(0.7, p.life*0.6);
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.283);
+      ctx.fillStyle=`rgba(200,244,255,${a})`; ctx.fill();
+      ctx.strokeStyle=`rgba(255,255,255,${a*0.7})`; ctx.lineWidth=0.8; ctx.stroke();
+    }
+
+    // jellyfish hazards
+    for(const j of state.jellies){
+      const sy = worldToScreen(j.depth);
+      if(sy<-120||sy>H+120) continue;
+      const pulse = 1 + Math.sin(state.t*j.pulse + j.ph)*0.16;
+      const r = j.r*pulse;
+      ctx.save();
+      ctx.translate(j.x, sy);
+      // tentacles
+      ctx.strokeStyle='rgba(255,140,210,.5)'; ctx.lineWidth=2;
+      for(let k=-2;k<=2;k++){
+        ctx.beginPath(); ctx.moveTo(k*r*0.28, r*0.4);
+        for(let s=1;s<=4;s++){
+          const yy = r*0.4 + s*r*0.5;
+          ctx.lineTo(k*r*0.28 + Math.sin(state.t*3 + k + s*0.8)*5, yy);
+        }
+        ctx.stroke();
+      }
+      // bell
+      const bg = ctx.createRadialGradient(0,-r*0.2,2,0,0,r);
+      bg.addColorStop(0,'rgba(255,200,240,.85)');
+      bg.addColorStop(1,'rgba(220,90,200,.28)');
+      ctx.fillStyle=bg;
+      ctx.beginPath(); ctx.ellipse(0,0,r,r*0.8,0,Math.PI,0);
+      ctx.lineTo(r, r*0.15);
+      for(let x=r;x>=-r;x-=r*0.5){ ctx.quadraticCurveTo(x-r*0.25, r*0.34, x-r*0.5, r*0.15); }
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle='rgba(255,190,235,.7)'; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.restore();
+    }
+
     // whirlpools
     for(const w of state.whirls){
       const sy = worldToScreen(w.depth);
@@ -325,6 +429,12 @@
     ctx.fillStyle='rgba(255,255,255,.5)';
     ctx.beginPath(); ctx.arc(6, 16+Math.sin(state.t*8)*3, 2.5,0,6.283); ctx.fill();
     ctx.restore();
+
+    // sting flash
+    if(state.sting>0){
+      ctx.fillStyle=`rgba(255,80,180,${state.sting*0.5})`;
+      ctx.fillRect(0,0,W,H);
+    }
 
     // HUD
     airbar.style.width = (state.air*100).toFixed(1)+'%';

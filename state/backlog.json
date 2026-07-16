@@ -981,9 +981,12 @@
       "title": "Bubble Diver polish: jellyfish hazard + bubbles",
       "acceptance": "Add jellyfish hazards and rising bubble particles; screenshot",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T12:48:02Z"
+      "status": "done",
+      "handoff": "Bubble Diver polish: pulsing jellyfish stingers (air drain + knockback + vibrate), rising bubble puff particles from the diver, sting flash; demo dodges both hazards and self-wins",
+      "updated": "2026-07-16T13:06:21Z",
+      "claimed_by": "unknown",
+      "issue": "51",
+      "cost": 177245
     },
     {
       "id": "T72",
