@@ -20,10 +20,10 @@
     justify-content:center; text-align:center; gap:18px; padding:32px;
     background:radial-gradient(ellipse at center,rgba(30,14,60,.72),rgba(10,7,19,.94));
     backdrop-filter:blur(3px); z-index:10; }
-  .overlay h1 { font-size:34px; font-weight:700; letter-spacing:.14em;
-    background:linear-gradient(90deg,#b98bff,#6fe0ff); -webkit-background-clip:text;
+  .overlay h1 { font-size:clamp(28px,8vw,38px); font-weight:700; letter-spacing:.1em;
+    max-width:100%; background:linear-gradient(90deg,#b98bff,#6fe0ff); -webkit-background-clip:text;
     background-clip:text; color:transparent; text-shadow:0 0 24px rgba(140,90,255,.5); }
-  .overlay p { max-width:20em; line-height:1.55; font-size:15px; color:#c3b6e0; }
+  .overlay p { max-width:min(20em,90vw); line-height:1.55; font-size:15px; color:#c3b6e0; }
   .btn { min-width:180px; min-height:52px; padding:14px 30px; font-size:17px; letter-spacing:.08em;
     border:1px solid rgba(160,120,255,.55); border-radius:40px; color:#eadfff;
     background:linear-gradient(180deg,rgba(120,70,220,.42),rgba(70,40,140,.32));
@@ -69,6 +69,21 @@
 
   let W,H,CX,CY,R;        // canvas metrics
   let level=0, rings=[], drag=null, won=false, t0=performance.now();
+  let particles=[], lastNow=performance.now();
+
+  // radial burst of glowing motes from (x,y)
+  function burst(x,y,n,hue,spd){
+    for(let i=0;i<n;i++){
+      const a=Math.random()*Math.PI*2, s=spd*(0.3+Math.random());
+      particles.push({ x, y, vx:Math.cos(a)*s, vy:Math.sin(a)*s,
+        life:1, decay:0.5+Math.random()*0.5, hue:hue+(Math.random()*44-22), r:2+Math.random()*3.5 });
+    }
+  }
+  // notch centre for ring i (screen coords)
+  function notchXY(i){
+    const rg=rings[i], b=band(i), a=-Math.PI/2+rg.rot;
+    return { x:CX+Math.cos(a)*b.mid, y:CY+Math.sin(a)*b.mid };
+  }
 
   function fit(){
     const wrap = document.getElementById('wrap');
@@ -87,8 +102,9 @@
       const step = Math.PI*2/steps;
       // start on a random non-zero step so it needs solving
       let idx = 1 + Math.floor(Math.random()*(steps-1));
-      return { steps, step, rot: idx*step, i };
+      return { steps, step, rot: idx*step, i, flash:0, wasAligned:false };
     });
+    particles = [];
     won = false;
     lvlEl.textContent = 'GLYPH '+ROMAN[level];
     updateHud();
@@ -140,12 +156,23 @@
     let d=a-drag.ang; while(d>Math.PI)d-=Math.PI*2; while(d<-Math.PI)d+=Math.PI*2;
     rings[drag.i].rot += d; drag.ang=a; updateHud();
   }
+  // snap a ring to its nearest step; fire glow+particle feedback if it just aligned
+  function settle(i,haptic){
+    const rg=rings[i];
+    rg.rot = Math.round(rg.rot/rg.step)*rg.step;   // snap
+    const al=isAligned(rg);
+    if(al && !rg.wasAligned){
+      rg.flash=1;
+      const n=notchXY(i); burst(n.x,n.y,14,196,120+i*20);
+      if(haptic && navigator.vibrate) navigator.vibrate([8,20,8]);
+    } else if(haptic && navigator.vibrate){ navigator.vibrate(4); }
+    rg.wasAligned=al;
+  }
   function onUp(){
     if(!drag){ return; }
-    const rg=rings[drag.i];
-    rg.rot = Math.round(rg.rot/rg.step)*rg.step;   // snap
+    const i=drag.i;
     drag=null;
-    if(navigator.vibrate) navigator.vibrate(isAligned(rg)?[8,20,8]:4);
+    settle(i,true);
     updateHud();
     if(allAligned() && !won) win();
   }
@@ -157,6 +184,10 @@
   function win(){
     won=true; updateHud();
     if(navigator.vibrate) navigator.vibrate([12,40,12,40,30]);
+    // fanfare: bloom from every notch + a big core burst
+    for(let i=0;i<rings.length;i++){ const n=notchXY(i); rings[i].flash=1; burst(n.x,n.y,18,196,150); }
+    burst(CX,CY,60,205,240);
+    setTimeout(()=>burst(CX,CY,40,190,180), 160);
     setTimeout(()=>{
       const last = level>=LEVELS.length-1;
       winTitle.textContent = last ? 'GLYPHS MASTERED' : 'GLYPH LOCKED';
@@ -164,12 +195,14 @@
                                 : 'The path is sealed. One glyph remains dark…';
       document.getElementById('nextBtn').textContent = last ? 'PLAY AGAIN' : 'NEXT GLYPH';
       winOv.classList.remove('hidden');
-    }, 620);
+    }, 1050);   // let the fanfare bloom before the overlay slides in
   }
 
   // ---- render ----
   function draw(now){
     const time = (now-t0)/1000;
+    const dt = Math.min(0.05, (now-lastNow)/1000); lastNow=now;
+    for(const rg of rings){ if(rg.flash>0) rg.flash=Math.max(0, rg.flash-dt*2.2); }
     ctx.clearRect(0,0,W,H);
     // ambient
     const bg = ctx.createRadialGradient(CX,CY,10,CX,CY,R*1.4);
@@ -198,11 +231,16 @@
     for(let i=0;i<rings.length;i++){
       const rg=rings[i], b=band(i), al=isAligned(rg);
       const active = drag && drag.i===i;
+      // aligned rings glow; a fresh snap blooms brighter (rg.flash 1->0)
+      const bloom = al ? (0.35 + 0.65*rg.flash) : 0;
       // band ring
+      ctx.save();
+      if(bloom>0){ ctx.shadowColor='#7de0ff'; ctx.shadowBlur=10+26*bloom; }
       ctx.beginPath(); ctx.arc(CX,CY,b.mid,0,Math.PI*2);
       ctx.lineWidth=b.r1-b.r0-6;
-      ctx.strokeStyle = al ? 'rgba(120,215,255,.32)' : (active?'rgba(150,110,240,.34)':'rgba(90,60,150,.22)');
+      ctx.strokeStyle = al ? ('rgba(120,215,255,'+(0.30+0.5*bloom)+')') : (active?'rgba(150,110,240,.34)':'rgba(90,60,150,.22)');
       ctx.stroke();
+      ctx.restore();
       // tick marks
       for(let s=0;s<rg.steps;s++){
         const a=s*rg.step - Math.PI/2 + rg.rot;
@@ -214,11 +252,10 @@
       // rune notch (the mark that must reach the top marker)
       const na = -Math.PI/2 + rg.rot;
       const nx=CX+Math.cos(na)*b.mid, ny=CY+Math.sin(na)*b.mid;
-      const glow = al?1:0.5;
       ctx.save();
-      ctx.shadowColor = al?'#8ff0ff':'#b585ff'; ctx.shadowBlur = al?20:12;
+      ctx.shadowColor = al?'#8ff0ff':'#b585ff'; ctx.shadowBlur = (al?20:12)+22*rg.flash;
       ctx.fillStyle = al?'#bff4ff':'#d9c2ff';
-      ctx.beginPath(); ctx.arc(nx,ny,al?9:7,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(nx,ny,(al?9:7)+3*rg.flash,0,Math.PI*2); ctx.fill();
       // small rune tick lines on the gem
       ctx.strokeStyle='rgba(30,10,60,.7)'; ctx.lineWidth=1.6;
       ctx.beginPath(); ctx.moveTo(nx-3,ny); ctx.lineTo(nx+3,ny); ctx.stroke();
@@ -246,34 +283,47 @@
     ctx.beginPath(); ctx.moveTo(CX,CY-b0.inner); ctx.lineTo(CX,CY-R);
     ctx.strokeStyle='rgba(255,215,120,.10)'; ctx.lineWidth=2; ctx.stroke();
 
+    // particles (snap pops + win fanfare)
+    if(particles.length){
+      ctx.save(); ctx.globalCompositeOperation='lighter';
+      for(let k=particles.length-1;k>=0;k--){
+        const p=particles[k];
+        p.x+=p.vx*dt; p.y+=p.vy*dt; p.vx*=0.94; p.vy*=0.94; p.life-=p.decay*dt;
+        if(p.life<=0){ particles.splice(k,1); continue; }
+        ctx.globalAlpha=Math.max(0,p.life);
+        ctx.fillStyle='hsl('+p.hue+',100%,72%)';
+        ctx.shadowColor='hsl('+p.hue+',100%,65%)'; ctx.shadowBlur=10;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r*(0.4+0.6*p.life),0,Math.PI*2); ctx.fill();
+      }
+      ctx.restore();
+    }
+
     requestAnimationFrame(draw);
   }
 
   // ---- demo autopilot ----
-  function stepDemo(){
-    if(won || winOv.classList.contains('hidden')===false) return;
-    // find innermost unaligned ring, rotate toward nearest index-0
-    const rg = rings.find(r=>!isAligned(r));
-    if(rg){
-      const target = Math.round(rg.rot/(Math.PI*2))*Math.PI*2;
-      let d = target - rg.rot;
-      const stepAmt = 0.18;
-      if(Math.abs(d) <= stepAmt){ rg.rot=target; } else { rg.rot += Math.sign(d)*stepAmt; }
-      updateHud();
-      if(allAligned() && !won) win();
+  let demoActive=false, demoWinAt=0, demoLast=0;
+  // timer-driven (rAF freezes under headless during a plain wait; timers keep firing)
+  function driveDemo(){
+    if(!demoActive) return;
+    const now=performance.now();
+    const ddt = demoLast ? Math.min(0.6, (now-demoLast)/1000) : 0.016; demoLast=now;
+    if(!won){
+      // rotate the innermost unaligned ring toward nearest index-0
+      const idx = rings.findIndex(r=>!isAligned(r));
+      if(idx>=0){
+        const rg=rings[idx];
+        const target = Math.round(rg.rot/(Math.PI*2))*Math.PI*2;
+        const d = target - rg.rot;
+        const stepAmt = 4.5*ddt;   // delta-timed: same speed at any frame rate
+        if(Math.abs(d) <= stepAmt){ rg.rot=target; settle(idx,false); } else { rg.rot += Math.sign(d)*stepAmt; }
+        updateHud();
+        if(allAligned() && !won){ win(); demoWinAt=now; }
+      }
+    } else if(now - demoWinAt > 1400){   // > win() overlay delay (1050): advance to next glyph
+      if(level < LEVELS.length-1){ nextLevel(); }
+      else { demoActive=false; }         // final glyph: stop, title stays WIN III
     }
-  }
-  function demoLoop(){
-    stepDemo();
-    if(won){
-      // advance to next level after brief pause, until final
-      setTimeout(()=>{
-        if(level < LEVELS.length-1){ nextLevel(); setTimeout(demoLoop,300); }
-        // else: stop, title stays WIN III
-      }, 780);  // > win() overlay delay (620) so the stale show is cleared by nextLevel
-      return;
-    }
-    setTimeout(demoLoop, 40);
   }
 
   // ---- flow ----
@@ -285,7 +335,7 @@
   function startGame(){
     startOv.classList.add('hidden');
     fit(); buildLevel();
-    if(DEMO) setTimeout(demoLoop, 400);
+    if(DEMO){ demoActive=true; demoLast=0; setInterval(driveDemo, 33); }
   }
   document.getElementById('startBtn').addEventListener('click', startGame);
   document.getElementById('nextBtn').addEventListener('click', ()=>{
@@ -295,9 +345,11 @@
 
   // expose hooks
   window.__glyph = {
-    solve(){ rings.forEach(r=>{ r.rot = Math.round(r.rot/(Math.PI*2))*Math.PI*2; }); updateHud();
+    solve(){ rings.forEach((r,i)=>{ r.rot = Math.round(r.rot/(Math.PI*2))*Math.PI*2; settle(i,false); }); updateHud();
              if(allAligned() && !won) win(); return true; },
     forceWin(){ this.solve(); return won; },
+    // align the innermost n rings (leaves outer unsolved → no win overlay; for demos/shots)
+    alignN(n){ for(let i=0;i<n && i<rings.length;i++){ rings[i].rot=Math.round(rings[i].rot/(Math.PI*2))*Math.PI*2; settle(i,false); } updateHud(); return true; },
     state(){ return { level:level+1, locked:lockedCount(), total:rings.length, won }; }
   };
 

@@ -1067,9 +1067,12 @@
       "title": "Glyph Lock polish: ring glow + solve fanfare",
       "acceptance": "add per-ring glow on alignment, snap feedback, and a win particle burst",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T12:48:03Z"
+      "status": "done",
+      "handoff": "Glyph Lock polish: per-ring alignment bloom, snap flash + particle pop, win fanfare burst",
+      "updated": "2026-07-16T23:00:57Z",
+      "claimed_by": "unknown",
+      "issue": "55",
+      "cost": 1065727
     },
     {
       "id": "T78",
