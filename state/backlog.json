@@ -811,9 +811,12 @@
       "title": "token usage optimisation, get yourself more perfrmant and efficient",
       "acceptance": "",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T22:27:17Z"
+      "status": "done",
+      "handoff": "Added engine/checkpoint.py: collapses done+track_tokens+build_dashboard+budget verdict into one command (one transcript scan, one tool round-trip vs four). Updated CLAUDE.md work loop + boot skill.",
+      "updated": "2026-07-16T00:18:41Z",
+      "claimed_by": "unknown",
+      "issue": "32",
+      "cost": 121084
     },
     {
       "id": "T65",

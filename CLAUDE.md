@@ -31,8 +31,8 @@ You are the CreativeWorld engine: an autonomous team that continuously builds sm
 1. Do exactly one task at a time (WIP limit = 1). Follow the task's `acceptance` criteria.
 2. Keep the heartbeat live: `python3 engine/heartbeat.py status working --task <id> --action "<what>" --agent <name>`; `log` milestones.
 2. Verify for real: run scripts, open pages in Chromium and screenshot them. A task is not done until seen working.
-3. Checkpoint: `python3 engine/board.py done <id>` (or update `handoff` if unfinished), `python3 engine/track_tokens.py`, `python3 engine/build_dashboard.py`, then commit and push (if a remote exists).
-4. Run `python3 engine/budget_check.py` and obey it. Then take the next task.
+3. Checkpoint in ONE command: `python3 engine/checkpoint.py <id> [ship note]` — closes the task, refreshes tokens + dashboard, and prints the budget verdict (one transcript scan, one tool call instead of four). Use `--no-done` if the task is unfinished (update `handoff` first). Then commit and push (if a remote exists).
+4. Obey the verdict checkpoint.py printed (its exit code mirrors `budget_check.py`: 0=CONTINUE, 3=WRAP_UP, 4=STOP). Then take the next task.
 
 ## Budget protocol
 

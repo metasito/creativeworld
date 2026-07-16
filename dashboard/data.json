@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-16T00:15:30Z",
+  "generated_at": "2026-07-16T00:18:42Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 1910207,
-    "window_used": 1604368,
-    "rolling_used": 1910207,
+    "used": 1963243,
+    "window_used": 1780687,
+    "rolling_used": 1963243,
     "budget": 4798485,
-    "pct": 39.8,
-    "rate_per_hour": 382132,
-    "eta_hours": 7.6,
+    "pct": 40.9,
+    "rate_per_hour": 392663,
+    "eta_hours": 7.2,
     "burn_spark": [
-      998081,
-      356976,
+      991483,
+      240290,
       0,
       0,
       0,
@@ -21,11 +21,11 @@
       0,
       0,
       0,
-      257090
+      433410
     ],
     "window_started_at": "2026-07-15T19:22:33Z",
-    "resets_at": "2026-07-16T00:15:34Z",
-    "seconds_to_reset": 4,
+    "resets_at": "2026-07-16T00:18:43Z",
+    "seconds_to_reset": 0,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -70,7 +70,7 @@
       "kind": "meta",
       "status": "active",
       "description": "The autonomous engine itself: budget tracking, board, boot/wrap-up flow, CI cron. Permanent epic \u2014 always improvable.",
-      "cost": 988578
+      "cost": 1109662
     },
     {
       "id": "E2",
@@ -866,7 +866,7 @@
       "claimed_by": "unknown",
       "issue": "31",
       "cost": 608216,
-      "commit": null
+      "commit": "87b387b"
     },
     {
       "id": "T57",
@@ -951,9 +951,12 @@
       "title": "token usage optimisation, get yourself more perfrmant and efficient",
       "acceptance": "",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T22:27:17Z",
+      "status": "done",
+      "handoff": "Added engine/checkpoint.py: collapses done+track_tokens+build_dashboard+budget verdict into one command (one transcript scan, one tool round-trip vs four). Updated CLAUDE.md work loop + boot skill.",
+      "updated": "2026-07-16T00:18:41Z",
+      "claimed_by": "unknown",
+      "issue": "32",
+      "cost": 121084,
       "commit": null
     },
     {
@@ -971,7 +974,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T64",
       "T63",
       "T62",
       "T61",
@@ -1189,21 +1191,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T56",
-    "current_action": "resume: trailing-5h burn sparkline + cap ETA on budget panel",
+    "current_task": "T64",
+    "current_action": "analyze token usage, find optimizations",
     "agent": "autopilot",
-    "updated": "2026-07-16T00:15:25Z",
+    "updated": "2026-07-16T00:18:00Z",
     "log": [
-      {
-        "at": "2026-07-15T23:59:34Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-16T00:01:43Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-16T00:01:43Z",
         "agent": "autopilot",
@@ -1253,6 +1245,16 @@
         "at": "2026-07-16T00:15:25Z",
         "agent": "autopilot",
         "msg": "T56 verified: burn sparkline + cap ETA on budget panel"
+      },
+      {
+        "at": "2026-07-16T00:16:00Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T00:18:00Z",
+        "agent": "autopilot",
+        "msg": "T64: added engine/checkpoint.py (done+track+dashboard+verdict in one command)"
       }
     ]
   }
