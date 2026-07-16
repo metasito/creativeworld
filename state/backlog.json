@@ -165,6 +165,22 @@
       "status": "shipped",
       "description": "drag to wire nodes and route a spark across a grid before the timer overloads",
       "slug": "spark-relay"
+    },
+    {
+      "id": "E22",
+      "title": "Aurora Surfer",
+      "kind": "project",
+      "status": "planned",
+      "description": "endless light-rider that surfs undulating aurora ribbons, thread glowing gates and dodge dark voids while speed climbs",
+      "slug": "aurora-surfer"
+    },
+    {
+      "id": "E23",
+      "title": "Crystal Merge",
+      "kind": "project",
+      "status": "planned",
+      "description": "drag matching crystals together on a grid to merge them into higher tiers toward a target gem, 2048-style touch puzzle",
+      "slug": "crystal-merge"
     }
   ],
   "tasks": [
@@ -936,9 +952,9 @@
       "title": "Prism Ricochet polish: beam glow + level select",
       "acceptance": "Add animated beam glow trail and a level-select grid; screenshot",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T07:57:22Z"
+      "updated": "2026-07-16T12:48:02Z"
     },
     {
       "id": "T70",
@@ -959,9 +975,9 @@
       "title": "Bubble Diver polish: jellyfish hazard + bubbles",
       "acceptance": "Add jellyfish hazards and rising bubble particles; screenshot",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T07:57:22Z"
+      "updated": "2026-07-16T12:48:02Z"
     },
     {
       "id": "T72",
@@ -982,9 +998,9 @@
       "title": "Echo Bloom polish: beat sync + combo",
       "acceptance": "Sync spawns to a beat and add combo multiplier; screenshot",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T07:57:23Z"
+      "updated": "2026-07-16T12:48:03Z"
     },
     {
       "id": "T74",
@@ -1005,9 +1021,9 @@
       "title": "Kite Weaver polish: wind gust visuals + haptics",
       "acceptance": "add animated wind-streak particles, tapered ribbon trails, and vibration on ribbon/collision where supported",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T08:14:36Z"
+      "updated": "2026-07-16T12:48:03Z"
     },
     {
       "id": "T76",
@@ -1028,9 +1044,9 @@
       "title": "Glyph Lock polish: ring glow + solve fanfare",
       "acceptance": "add per-ring glow on alignment, snap feedback, and a win particle burst",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T08:14:36Z"
+      "updated": "2026-07-16T12:48:03Z"
     },
     {
       "id": "T78",
@@ -1076,10 +1092,50 @@
       "updated": "2026-07-16T08:31:47Z",
       "cost_start": 20257391,
       "issue": "45"
+    },
+    {
+      "id": "T82",
+      "epic": "E22",
+      "title": "Aurora Surfer v1",
+      "acceptance": "Single index.html touch game: drag/hold to steer a glowing light-rider along scrolling aurora ribbons; thread bright gates for score, dodge dark voids (lose); speed ramps; viewport meta, portrait, 44px targets; win/endless score + restart; ?demo=1 auto-plays with state in document.title; shot.png",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T12:48:02Z"
+    },
+    {
+      "id": "T83",
+      "epic": "E22",
+      "title": "Aurora Surfer polish: trail bloom + haptics",
+      "acceptance": "add tapered glowing trail, particle sparkle on gate pass, and vibration feedback where supported; screenshot",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T12:47:57Z"
+    },
+    {
+      "id": "T84",
+      "epic": "E23",
+      "title": "Crystal Merge v1",
+      "acceptance": "Single index.html touch puzzle: drag a crystal onto a matching one to merge into the next tier on a grid; new crystals spawn; reach a target tier to win, board-full = lose; portrait, pointer events, 44px targets, viewport meta; ?demo=1 hook; shot.png",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T12:48:02Z"
+    },
+    {
+      "id": "T85",
+      "epic": "E23",
+      "title": "Crystal Merge polish: merge burst + combo",
+      "acceptance": "add merge particle burst, chain-combo scoring, and next-crystal preview; screenshot",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T12:47:57Z"
     }
   ],
   "next_ids": {
-    "epic": 22,
-    "task": 82
+    "epic": 24,
+    "task": 86
   }
 }
