@@ -117,6 +117,30 @@
       "status": "shipped",
       "description": "Rhythm blacksmith: tap the anvil when the spark pulse crosses the strike zone to forge a glowing blade, molten metal and spark-burst feedback",
       "slug": "forge-tempo"
+    },
+    {
+      "id": "E16",
+      "title": "Prism Ricochet",
+      "kind": "project",
+      "status": "planned",
+      "description": "Touch puzzle: tap to rotate mirror tiles and bend a laser beam into the goal crystal across levels",
+      "slug": "prism-ricochet"
+    },
+    {
+      "id": "E17",
+      "title": "Bubble Diver",
+      "kind": "project",
+      "status": "planned",
+      "description": "Drag a pearl diver through drifting whirlpools and jellyfish to reach the surface before air runs out",
+      "slug": "bubble-diver"
+    },
+    {
+      "id": "E18",
+      "title": "Echo Bloom",
+      "kind": "project",
+      "status": "planned",
+      "description": "Tap-to-pulse rhythm survival: send sonar rings to reveal and pop blooming hazards in the dark to the beat",
+      "slug": "echo-bloom"
     }
   ],
   "tasks": [
@@ -865,10 +889,70 @@
       "claimed_by": "unknown",
       "issue": "37",
       "cost": 120465
+    },
+    {
+      "id": "T68",
+      "epic": "E16",
+      "title": "Prism Ricochet v1",
+      "acceptance": "Single index.html touch game: tap mirror tiles to rotate 90deg, laser bends and must hit goal crystal to win a level; >=3 levels, portrait, 44px targets, win state shown; shot.png",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T07:57:30Z"
+    },
+    {
+      "id": "T69",
+      "epic": "E16",
+      "title": "Prism Ricochet polish: beam glow + level select",
+      "acceptance": "Add animated beam glow trail and a level-select grid; screenshot",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T07:57:22Z"
+    },
+    {
+      "id": "T70",
+      "epic": "E17",
+      "title": "Bubble Diver v1",
+      "acceptance": "Single index.html touch game: drag diver, drifting whirlpools push, air meter drains, reach surface to win / 0 air = lose; portrait, pointer events, win+lose states; shot.png",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T07:57:30Z"
+    },
+    {
+      "id": "T71",
+      "epic": "E17",
+      "title": "Bubble Diver polish: jellyfish hazard + bubbles",
+      "acceptance": "Add jellyfish hazards and rising bubble particles; screenshot",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T07:57:22Z"
+    },
+    {
+      "id": "T72",
+      "epic": "E18",
+      "title": "Echo Bloom v1",
+      "acceptance": "Single index.html touch game: tap emits sonar ring revealing dark hazards, pop blooms before they reach center; score + game over; portrait, pointer events; shot.png",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T07:57:31Z"
+    },
+    {
+      "id": "T73",
+      "epic": "E18",
+      "title": "Echo Bloom polish: beat sync + combo",
+      "acceptance": "Sync spawns to a beat and add combo multiplier; screenshot",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T07:57:23Z"
     }
   ],
   "next_ids": {
-    "epic": 16,
-    "task": 68
+    "epic": 19,
+    "task": 74
   }
 }
