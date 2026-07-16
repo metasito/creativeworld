@@ -17,6 +17,14 @@
     font-variant-numeric:tabular-nums;pointer-events:none;letter-spacing:.5px}
   #score{font-size:30px;font-weight:800;text-shadow:0 0 18px #4de0ff}
   #lives{font-size:26px;letter-spacing:3px;text-shadow:0 0 14px #ff5c8a}
+  #combo{position:absolute;top:calc(env(safe-area-inset-top) + 54px);left:50%;
+    transform:translateX(-50%);font-size:34px;font-weight:900;font-variant-numeric:tabular-nums;
+    letter-spacing:1px;pointer-events:none;opacity:0;transition:opacity .25s;
+    background:linear-gradient(90deg,#4de0ff,#b98bff);-webkit-background-clip:text;
+    background-clip:text;color:transparent;text-shadow:0 0 22px rgba(120,180,255,.5)}
+  #combo.on{opacity:1}
+  #combo.pop{animation:cpop .3s ease-out}
+  @keyframes cpop{0%{transform:translateX(-50%) scale(1.4)}100%{transform:translateX(-50%) scale(1)}}
   .overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
     align-items:center;text-align:center;padding:30px;gap:16px;
     background:radial-gradient(circle at 50% 42%,rgba(10,14,34,.55),rgba(5,6,15,.92));
@@ -39,10 +47,12 @@
 <div id="wrap">
   <canvas id="c"></canvas>
   <div id="hud"><div id="score">0</div><div id="lives">♥♥♥</div></div>
+  <div id="combo"></div>
   <div id="start" class="overlay">
-    <div class="title">ECHO&nbsp;BLOOM</div>
-    <div class="sub">The dark hides drifting <b>blooms</b>. Each <b>tap</b> pings a sonar ring
-      that lights them up — and pops any bloom you touch.<br>Keep them off the core.</div>
+    <div class="title">ECHO BLOOM</div>
+    <div class="sub">The dark hides drifting <b>blooms</b> that spawn on the <b>beat</b>. Each <b>tap</b>
+      pings a sonar ring that pops the bloom you touch.<br>Pop <b>on the beat</b> to build your
+      <b>combo ×</b>. Keep them off the core.</div>
     <div class="cta" id="startBtn">TAP TO DIVE</div>
   </div>
   <div id="over" class="overlay hidden">
@@ -57,6 +67,7 @@
 const cv=document.getElementById('c'),ctx=cv.getContext('2d');
 const scoreEl=document.getElementById('score'),livesEl=document.getElementById('lives');
 const startO=document.getElementById('start'),overO=document.getElementById('over'),finalEl=document.getElementById('finalScore');
+const comboEl=document.getElementById('combo');
 const DEMO=new URLSearchParams(location.search).has('demo');
 let W=0,H=0,DPR=1,cx=0,cy=0;
 function resize(){
@@ -67,15 +78,22 @@ function resize(){
 addEventListener('resize',resize);resize();
 
 const CORE_R=30;
-let blooms,sonars,parts,score,lives,elapsed,spawnT,running,shake;
+const BEAT_WIN=0.19;   // seconds after a beat that a pop counts as "on beat"
+let blooms,sonars,parts,floaters,score,lives,elapsed,running,shake,flash;
+let beatLen,beatAge,beatFlash,beatIndex,combo,mult,bestCombo;
 
 function reset(){
-  blooms=[];sonars=[];parts=[];score=0;lives=3;elapsed=0;spawnT=0;running=true;shake=0;
-  updHUD();
+  blooms=[];sonars=[];parts=[];floaters=[];score=0;lives=3;elapsed=0;running=true;shake=0;flash=0;
+  beatLen=0.7;beatAge=0;beatFlash=0;beatIndex=0;combo=0;mult=1;bestCombo=0;
+  updHUD();updCombo();
 }
 function updHUD(){
   scoreEl.textContent=score;
   livesEl.textContent='♥'.repeat(Math.max(0,lives))||'·';
+}
+function updCombo(){
+  if(combo>1){comboEl.textContent='×'+mult+'  '+combo;comboEl.classList.add('on');}
+  else comboEl.classList.remove('on');
 }
 
 function spawnBloom(){
@@ -98,8 +116,26 @@ function ping(x,y){
     const d=Math.hypot(b.x-x,b.y-y);
     if(d<b.r+20 && d<bd){bd=d;best=b;}
   }
-  if(best){best.dead=true;score++;updHUD();burst(best.x,best.y,best.hue);beep(560+Math.min(score,40)*8,.07);}
-  else beep(200,.05);
+  if(best){
+    best.dead=true;
+    const onBeat=beatAge<BEAT_WIN;      // popped right on the beat?
+    combo++;
+    mult=1+Math.floor(combo/4);          // ×1, then ×2 at 4-streak, ×3 at 8…
+    let gain=mult;
+    if(onBeat){gain+=mult;flash=Math.max(flash,0.5);}  // on-beat = double this hit
+    score+=gain;
+    if(combo>bestCombo)bestCombo=combo;
+    updHUD();
+    comboEl.classList.remove('pop');void comboEl.offsetWidth;comboEl.classList.add('pop');
+    updCombo();
+    burst(best.x,best.y,onBeat?175:best.hue);
+    beep((onBeat?720:520)+Math.min(combo,40)*10,.07);
+    floaters.push({x:best.x,y:best.y,txt:(onBeat?'BEAT ':'')+'+'+gain,life:1,hue:onBeat?175:best.hue});
+  }else{
+    // a miss breaks the streak
+    if(combo>0){combo=0;mult=1;updCombo();}
+    beep(180,.05);
+  }
 }
 function burst(x,y,hue){
   for(let i=0;i<14;i++){
@@ -119,8 +155,27 @@ function beep(freq,dur){
   o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+dur+.02);
 }
 
+function onBeat(){
+  beatIndex++;
+  beatFlash=1;
+  spawnBloom();
+  // accent every 4th beat (bar line)
+  const bar=beatIndex%4===0;
+  click(bar?150:96,bar?.12:.07);
+}
+// percussive metronome tick
+function click(freq,dur){
+  if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return;}}
+  const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();
+  o.type='square';o.frequency.setValueAtTime(freq,t);
+  o.frequency.exponentialRampToValueAtTime(freq*0.5,t+dur);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.008);
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+dur+.02);
+}
+
 function breach(b){
-  b.dead=true;lives--;updHUD();shake=14;beep(90,.25);
+  b.dead=true;lives--;combo=0;mult=1;updHUD();updCombo();shake=14;beep(90,.25);
   for(let i=0;i<20;i++){const a=Math.random()*6.28,s=60+Math.random()*160;
     parts.push({x:cx,y:cy,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,hue:0});}
   if(lives<=0)gameOver();
@@ -133,9 +188,12 @@ let last=performance.now();
 function loop(now){
   const dt=Math.min((now-last)/1000,.05);last=now;
   if(running){
-    elapsed+=dt;spawnT-=dt;
-    const interval=Math.max(0.45,1.5-elapsed*0.03);
-    if(spawnT<=0){spawnBloom();spawnT=interval;}
+    elapsed+=dt;
+    // --- beat clock: tempo rises with depth, blooms spawn on each beat ---
+    const bpm=Math.min(150,84+elapsed*3.4);
+    beatLen=60/bpm;
+    beatAge+=dt;
+    if(beatAge>=beatLen){beatAge-=beatLen;onBeat();}
     // blooms
     for(const b of blooms){
       if(b.dead)continue;
@@ -155,9 +213,13 @@ function loop(now){
       }
     }
     for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=0.94;p.vy*=0.94;p.life-=dt*1.4;}
+    for(const f of floaters){f.y-=34*dt;f.life-=dt*1.1;}
+    beatFlash=Math.max(0,beatFlash-dt*3.2);
+    flash=Math.max(0,flash-dt*2.6);
     blooms=blooms.filter(b=>!b.dead);
     sonars=sonars.filter(s=>!s.dead);
     parts=parts.filter(p=>p.life>0);
+    floaters=floaters.filter(f=>f.life>0);
     if(DEMO)demoAI(dt);
   }
   draw();
@@ -182,8 +244,14 @@ function draw(){
     ctx.strokeStyle=`rgba(150,120,255,${a*0.3})`;ctx.lineWidth=8;
     ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.29);ctx.stroke();
   }
-  // core
-  const pulse=1+Math.sin(performance.now()/300)*0.08;
+  // beat pulse ring — a fading ring blooms out of the core on every beat
+  if(beatFlash>0){
+    const br=CORE_R+ (1-beatFlash)*Math.min(W,H)*0.5;
+    ctx.strokeStyle=`rgba(120,220,255,${beatFlash*0.4})`;ctx.lineWidth=4*beatFlash+1;
+    ctx.beginPath();ctx.arc(cx,cy,br,0,6.29);ctx.stroke();
+  }
+  // core — throbs to the beat
+  const pulse=1+beatFlash*0.35+Math.sin(performance.now()/300)*0.05;
   const cg=ctx.createRadialGradient(cx,cy,2,cx,cy,CORE_R*3);
   cg.addColorStop(0,'rgba(120,230,255,.9)');cg.addColorStop(.4,'rgba(90,160,255,.4)');
   cg.addColorStop(1,'rgba(90,160,255,0)');
@@ -218,7 +286,20 @@ function draw(){
     ctx.fillStyle=`hsla(${p.hue},100%,70%,${p.life})`;
     ctx.beginPath();ctx.arc(p.x,p.y,3*p.life+1,0,6.29);ctx.fill();
   }
+  // score floaters (+N / BEAT)
+  ctx.font='700 20px -apple-system,Segoe UI,sans-serif';ctx.textAlign='center';
+  for(const f of floaters){
+    ctx.fillStyle=`hsla(${f.hue},100%,78%,${f.life})`;
+    ctx.fillText(f.txt,f.x,f.y);
+  }
+  ctx.textAlign='left';
   ctx.restore();
+  // on-beat hit flash — brief edge glow across the whole screen
+  if(flash>0){
+    const fg=ctx.createRadialGradient(cx,cy,Math.min(W,H)*0.2,cx,cy,Math.hypot(W,H)/1.5);
+    fg.addColorStop(0,'rgba(120,220,255,0)');fg.addColorStop(1,`rgba(120,220,255,${flash*0.3})`);
+    ctx.fillStyle=fg;ctx.fillRect(0,0,W,H);
+  }
 }
 
 function syncTitle(){
@@ -227,16 +308,25 @@ function syncTitle(){
 }
 
 // ---- demo autopilot ----
-let demoT=0;
-function demoAI(dt){
-  demoT-=dt;
-  if(demoT>0)return;
-  demoT=0.28;
-  // ping+pop the bloom nearest the core (most urgent)
+// Plays on-beat: pops the bloom nearest the core each beat (earning BEAT bonuses
+// + a rising combo), and catches up when blooms crowd the core. Never pings empty,
+// so combo climbs — showing off the beat-sync + combo mechanic.
+let demoFired=false,catchT=0;
+function popNearestCore(){
   let best=null,bd=1e9;
   for(const b of blooms){const d=Math.hypot(b.x-cx,b.y-cy);if(d<bd){bd=d;best=b;}}
   if(best)ping(best.x,best.y);
-  else ping(cx+(Math.random()-.5)*W*0.5,cy+(Math.random()-.5)*H*0.5);
+  return bd;
+}
+function demoAI(dt){
+  catchT-=dt;
+  if(beatAge<BEAT_WIN){ if(!demoFired){demoFired=true;popNearestCore();} }
+  else demoFired=false;
+  if(catchT<=0 && blooms.length>2){
+    let best=null,bd=1e9;
+    for(const b of blooms){const d=Math.hypot(b.x-cx,b.y-cy);if(d<bd){bd=d;best=b;}}
+    if(best && bd<Math.min(W,H)*0.34){ping(best.x,best.y);catchT=0.2;}
+  }
 }
 
 // ---- input ----

@@ -1,18 +1,17 @@
 {
-  "generated_at": "2026-07-16T13:06:23Z",
+  "generated_at": "2026-07-16T22:23:24Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2365393,
-    "window_used": 1250866,
-    "rolling_used": 2365393,
+    "used": 256874,
+    "window_used": 178095,
+    "rolling_used": 256874,
     "binding": "trailing",
     "budget": 4798485,
-    "pct": 49.3,
-    "rate_per_hour": 473102,
-    "eta_hours": 5.1,
+    "pct": 5.4,
+    "rate_per_hour": 51660,
+    "eta_hours": 87.9,
     "burn_spark": [
-      1016346,
-      98180,
+      78779,
       0,
       0,
       0,
@@ -22,13 +21,14 @@
       0,
       0,
       0,
-      1250866
+      0,
+      178095
     ],
-    "window_started_at": "2026-07-16T10:22:33Z",
-    "resets_at": "2026-07-16T15:22:33Z",
-    "seconds_to_reset": 8169,
-    "nap_until": "2026-07-16T13:06:24Z",
-    "nap_seconds": 0,
+    "window_started_at": "2026-07-16T20:22:33Z",
+    "resets_at": "2026-07-17T01:22:33Z",
+    "seconds_to_reset": 10748,
+    "nap_until": "2026-07-16T22:25:03Z",
+    "nap_seconds": 99,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -77,6 +77,16 @@
       {
         "started_at": "2026-07-16T05:22:33Z",
         "used": 1915569,
+        "budget": 4798485
+      },
+      {
+        "started_at": "2026-07-16T10:22:33Z",
+        "used": 1461611,
+        "budget": 4798485
+      },
+      {
+        "started_at": "2026-07-16T15:22:33Z",
+        "used": 18534,
         "budget": 4798485
       }
     ]
@@ -240,7 +250,7 @@
       "status": "shipped",
       "description": "Tap-to-pulse rhythm survival: send sonar rings to reveal and pop blooming hazards in the dark to the beat",
       "slug": "echo-bloom",
-      "cost": 163673
+      "cost": 589631
     },
     {
       "id": "E19",
@@ -286,6 +296,15 @@
       "description": "drag matching crystals together on a grid to merge them into higher tiers toward a target gem, 2048-style touch puzzle",
       "slug": "crystal-merge",
       "cost": 151796
+    },
+    {
+      "id": "E24",
+      "title": "Circuit Surge",
+      "kind": "project",
+      "status": "planned",
+      "description": "route power through a neon grid by drag-connecting nodes before the overload timer blows",
+      "slug": "circuit-surge",
+      "cost": 0
     }
   ],
   "tasks": [
@@ -1160,7 +1179,7 @@
       "claimed_by": "unknown",
       "issue": "51",
       "cost": 177245,
-      "commit": null
+      "commit": "53189af"
     },
     {
       "id": "T72",
@@ -1182,9 +1201,12 @@
       "title": "Echo Bloom polish: beat sync + combo",
       "acceptance": "Sync spawns to a beat and add combo multiplier; screenshot",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T12:48:03Z",
+      "status": "done",
+      "handoff": "Echo Bloom polish: beat-synced spawns + on-beat combo multiplier, metronome ticks, wrap-fixed title",
+      "updated": "2026-07-16T22:23:20Z",
+      "claimed_by": "unknown",
+      "issue": "52",
+      "cost": 425958,
       "commit": null
     },
     {
@@ -1257,9 +1279,9 @@
       "title": "Spark Relay polish: spark travel animation + haptics",
       "acceptance": "animate the spark travelling the completed path, add node pulse and vibration feedback",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T08:14:36Z",
+      "updated": "2026-07-16T22:20:40Z",
       "commit": null
     },
     {
@@ -1306,9 +1328,9 @@
       "title": "Aurora Surfer polish: trail bloom + haptics",
       "acceptance": "add tapered glowing trail, particle sparkle on gate pass, and vibration feedback where supported; screenshot",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T12:47:57Z",
+      "updated": "2026-07-16T22:20:40Z",
       "commit": null
     },
     {
@@ -1331,18 +1353,43 @@
       "title": "Crystal Merge polish: merge burst + combo",
       "acceptance": "add merge particle burst, chain-combo scoring, and next-crystal preview; screenshot",
       "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T22:20:41Z",
+      "commit": null
+    },
+    {
+      "id": "T86",
+      "epic": "E24",
+      "title": "Circuit Surge v1 - drag-connect neon nodes to route power before overload; demo self-plays",
+      "acceptance": "Single index.html mobile game: drag from node to node to build a power path, overload timer creates tension, win when all nodes lit; touch targets >=44px, viewport meta, ?demo=1 self-plays; screenshot",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T22:20:53Z",
+      "commit": null
+    },
+    {
+      "id": "T87",
+      "epic": "E24",
+      "title": "Circuit Surge polish: surge pulse along wires + haptics",
+      "acceptance": "Animate a light pulse travelling completed wires and add vibration on connect; screenshot",
+      "size": "S",
       "status": "backlog",
       "handoff": "",
-      "updated": "2026-07-16T12:47:57Z",
+      "updated": "2026-07-16T22:20:49Z",
       "commit": null
     }
   ],
   "queue": {
     "in_progress": null,
     "next": [
-      "T73",
+      "T86",
       "T75",
       "T77",
+      "T79",
+      "T83",
+      "T85",
       "T61",
       "T66"
     ],
@@ -1553,8 +1600,8 @@
       "slug": "echo-bloom",
       "built": true,
       "shot": true,
-      "updated": "2026-07-16T08:10:46Z",
-      "cost": 163673,
+      "updated": "2026-07-16T22:22:33Z",
+      "cost": 589631,
       "url": "/projects/echo-bloom/"
     },
     {
@@ -1621,6 +1668,19 @@
       "updated": "2026-07-16T12:54:27Z",
       "cost": 151796,
       "url": "/projects/crystal-merge/"
+    },
+    {
+      "id": "E24",
+      "title": "Circuit Surge",
+      "kind": "project",
+      "status": "planned",
+      "description": "route power through a neon grid by drag-connecting nodes before the overload timer blows",
+      "slug": "circuit-surge",
+      "built": false,
+      "shot": false,
+      "updated": null,
+      "cost": 0,
+      "url": null
     }
   ],
   "sessions": [
@@ -1658,70 +1718,70 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T71",
-    "current_action": "Bubble Diver polish: jellyfish hazard + bubbles",
+    "current_task": "T73",
+    "current_action": "Echo Bloom polish: beat sync + combo",
     "agent": "autopilot",
-    "updated": "2026-07-16T13:03:11Z",
+    "updated": "2026-07-16T22:21:45Z",
     "log": [
       {
-        "at": "2026-07-16T12:46:19Z",
-        "agent": "autopilot",
-        "msg": "T58: supernova hazard + level-select wired, demo loop + forceWin verified"
-      },
-      {
-        "at": "2026-07-16T12:46:53Z",
+        "at": "2026-07-16T17:31:36Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-16T12:48:26Z",
+        "at": "2026-07-16T17:31:36Z",
         "agent": "autopilot",
-        "msg": "claimed T82 Aurora Surfer v1"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-16T12:50:06Z",
-        "agent": "autopilot",
-        "msg": "built aurora-surfer index.html, validating"
-      },
-      {
-        "at": "2026-07-16T12:51:29Z",
+        "at": "2026-07-16T17:33:50Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-16T12:54:30Z",
+        "at": "2026-07-16T17:33:50Z",
         "agent": "autopilot",
-        "msg": "built crystal-merge index.html, validating"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-16T12:56:07Z",
+        "at": "2026-07-16T17:36:01Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-16T12:57:52Z",
+        "at": "2026-07-16T17:36:01Z",
         "agent": "autopilot",
-        "msg": "T60: added quench steam burst + stronger ramp; validating"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-16T12:59:50Z",
+        "at": "2026-07-16T17:38:12Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-16T13:01:58Z",
+        "at": "2026-07-16T17:38:12Z",
         "agent": "autopilot",
-        "msg": "Prism Ricochet: added flowing photon beam trail + tappable level-select grid; demo self-wins, jumpTo verified"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-16T13:02:28Z",
+        "at": "2026-07-16T17:41:31Z",
+        "agent": "autopilot",
+        "msg": "T73 beat-sync+combo already coded; validating with drive.py"
+      },
+      {
+        "at": "2026-07-16T22:17:20Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-16T13:03:11Z",
+        "at": "2026-07-16T22:17:20Z",
         "agent": "autopilot",
-        "msg": "T71: adding jellyfish hazards + rising bubble particles to bubble-diver"
+        "msg": "agent error rc=1 \u2014 120s backoff"
+      },
+      {
+        "at": "2026-07-16T22:21:45Z",
+        "agent": "autopilot",
+        "msg": "verifying Echo Bloom beat-sync + combo via drive.py"
       }
     ]
   },
