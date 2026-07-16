@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-07-16T12:55:42Z",
+  "generated_at": "2026-07-16T12:59:28Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2255761,
-    "window_used": 689980,
-    "rolling_used": 2255761,
+    "used": 2333157,
+    "window_used": 890617,
+    "rolling_used": 2333157,
     "binding": "trailing",
     "budget": 4798485,
-    "pct": 47.0,
-    "rate_per_hour": 451103,
-    "eta_hours": 5.6,
+    "pct": 48.6,
+    "rate_per_hour": 467459,
+    "eta_hours": 5.3,
     "burn_spark": [
-      1018333,
-      541523,
+      1015272,
+      427268,
       0,
       0,
       0,
@@ -22,13 +22,13 @@
       0,
       0,
       0,
-      689980
+      890617
     ],
     "window_started_at": "2026-07-16T10:22:33Z",
     "resets_at": "2026-07-16T15:22:33Z",
-    "seconds_to_reset": 8810,
-    "nap_until": "2026-07-16T12:55:40Z",
-    "nap_seconds": 0,
+    "seconds_to_reset": 8584,
+    "nap_until": "2026-07-16T13:00:00Z",
+    "nap_seconds": 31,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -213,7 +213,7 @@
       "status": "shipped",
       "description": "Rhythm blacksmith: tap the anvil when the spark pulse crosses the strike zone to forge a glowing blade, molten metal and spark-burst feedback",
       "slug": "forge-tempo",
-      "cost": 181511
+      "cost": 340029
     },
     {
       "id": "E16",
@@ -1006,9 +1006,12 @@
       "title": "Forge Tempo polish: quench sizzle + haptics",
       "acceptance": "Quench animation (steam burst) on completion, navigator.vibrate haptics on strike where supported, difficulty ramps pulse speed; verified via screenshot",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T00:12:49Z",
+      "status": "done",
+      "handoff": "quench steam burst + haptics + stronger pulse ramp; demo self-wins",
+      "updated": "2026-07-16T12:59:27Z",
+      "claimed_by": "unknown",
+      "issue": "49",
+      "cost": 158518,
       "commit": null
     },
     {
@@ -1314,7 +1317,7 @@
       "claimed_by": "unknown",
       "issue": "48",
       "cost": 151796,
-      "commit": null
+      "commit": "109e2fc"
     },
     {
       "id": "T85",
@@ -1331,7 +1334,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T60",
       "T69",
       "T71",
       "T73",
@@ -1508,8 +1510,8 @@
       "slug": "forge-tempo",
       "built": true,
       "shot": true,
-      "updated": "2026-07-16T07:54:18Z",
-      "cost": 181511,
+      "updated": "2026-07-16T12:57:39Z",
+      "cost": 340029,
       "url": "/projects/forge-tempo/"
     },
     {
@@ -1652,21 +1654,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T84",
-    "current_action": "Building Crystal Merge v1",
+    "current_task": "T60",
+    "current_action": "Forge Tempo polish: quench sizzle + haptics",
     "agent": "autopilot",
-    "updated": "2026-07-16T12:54:30Z",
+    "updated": "2026-07-16T12:57:52Z",
     "log": [
-      {
-        "at": "2026-07-16T12:35:29Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-16T12:35:29Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
       {
         "at": "2026-07-16T12:37:39Z",
         "agent": "autopilot",
@@ -1716,6 +1708,16 @@
         "at": "2026-07-16T12:54:30Z",
         "agent": "autopilot",
         "msg": "built crystal-merge index.html, validating"
+      },
+      {
+        "at": "2026-07-16T12:56:07Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T12:57:52Z",
+        "agent": "autopilot",
+        "msg": "T60: added quench steam burst + stronger ramp; validating"
       }
     ]
   },

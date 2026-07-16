@@ -844,9 +844,12 @@
       "title": "Forge Tempo polish: quench sizzle + haptics",
       "acceptance": "Quench animation (steam burst) on completion, navigator.vibrate haptics on strike where supported, difficulty ramps pulse speed; verified via screenshot",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T00:12:49Z"
+      "status": "done",
+      "handoff": "quench steam burst + haptics + stronger pulse ramp; demo self-wins",
+      "updated": "2026-07-16T12:59:27Z",
+      "claimed_by": "unknown",
+      "issue": "49",
+      "cost": 158518
     },
     {
       "id": "T61",
