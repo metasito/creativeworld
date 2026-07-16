@@ -57,6 +57,7 @@ def compose(live=False):
         "sessions": sessions[-10:],
         "learnings": [l[2:] for l in learnings if l.startswith("- ")][:8],
         "activity": {**activity, "log": activity.get("log", [])[-12:]},
+        "control": lib.control(),
     }
 
 

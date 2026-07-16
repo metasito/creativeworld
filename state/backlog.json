@@ -833,9 +833,12 @@
       "title": "Dashboard: start/stop autopilot control button",
       "acceptance": "Dashboard has a Start/Stop control that toggles the autopilot loop (writes a control flag autopilot reads); button reflects live running/stopped state; verified in Chromium",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T00:12:49Z"
+      "status": "done",
+      "handoff": "start/stop autopilot control button on dashboard",
+      "updated": "2026-07-16T00:41:06Z",
+      "claimed_by": "unknown",
+      "issue": "36",
+      "cost": 282420
     },
     {
       "id": "T66",

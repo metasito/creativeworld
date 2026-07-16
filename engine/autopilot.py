@@ -98,6 +98,15 @@ def main():
     dry = "--dry-run" in sys.argv
     print(f"autopilot up · claude={CLAUDE} · once={once} dry={dry}")
     while True:
+        # 0. Dashboard kill-switch: honor a "stop" flag before spending anything.
+        if lib.control().get("autopilot") == "stop":
+            set_status("paused", "stopped from dashboard — waiting for Start")
+            print("autopilot paused (dashboard flag) — re-checking in 30s")
+            if once:
+                break
+            time.sleep(30)
+            continue
+
         tokens = lib.load("tokens.json")
         lib.update_from_transcripts(tokens)
         lib.save("tokens.json", tokens)

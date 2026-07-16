@@ -46,11 +46,22 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         route = self.path.rstrip("/")
-        if route not in ("/api/task", "/api/task/update"):
+        if route not in ("/api/task", "/api/task/update", "/api/autopilot"):
             self.send_error(404)
             return
         try:
             body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+            if route == "/api/autopilot":
+                state = "run" if body.get("run") else "stop"
+                lib.set_control("autopilot", state)  # own state_lock inside
+                out, code = {"ok": True, "autopilot": state}, 200
+                resp = json.dumps(out).encode()
+                self.send_response(code)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(resp)))
+                self.end_headers()
+                self.wfile.write(resp)
+                return
             with lib.state_lock():  # whole read-modify-write is one transaction
                 b = lib.load("backlog.json")
                 if route == "/api/task/update":

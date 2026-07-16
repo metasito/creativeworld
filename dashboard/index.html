@@ -88,6 +88,11 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
 #a-log li { font-size: 12px; color: var(--ink-2); padding: 3px 0; border-bottom: 1px solid var(--grid); display:flex; gap:8px; }
 #a-log .t { color: var(--muted); flex: none; font-variant-numeric: tabular-nums; }
 #a-log .ag { color: var(--accent); flex: none; }
+#a-toggle { font: inherit; font-size: 12px; font-weight: 600; border: 1px solid var(--grid); border-radius: 7px;
+  padding: 5px 12px; min-height: 30px; cursor: pointer; color: var(--ink); background: var(--bg); }
+#a-toggle:hover { filter: brightness(1.1); }
+#a-toggle.stop { background: var(--good); color: #fff; border-color: transparent; }
+#a-toggle.start { background: var(--warn); color: #111; border-color: transparent; }
 /* drag & drop board */
 .task.draggable { cursor: grab; }
 .task.dragging { opacity: .45; }
@@ -148,6 +153,7 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
     <span id="a-task" style="color:var(--ink-2)"></span>
     <span id="a-action" style="color:var(--muted); font-size:13px"></span>
     <span id="a-when" style="margin-left:auto; color:var(--muted); font-size:12px"></span>
+    <button id="a-toggle" style="display:none"></button>
   </div>
   <ul id="a-log" style="margin-top:10px; list-style:none; max-height:150px; overflow:auto"></ul>
 </div>
@@ -299,7 +305,7 @@ function render(d) {
     .map(e => `<span class="chip" title="measured weighted tokens across ${esc(e.title)} tasks">${esc(e.title)} · ${fmt(e.cost)}</span>`).join("")
     || `<span class="chip" style="color:var(--muted)">per-task costs appear as tasks complete</span>`;
 
-  renderAgent(d.activity, b, d.queue.in_progress);
+  renderAgent(d.activity, b, d.queue.in_progress, d.control);
 
   const working = b.verdict === "CONTINUE" && d.queue.in_progress;
   const st = $("status");
@@ -392,7 +398,7 @@ $("addform").addEventListener("submit", async e => {
   if (j.ok) { $("f-title").value = ""; $("f-accept").value = ""; $("f-newtitle").value = ""; $("f-newslug").value = ""; }
 });
 
-function renderAgent(a, b, inprog) {
+function renderAgent(a, b, inprog, control) {
   a = a || {engine_status: "idle", log: []};
   const upd = a.updated ? new Date(a.updated) : null;
   const ageSec = upd ? (Date.now() - upd) / 1000 : Infinity;
@@ -414,7 +420,26 @@ function renderAgent(a, b, inprog) {
   $("a-log").innerHTML = (a.log || []).slice().reverse().map(e =>
     `<li><span class="t">${e.at ? new Date(e.at).toLocaleTimeString() : ""}</span>
      <span class="ag">${esc(e.agent || "engine")}</span><span>${esc(e.msg)}</span></li>`).join("");
+
+  const btn = $("a-toggle");
+  const run = (control?.autopilot ?? "run") !== "stop";   // flag: is the loop allowed to work?
+  autopilotRun = run;
+  btn.style.display = live ? "" : "none";                 // toggling needs the live server
+  btn.className = run ? "stop" : "start";
+  btn.textContent = run ? "⏸ Stop autopilot" : "▶ Start autopilot";
+  btn.title = run ? "Autopilot loop is enabled — click to pause it"
+                  : "Autopilot loop is stopped — click to let it run";
+  if (!run && status !== "working") $("a-status").textContent = "◼ STOPPED";
 }
+let autopilotRun = true;
+$("a-toggle").onclick = async () => {
+  const btn = $("a-toggle");
+  btn.disabled = true;
+  try {
+    await fetch("/api/autopilot", { method: "POST", body: JSON.stringify({ run: !autopilotRun }) });
+    render(await fetchState());               // reflect the new flag immediately
+  } catch (e) {} finally { btn.disabled = false; }
+};
 const timeago = s => s === Infinity ? "never" : s < 60 ? Math.round(s)+"s ago" : Math.round(s/60)+"m ago";
 
 /* ---- board drag & drop + task modal (delegated, bound once) ---- */

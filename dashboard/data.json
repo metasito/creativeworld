@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-16T00:33:29Z",
+  "generated_at": "2026-07-16T00:41:07Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2139518,
-    "window_used": 600664,
-    "rolling_used": 2139518,
+    "used": 2194057,
+    "window_used": 940730,
+    "rolling_used": 2194057,
     "binding": "trailing",
     "budget": 4798485,
-    "pct": 44.6,
-    "rate_per_hour": 428127,
-    "eta_hours": 6.2,
+    "pct": 45.7,
+    "rate_per_hour": 438811,
+    "eta_hours": 5.9,
     "burn_spark": [
-      631206,
+      345679,
       0,
       0,
       0,
@@ -21,14 +21,14 @@
       0,
       0,
       0,
-      0,
-      1210252
+      290172,
+      1260146
     ],
     "window_started_at": "2026-07-16T00:22:33Z",
     "resets_at": "2026-07-16T05:22:33Z",
-    "seconds_to_reset": 17343,
-    "nap_until": "2026-07-16T00:33:39Z",
-    "nap_seconds": 9,
+    "seconds_to_reset": 16885,
+    "nap_until": "2026-07-16T00:41:07Z",
+    "nap_seconds": 0,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -86,7 +86,7 @@
       "kind": "meta",
       "status": "active",
       "description": "The realtime PM dashboard. Permanent epic \u2014 always improvable.",
-      "cost": 871260
+      "cost": 1153680
     },
     {
       "id": "E3",
@@ -888,7 +888,7 @@
       "claimed_by": "unknown",
       "issue": "35",
       "cost": 190705,
-      "commit": null
+      "commit": "a188ade"
     },
     {
       "id": "T58",
@@ -982,9 +982,12 @@
       "title": "Dashboard: start/stop autopilot control button",
       "acceptance": "Dashboard has a Start/Stop control that toggles the autopilot loop (writes a control flag autopilot reads); button reflects live running/stopped state; verified in Chromium",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T00:12:49Z",
+      "status": "done",
+      "handoff": "start/stop autopilot control button on dashboard",
+      "updated": "2026-07-16T00:41:06Z",
+      "claimed_by": "unknown",
+      "issue": "36",
+      "cost": 282420,
       "commit": null
     },
     {
@@ -1013,7 +1016,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T65",
       "T67",
       "T66",
       "T59",
@@ -1229,21 +1231,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T57",
-    "current_action": "building Comet Sling v1 orbital golf game",
+    "current_task": "T65",
+    "current_action": "start/stop autopilot control button",
     "agent": "autopilot",
-    "updated": "2026-07-16T00:33:25Z",
+    "updated": "2026-07-16T00:40:59Z",
     "log": [
-      {
-        "at": "2026-07-16T00:07:56Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-16T00:10:00Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-16T00:10:00Z",
         "agent": "autopilot",
@@ -1293,7 +1285,21 @@
         "at": "2026-07-16T00:33:25Z",
         "agent": "autopilot",
         "msg": "T57 verified: gameplay screenshot + demo title (L1 strokes:5) + win pipeline (WIN L3)"
+      },
+      {
+        "at": "2026-07-16T00:34:04Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T00:40:59Z",
+        "agent": "autopilot",
+        "msg": "T65 verified: /api/autopilot flag round-trips; dashboard Start/Stop button reflects live run/stop state (DOM+screenshot)"
       }
     ]
+  },
+  "control": {
+    "autopilot": "run",
+    "updated": "2026-07-16T00:40:48Z"
   }
 }

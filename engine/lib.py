@@ -167,6 +167,29 @@ def save(name, data):
     os.replace(tmp, path)
 
 
+def control():
+    """Autopilot run/stop flag the dashboard toggles. Missing/torn file => run."""
+    try:
+        c = load("control.json")
+    except (FileNotFoundError, json.JSONDecodeError):
+        c = {}
+    c.setdefault("autopilot", "run")
+    return c
+
+
+def set_control(field, value):
+    """Transactional flip of one control field (dashboard button writes this)."""
+    with state_lock():
+        try:
+            c = load("control.json")
+        except (FileNotFoundError, json.JSONDecodeError):
+            c = {}
+        c[field] = value
+        c["updated"] = iso(now())
+        save("control.json", c)
+    return c
+
+
 def now():
     return datetime.now(timezone.utc)
 
