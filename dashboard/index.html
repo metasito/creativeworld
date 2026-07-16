@@ -124,11 +124,12 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
 
 <div class="card" id="budget-card">
   <div class="tiles">
-    <div class="tile"><div class="v" id="pct">–</div><div class="l">of window budget used</div></div>
-    <div class="tile"><div class="v" id="used">–</div><div class="l">weighted tokens spent</div></div>
+    <div class="tile"><div class="v" id="pct">–</div><div class="l">of 5h cap used</div></div>
+    <div class="tile"><div class="v" id="used">–</div><div class="l" id="used-l">weighted tokens spent</div></div>
     <div class="tile"><div class="v" id="reset">–</div><div class="l">until window reset</div></div>
     <div class="tile"><div class="v" id="verdict">–</div><div class="l">engine verdict</div></div>
   </div>
+  <div id="budget-sub" style="margin-top:8px; font-size:12px; color:var(--muted)"></div>
   <div class="gauge">
     <div class="bar"><div class="fill" id="fill"></div><div class="mark" id="m85"></div><div class="mark" id="m95"></div></div>
     <div class="labels"><span>0</span><span id="blabel"></span></div>
@@ -247,6 +248,16 @@ function render(d) {
   repoUrl = d.repo_url || null;
   $("pct").textContent = b.pct.toFixed(1) + "%";
   $("used").textContent = fmt(b.used);
+  // Reconcile the two measures so the headline number is never a mystery: the cap
+  // is the MAX of the anchored engine window and a trailing-5h sum; whichever is
+  // higher ("binding") drives pct/verdict.
+  const bind = b.binding === "trailing" ? "trailing 5h" : "anchored window";
+  $("used-l").textContent = "weighted tokens (" + bind + ", binding)";
+  if (b.window_used != null && b.rolling_used != null) {
+    $("budget-sub").innerHTML =
+      `anchored window <b>${fmt(b.window_used)}</b> · trailing 5h <b>${fmt(b.rolling_used)}</b>` +
+      ` → binding <b>${fmt(b.used)}</b> of budget ${fmt(b.budget)}`;
+  }
   resetsAt = b.resets_at ? new Date(b.resets_at) : null;
   tickReset();
   $("verdict").textContent = b.verdict;
@@ -258,7 +269,7 @@ function render(d) {
 
   // history bars: each past window's spend; red = real limit hit, amber = overran
   // the then-budget (what auto-raises the estimate), dashed = current window.
-  const hist = (b.history || []).concat([{started_at: b.window_started_at, used: b.used, budget: b.budget, now: true}]);
+  const hist = (b.history || []).concat([{started_at: b.window_started_at, used: b.window_used != null ? b.window_used : b.used, budget: b.budget, now: true}]);
   const maxV = Math.max(1, ...hist.map(h => Math.max(h.used || 0, h.budget || 0)));
   $("hist").innerHTML = hist.map(h => {
     const cls = h.limit_hit ? " lim" : (h.used > h.budget ? " over" : h.now ? " now" : "");

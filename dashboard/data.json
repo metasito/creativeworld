@@ -1,17 +1,18 @@
 {
-  "generated_at": "2026-07-16T00:18:42Z",
+  "generated_at": "2026-07-16T00:25:39Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 1963243,
-    "window_used": 1780687,
-    "rolling_used": 1963243,
+    "used": 2050244,
+    "window_used": 216170,
+    "rolling_used": 2050244,
+    "binding": "trailing",
     "budget": 4798485,
-    "pct": 40.9,
-    "rate_per_hour": 392663,
-    "eta_hours": 7.2,
+    "pct": 42.7,
+    "rate_per_hour": 410214,
+    "eta_hours": 6.7,
     "burn_spark": [
-      991483,
-      240290,
+      926426,
+      0,
       0,
       0,
       0,
@@ -21,11 +22,13 @@
       0,
       0,
       0,
-      433410
+      825757
     ],
-    "window_started_at": "2026-07-15T19:22:33Z",
-    "resets_at": "2026-07-16T00:18:43Z",
-    "seconds_to_reset": 0,
+    "window_started_at": "2026-07-16T00:22:33Z",
+    "resets_at": "2026-07-16T05:22:33Z",
+    "seconds_to_reset": 17813,
+    "nap_until": "2026-07-16T00:25:46Z",
+    "nap_seconds": 7,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -60,6 +63,11 @@
         "started_at": "2026-07-15T14:22:33Z",
         "used": 1211233,
         "budget": 4798485
+      },
+      {
+        "started_at": "2026-07-15T19:22:33Z",
+        "used": 1824325,
+        "budget": 4798485
       }
     ]
   },
@@ -70,7 +78,7 @@
       "kind": "meta",
       "status": "active",
       "description": "The autonomous engine itself: budget tracking, board, boot/wrap-up flow, CI cron. Permanent epic \u2014 always improvable.",
-      "cost": 1109662
+      "cost": 1454520
     },
     {
       "id": "E2",
@@ -940,9 +948,12 @@
       "title": "token dashboard sucs window budged used is wrong, weighted tokens spent i dont know, window rest is rwong and also vergict is wrong, wrap and stoped is wrong",
       "acceptance": "",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T22:26:48Z",
+      "status": "done",
+      "handoff": "anchored reset stops sliding; split nap_until; dashboard binding breakdown reconciles used/window/trailing",
+      "updated": "2026-07-16T00:25:37Z",
+      "claimed_by": "unknown",
+      "issue": "33",
+      "cost": 344858,
       "commit": null
     },
     {
@@ -957,7 +968,7 @@
       "claimed_by": "unknown",
       "issue": "32",
       "cost": 121084,
-      "commit": null
+      "commit": "c59d1be"
     },
     {
       "id": "T65",
@@ -974,7 +985,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T63",
       "T62",
       "T61",
       "T57",
@@ -1191,21 +1201,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T64",
-    "current_action": "analyze token usage, find optimizations",
+    "current_task": "T63",
+    "current_action": "investigate dashboard token math bugs",
     "agent": "autopilot",
-    "updated": "2026-07-16T00:18:00Z",
+    "updated": "2026-07-16T00:24:06Z",
     "log": [
-      {
-        "at": "2026-07-16T00:01:43Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-16T00:03:47Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-16T00:03:47Z",
         "agent": "autopilot",
@@ -1255,6 +1255,16 @@
         "at": "2026-07-16T00:18:00Z",
         "agent": "autopilot",
         "msg": "T64: added engine/checkpoint.py (done+track+dashboard+verdict in one command)"
+      },
+      {
+        "at": "2026-07-16T00:19:09Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T00:24:06Z",
+        "agent": "autopilot",
+        "msg": "T63: anchored reset (stops sliding), split nap_until, dashboard binding breakdown"
       }
     ]
   }

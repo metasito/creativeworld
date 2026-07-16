@@ -801,9 +801,12 @@
       "title": "token dashboard sucs window budged used is wrong, weighted tokens spent i dont know, window rest is rwong and also vergict is wrong, wrap and stoped is wrong",
       "acceptance": "",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T22:26:48Z"
+      "status": "done",
+      "handoff": "anchored reset stops sliding; split nap_until; dashboard binding breakdown reconciles used/window/trailing",
+      "updated": "2026-07-16T00:25:37Z",
+      "claimed_by": "unknown",
+      "issue": "33",
+      "cost": 344858
     },
     {
       "id": "T64",

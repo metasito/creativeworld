@@ -46,4 +46,6 @@ Whenever you fix a bug, discover a CSS/layout trick, or a verification shortcut:
 
 ## Lessons Learned
 
-- (placeholder — first real lesson replaces this line)
+- Dashboard budget panel: when a number derives from >1 measure (used = max(anchored window, trailing 5h)), SHOW the reconciliation ("anchored X · trailing Y → binding Z of budget") — a single opaque headline reads as "wrong" even when the math is right.
+- Countdown fields must count DOWN to a fixed point: a "reset" derived from `oldest_trailing_msg + Nh` slides forward forever (always ≈now). Use the anchored window end for display; keep any rolling-relief target as a separate `nap_until` field.
+- Verify the dashboard via `engine/server.py` + `shot.py http://localhost:8787/`, NOT `file://` — a file:// load can't fetch data.json and every tile renders as "–".

@@ -123,7 +123,8 @@ def main():
             if status in ("ok", "limit"):
                 continue
         if name != "CONTINUE":
-            reset = lib.parse_iso(s["resets_at"]) if s["resets_at"] else lib.now() + timedelta(hours=1)
+            nap_at = s.get("nap_until") or s.get("resets_at")
+            reset = lib.parse_iso(nap_at) if nap_at else lib.now() + timedelta(hours=1)
             if not nap(reset, f"budget {name} {s['pct']}%", once):
                 break
             continue

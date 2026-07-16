@@ -362,14 +362,22 @@ def budget_summary(tokens):
     if rate and used < budget:
         eta_h = round((budget - used) / rate, 1)
     pct = 100.0 * used / budget if budget else 0.0
+    binding = "trailing" if (roll_used is not None and roll_used > win_used) else "window"
+    # Displayed reset = the anchored engine window end (started_at + window_hours):
+    # a STABLE, counting-DOWN target that by_session actually clears at. The old code
+    # showed roll_end (oldest-trailing-msg + window_hours) here, but that oldest msg
+    # slides forward as it ages out, so resets_at was pinned to ~now and never counted
+    # down — which made the whole panel look broken.
     end = window_end(tokens)
-    # nap target follows whichever measure is binding
-    if roll_used is not None and roll_used >= win_used and roll_end:
-        end = roll_end
+    # Nap target is separate: when the TRAILING measure is binding, relief comes as
+    # the oldest spend ages out of the trailing window (roll_end), not at the anchored
+    # reset. Kept apart so display stays honest while naps track the real constraint.
+    nap_end = roll_end if (binding == "trailing" and roll_end) else end
     return {
         "used": used,
         "window_used": win_used,
         "rolling_used": roll_used,
+        "binding": binding,
         "budget": budget,
         "pct": round(pct, 1),
         "rate_per_hour": rate,
@@ -378,6 +386,8 @@ def budget_summary(tokens):
         "window_started_at": tokens["window"].get("started_at"),
         "resets_at": iso(end) if end else None,
         "seconds_to_reset": max(0, int((end - now()).total_seconds())) if end else None,
+        "nap_until": iso(nap_end) if nap_end else None,
+        "nap_seconds": max(0, int((nap_end - now()).total_seconds())) if nap_end else None,
         "wrap_up_pct": cfg["wrap_up_pct"],
         "stop_pct": cfg["stop_pct"],
     }
