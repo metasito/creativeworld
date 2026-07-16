@@ -1122,9 +1122,12 @@
       "title": "Crystal Merge v1",
       "acceptance": "Single index.html touch puzzle: drag a crystal onto a matching one to merge into the next tier on a grid; new crystals spawn; reach a target tier to win, board-full = lose; portrait, pointer events, 44px targets, viewport meta; ?demo=1 hook; shot.png",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T12:48:02Z"
+      "status": "done",
+      "handoff": "Crystal Merge v1 - drag-to-fuse gem grid, spawn-flood tension, demo self-wins to tier 6",
+      "updated": "2026-07-16T12:55:39Z",
+      "claimed_by": "unknown",
+      "issue": "48",
+      "cost": 151796
     },
     {
       "id": "T85",

@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-07-16T12:51:09Z",
+  "generated_at": "2026-07-16T12:55:42Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2282944,
-    "window_used": 497548,
-    "rolling_used": 2282944,
+    "used": 2255761,
+    "window_used": 689980,
+    "rolling_used": 2255761,
     "binding": "trailing",
     "budget": 4798485,
-    "pct": 47.6,
-    "rate_per_hour": 456571,
-    "eta_hours": 5.5,
+    "pct": 47.0,
+    "rate_per_hour": 451103,
+    "eta_hours": 5.6,
     "burn_spark": [
-      1093843,
-      691552,
+      1018333,
+      541523,
       0,
       0,
       0,
@@ -22,12 +22,12 @@
       0,
       0,
       0,
-      497548
+      689980
     ],
     "window_started_at": "2026-07-16T10:22:33Z",
     "resets_at": "2026-07-16T15:22:33Z",
-    "seconds_to_reset": 9083,
-    "nap_until": "2026-07-16T12:51:08Z",
+    "seconds_to_reset": 8810,
+    "nap_until": "2026-07-16T12:55:40Z",
     "nap_seconds": 0,
     "wrap_up_pct": 85,
     "stop_pct": 95,
@@ -285,7 +285,7 @@
       "status": "planned",
       "description": "drag matching crystals together on a grid to merge them into higher tiers toward a target gem, 2048-style touch puzzle",
       "slug": "crystal-merge",
-      "cost": 0
+      "cost": 151796
     }
   ],
   "tasks": [
@@ -1289,7 +1289,7 @@
       "claimed_by": "unknown",
       "issue": "47",
       "cost": 144762,
-      "commit": null
+      "commit": "aee664a"
     },
     {
       "id": "T83",
@@ -1308,9 +1308,12 @@
       "title": "Crystal Merge v1",
       "acceptance": "Single index.html touch puzzle: drag a crystal onto a matching one to merge into the next tier on a grid; new crystals spawn; reach a target tier to win, board-full = lose; portrait, pointer events, 44px targets, viewport meta; ?demo=1 hook; shot.png",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T12:48:02Z",
+      "status": "done",
+      "handoff": "Crystal Merge v1 - drag-to-fuse gem grid, spawn-flood tension, demo self-wins to tier 6",
+      "updated": "2026-07-16T12:55:39Z",
+      "claimed_by": "unknown",
+      "issue": "48",
+      "cost": 151796,
       "commit": null
     },
     {
@@ -1328,7 +1331,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T84",
       "T60",
       "T69",
       "T71",
@@ -1608,11 +1610,11 @@
       "status": "planned",
       "description": "drag matching crystals together on a grid to merge them into higher tiers toward a target gem, 2048-style touch puzzle",
       "slug": "crystal-merge",
-      "built": false,
-      "shot": false,
-      "updated": null,
-      "cost": 0,
-      "url": null
+      "built": true,
+      "shot": true,
+      "updated": "2026-07-16T12:54:27Z",
+      "cost": 151796,
+      "url": "/projects/crystal-merge/"
     }
   ],
   "sessions": [
@@ -1650,21 +1652,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T82",
-    "current_action": "building Aurora Surfer v1",
+    "current_task": "T84",
+    "current_action": "Building Crystal Merge v1",
     "agent": "autopilot",
-    "updated": "2026-07-16T12:50:06Z",
+    "updated": "2026-07-16T12:54:30Z",
     "log": [
-      {
-        "at": "2026-07-16T12:33:19Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-16T12:33:19Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
       {
         "at": "2026-07-16T12:35:29Z",
         "agent": "autopilot",
@@ -1714,6 +1706,16 @@
         "at": "2026-07-16T12:50:06Z",
         "agent": "autopilot",
         "msg": "built aurora-surfer index.html, validating"
+      },
+      {
+        "at": "2026-07-16T12:51:29Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T12:54:30Z",
+        "agent": "autopilot",
+        "msg": "built crystal-merge index.html, validating"
       }
     ]
   },

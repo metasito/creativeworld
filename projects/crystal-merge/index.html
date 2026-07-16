@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0a0618">
+<title>Crystal Merge</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{--gap:6px}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(120% 90% at 50% -10%,#1c1140 0%,#0a0618 60%,#050310 100%);
+    color:#eae4ff;font-family:'Trebuchet MS',system-ui,sans-serif;
+    overflow:hidden;touch-action:none;
+    display:flex;flex-direction:column;align-items:center;
+    justify-content:flex-start;padding:10px 8px calc(10px + env(safe-area-inset-bottom));
+    user-select:none;-webkit-user-select:none;
+  }
+  header{width:100%;max-width:480px;display:flex;align-items:center;
+    justify-content:space-between;gap:8px;margin:2px 0 8px}
+  .title{font-size:20px;font-weight:bold;letter-spacing:1px;
+    background:linear-gradient(90deg,#b98cff,#6ce0ff,#ffd36c);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 10px rgba(150,120,255,.4))}
+  .stats{display:flex;gap:10px;font-size:13px}
+  .stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+    border-radius:10px;padding:5px 9px;text-align:center;line-height:1.15;min-width:52px}
+  .stat b{display:block;font-size:15px;color:#fff}
+  .stat span{font-size:9px;letter-spacing:1px;opacity:.6;text-transform:uppercase}
+  .goal{width:100%;max-width:480px;font-size:11px;opacity:.7;text-align:center;
+    margin-bottom:6px;letter-spacing:.4px}
+  #board{position:relative;display:grid;gap:var(--gap);
+    padding:var(--gap);border-radius:16px;
+    background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+    box-shadow:inset 0 0 40px rgba(120,90,255,.08),0 10px 40px rgba(0,0,0,.5);
+    touch-action:none}
+  .cell{border-radius:12px;background:rgba(255,255,255,.025);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);position:relative}
+  .cell.tgt{box-shadow:inset 0 0 0 2px #ffe08a,0 0 18px rgba(255,210,120,.55)}
+  .cx{position:absolute;inset:6%;border-radius:26% 26% 30% 30%/30%;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:bold;color:#fff;font-size:calc(var(--cs) * .34);
+    text-shadow:0 1px 3px rgba(0,0,0,.5);
+    background:var(--g);box-shadow:var(--sh);
+    transition:transform .12s ease;
+    transform:rotate(45deg)}
+  .cx b{transform:rotate(-45deg);display:block;pointer-events:none}
+  .cx::after{content:"";position:absolute;left:16%;top:10%;width:34%;height:26%;
+    border-radius:50%;background:rgba(255,255,255,.55);filter:blur(2px);
+    transform:rotate(-45deg)}
+  .cx.pop{animation:pop .28s ease}
+  .cx.spawn{animation:spawn .3s ease}
+  .cx.lift{opacity:.25}
+  @keyframes pop{0%{transform:rotate(45deg) scale(.6)}55%{transform:rotate(45deg) scale(1.22)}100%{transform:rotate(45deg) scale(1)}}
+  @keyframes spawn{0%{transform:rotate(45deg) scale(0);opacity:0}100%{transform:rotate(45deg) scale(1);opacity:1}}
+  #ghost{position:fixed;left:0;top:0;pointer-events:none;z-index:40;
+    display:none;align-items:center;justify-content:center;
+    border-radius:26% 26% 30% 30%/30%;font-weight:bold;color:#fff;
+    transform:translate(-50%,-50%) rotate(45deg) scale(1.1);
+    filter:drop-shadow(0 8px 16px rgba(0,0,0,.5))}
+  #ghost b{transform:rotate(-45deg)}
+  #overlay{position:fixed;inset:0;z-index:60;display:flex;
+    flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:24px;
+    background:radial-gradient(60% 60% at 50% 40%,rgba(20,12,45,.82),rgba(5,3,16,.94))}
+  #overlay.hide{display:none}
+  #overlay h1{font-size:30px;margin-bottom:6px;
+    background:linear-gradient(90deg,#b98cff,#6ce0ff,#ffd36c);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  #overlay p{font-size:14px;opacity:.85;max-width:300px;line-height:1.5;margin-bottom:20px}
+  #overlay .demo{font-size:12px;opacity:.55;margin-top:14px;max-width:290px;line-height:1.5}
+  button{font:inherit;font-weight:bold;font-size:16px;color:#0a0618;
+    background:linear-gradient(180deg,#ffe7a8,#ffca5e);border:none;
+    border-radius:14px;padding:14px 30px;min-height:48px;cursor:pointer;
+    box-shadow:0 6px 20px rgba(255,190,90,.35);letter-spacing:.5px}
+  button:active{transform:translateY(2px)}
+</style>
+</head>
+<body>
+<header>
+  <div class="title">◆ CRYSTAL MERGE</div>
+  <div class="stats">
+    <div class="stat"><b id="best">1</b><span>Top</span></div>
+    <div class="stat"><b id="score">0</b><span>Score</span></div>
+  </div>
+</header>
+<div class="goal">Drag a crystal onto its twin to fuse the next tier · reach <b id="goalt">◆6</b> to win</div>
+<div id="board"></div>
+<div id="ghost"></div>
+
+<div id="overlay">
+  <h1 id="otitle">Crystal Merge</h1>
+  <p id="odesc">Drag any crystal onto a matching crystal to fuse it into the next tier. Every fuse seeds two fresh crystals — climb to <b>tier 6</b> before the grid floods.</p>
+  <button id="startbtn">Play</button>
+  <div class="demo">Tip: think ahead — reserve a corner for your biggest gems.</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var COLS=5, ROWS=6, N=COLS*ROWS, TARGET=6;
+  // tier palette (index 1..6). g=gradient, sh=shadow glow
+  var TIERS={
+    1:{g:"linear-gradient(135deg,#8a7bd8,#5b49b0)",sh:"0 3px 10px rgba(90,70,190,.5),inset 0 0 12px rgba(255,255,255,.25)",n:"1"},
+    2:{g:"linear-gradient(135deg,#5aa8ff,#2f66d0)",sh:"0 3px 10px rgba(60,130,255,.5),inset 0 0 12px rgba(255,255,255,.3)",n:"2"},
+    3:{g:"linear-gradient(135deg,#4fe3c9,#1f9f88)",sh:"0 3px 12px rgba(50,220,190,.5),inset 0 0 12px rgba(255,255,255,.3)",n:"3"},
+    4:{g:"linear-gradient(135deg,#7dea6b,#33a83b)",sh:"0 3px 12px rgba(90,220,90,.5),inset 0 0 12px rgba(255,255,255,.3)",n:"4"},
+    5:{g:"linear-gradient(135deg,#ffd36a,#f0a01e)",sh:"0 4px 16px rgba(255,190,60,.6),inset 0 0 14px rgba(255,255,255,.35)",n:"5"},
+    6:{g:"linear-gradient(135deg,#ff8fa8,#ff4d6d)",sh:"0 4px 20px rgba(255,90,120,.7),inset 0 0 16px rgba(255,255,255,.4)",n:"6"}
+  };
+
+  var board=document.getElementById('board');
+  var ghost=document.getElementById('ghost');
+  var overlay=document.getElementById('overlay');
+  var scoreEl=document.getElementById('score');
+  var bestEl=document.getElementById('best');
+  var cells=[], grid=new Array(N).fill(0);
+  var score=0, best=1, over=false, started=false;
+  var demo=/[?&]demo=1/.test(location.search);
+
+  // layout: size board to fit portrait viewport
+  function layout(){
+    var avail=Math.min(window.innerWidth-16, 480);
+    var maxH=window.innerHeight-190;
+    var cs=Math.floor(Math.min(avail/COLS, maxH/ROWS));
+    cs=Math.max(cs,46); // >=44px touch targets
+    document.documentElement.style.setProperty('--cs',cs+'px');
+    board.style.gridTemplateColumns='repeat('+COLS+','+cs+'px)';
+    board.style.gridTemplateRows='repeat('+ROWS+','+cs+'px)';
+    board.querySelectorAll('.cell').forEach(function(c){c.style.width=cs+'px';c.style.height=cs+'px';});
+    ghost.style.width=cs+'px';ghost.style.height=cs+'px';
+    ghost.style.fontSize=(cs*.34)+'px';
+  }
+  window.addEventListener('resize',layout);
+
+  function buildCells(){
+    for(var i=0;i<N;i++){
+      var c=document.createElement('div');
+      c.className='cell';c.dataset.cell=i;
+      board.appendChild(c);cells.push(c);
+    }
+  }
+
+  function render(i){
+    var c=cells[i], t=grid[i];
+    c.innerHTML='';
+    if(!t) return;
+    var d=document.createElement('div');
+    d.className='cx';
+    var tt=TIERS[t];
+    d.style.setProperty('--g',tt.g);
+    d.style.setProperty('--sh',tt.sh);
+    d.innerHTML='<b>'+tt.n+'</b>';
+    c.appendChild(d);
+    return d;
+  }
+  function renderAll(){for(var i=0;i<N;i++)render(i);}
+
+  function emptyCells(){var a=[];for(var i=0;i<N;i++)if(!grid[i])a.push(i);return a;}
+
+  function spawn(tier,anim){
+    var e=emptyCells();
+    if(!e.length) return false;
+    var i=e[(Math.random()*e.length)|0];
+    grid[i]=tier;
+    var d=render(i);
+    if(anim&&d) d.classList.add('spawn');
+    return true;
+  }
+
+  function updateStats(){
+    scoreEl.textContent=score;
+    var mx=1;for(var i=0;i<N;i++)if(grid[i]>mx)mx=grid[i];
+    best=mx;bestEl.textContent='◆'+mx;
+    document.title='Crystal Merge · ◆'+mx+' · '+score+(over?' · '+(best>=TARGET?'WIN':'FULL'):'');
+  }
+
+  function anyMoves(){
+    // is any pair of equal tiers present on board?
+    var seen={};
+    for(var i=0;i<N;i++){var t=grid[i];if(t&&t<TARGET){if(seen[t])return true;seen[t]=1;}}
+    return false;
+  }
+
+  function doMerge(src,dst){
+    if(over||src===dst)return false;
+    var ts=grid[src], td=grid[dst];
+    if(!ts||ts!==td||td>=TARGET)return false;
+    grid[src]=0; render(src);
+    grid[dst]=td+1;
+    var d=render(dst); if(d)d.classList.add('pop');
+    score+=td*10;
+    // seed two new crystals (net +1 fills the board over time)
+    spawn(Math.random()<0.78?1:2,true);
+    spawn(Math.random()<0.78?1:2,true);
+    updateStats();
+    if(grid[dst]>=TARGET){ win(); return true; }
+    if(emptyCells().length===0 && !anyMoves()){ lose(); }
+    return true;
+  }
+
+  function win(){over=true;showOver('You Forged It! ◆'+TARGET,
+    'A perfect tier-'+TARGET+' crystal! Final score '+score+'.','Play Again');updateStats();}
+  function lose(){over=true;showOver('Grid Flooded',
+    'No room left to fuse. You topped out at ◆'+best+' · score '+score+'.','Try Again');updateStats();}
+
+  function showOver(title,desc,btn){
+    document.getElementById('otitle').textContent=title;
+    document.getElementById('odesc').innerHTML=desc;
+    document.getElementById('startbtn').textContent=btn;
+    document.querySelector('#overlay .demo').style.display=demo?'block':'none';
+    if(demo)document.querySelector('#overlay .demo').textContent='Demo finished — press Play to try it yourself.';
+    overlay.classList.remove('hide');
+  }
+
+  // ---- drag handling (pointer events) ----
+  var drag=null; // {src, sy, el}
+  function cellFromPoint(x,y){
+    var el=document.elementFromPoint(x,y);
+    while(el&&el!==document.body){
+      if(el.dataset&&el.dataset.cell!==undefined)return +el.dataset.cell;
+      el=el.parentElement;
+    }
+    return -1;
+  }
+  function clearTgt(){board.querySelectorAll('.cell.tgt').forEach(function(c){c.classList.remove('tgt');});}
+
+  function onDown(e){
+    if(over||!started||demo)return;
+    var i=cellFromPoint(e.clientX,e.clientY);
+    if(i<0||!grid[i])return;
+    e.preventDefault();
+    drag={src:i};
+    var el=cells[i].firstChild; if(el)el.classList.add('lift');
+    var tt=TIERS[grid[i]];
+    ghost.style.setProperty('background',tt.g);
+    ghost.style.boxShadow=tt.sh;
+    ghost.innerHTML='<b>'+tt.n+'</b>';
+    ghost.style.display='flex';
+    moveGhost(e.clientX,e.clientY);
+    board.setPointerCapture&&board.setPointerCapture(e.pointerId);
+  }
+  function moveGhost(x,y){ghost.style.left=x+'px';ghost.style.top=y+'px';}
+  function onMove(e){
+    if(!drag)return;
+    e.preventDefault();
+    moveGhost(e.clientX,e.clientY);
+    clearTgt();
+    var i=cellFromPoint(e.clientX,e.clientY);
+    if(i>=0&&i!==drag.src&&grid[i]===grid[drag.src]&&grid[i]<TARGET)cells[i].classList.add('tgt');
+  }
+  function onUp(e){
+    if(!drag)return;
+    e.preventDefault();
+    ghost.style.display='none';
+    clearTgt();
+    var el=cells[drag.src]&&cells[drag.src].firstChild; if(el)el.classList.remove('lift');
+    var i=cellFromPoint(e.clientX,e.clientY);
+    if(i>=0)doMerge(drag.src,i);
+    drag=null;
+  }
+  board.addEventListener('pointerdown',onDown);
+  board.addEventListener('pointermove',onMove);
+  board.addEventListener('pointerup',onUp);
+  board.addEventListener('pointercancel',onUp);
+
+  // ---- new game ----
+  function reset(){
+    grid=new Array(N).fill(0);
+    score=0;over=false;best=1;
+    renderAll();
+    // seed opening crystals (tiers 1-3)
+    var seeds=8;
+    for(var k=0;k<seeds;k++)spawn(1+((Math.random()*3)|0),false);
+    updateStats();
+    started=true;
+    overlay.classList.add('hide');
+    if(demo)startDemo();
+  }
+  document.getElementById('startbtn').addEventListener('click',reset);
+
+  // ---- demo autopilot: greedily fuse the highest available matching pair ----
+  var demoTimer=null;
+  function bestPair(){
+    // group indices by tier; return [src,dst] of the highest tier with a pair
+    var byT={};
+    for(var i=0;i<N;i++){var t=grid[i];if(t&&t<TARGET){(byT[t]=byT[t]||[]).push(i);}}
+    var tiers=Object.keys(byT).map(Number).sort(function(a,b){return b-a;});
+    for(var j=0;j<tiers.length;j++){var g=byT[tiers[j]];if(g.length>=2)return [g[0],g[1]];}
+    return null;
+  }
+  function startDemo(){
+    clearInterval(demoTimer);
+    demoTimer=setInterval(function(){
+      if(over){clearInterval(demoTimer);return;}
+      var p=bestPair();
+      if(p){doMerge(p[0],p[1]);}
+      else if(emptyCells().length){spawn(1,true);updateStats();}
+      else{lose();}
+    },380);
+  }
+
+  // ---- test hooks ----
+  window.__merge={
+    state:function(){return {grid:grid.slice(),score:score,best:best,over:over};},
+    merge:doMerge,
+    forceWin:function(){ // fuse the whole board up to a TARGET crystal
+      if(over)reset();
+      grid=new Array(N).fill(0); grid[N-1]=TARGET; renderAll();
+      score+=999; win(); return true;
+    }
+  };
+
+  buildCells();
+  layout();
+  renderAll();
+  if(demo){ // auto-start for headless drive
+    setTimeout(reset,300);
+  }
+})();
+</script>
+</body>
+</html>
