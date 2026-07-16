@@ -47,4 +47,4 @@ Whenever you fix a bug, hit a platform quirk, or find a pattern that made the ga
 
 ## Lessons Learned
 
-- (placeholder — first real lesson replaces this line)
+- Gravity/aim games: a `?demo=1` player aiming straight at a small goal rarely scores (wells bend the path). Prove the loop with strokes-in-title, and prove the WIN path with a synchronous `window.__comet._forceWin()` test hook a single `drive.py --js` can assert — don't rely on random demo play to reach game-over.
