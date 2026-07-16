@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-07-16T12:59:28Z",
+  "generated_at": "2026-07-16T13:02:03Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2333157,
-    "window_used": 890617,
-    "rolling_used": 2333157,
+    "used": 2319481,
+    "window_used": 1028335,
+    "rolling_used": 2319481,
     "binding": "trailing",
     "budget": 4798485,
-    "pct": 48.6,
-    "rate_per_hour": 467459,
+    "pct": 48.3,
+    "rate_per_hour": 463881,
     "eta_hours": 5.3,
     "burn_spark": [
-      1015272,
-      427268,
+      971394,
+      319752,
       0,
       0,
       0,
@@ -22,13 +22,13 @@
       0,
       0,
       0,
-      890617
+      1028335
     ],
     "window_started_at": "2026-07-16T10:22:33Z",
     "resets_at": "2026-07-16T15:22:33Z",
-    "seconds_to_reset": 8584,
-    "nap_until": "2026-07-16T13:00:00Z",
-    "nap_seconds": 31,
+    "seconds_to_reset": 8429,
+    "nap_until": "2026-07-16T13:02:02Z",
+    "nap_seconds": 0,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -222,7 +222,7 @@
       "status": "shipped",
       "description": "Touch puzzle: tap to rotate mirror tiles and bend a laser beam into the goal crystal across levels",
       "slug": "prism-ricochet",
-      "cost": 158669
+      "cost": 252545
     },
     {
       "id": "E17",
@@ -1012,7 +1012,7 @@
       "claimed_by": "unknown",
       "issue": "49",
       "cost": 158518,
-      "commit": null
+      "commit": "9ee69bb"
     },
     {
       "id": "T61",
@@ -1126,9 +1126,12 @@
       "title": "Prism Ricochet polish: beam glow + level select",
       "acceptance": "Add animated beam glow trail and a level-select grid; screenshot",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T12:48:02Z",
+      "status": "done",
+      "handoff": "Prism Ricochet polish: flowing beam glow trail + tappable level-select grid",
+      "updated": "2026-07-16T13:02:01Z",
+      "claimed_by": "unknown",
+      "issue": "50",
+      "cost": 93876,
       "commit": null
     },
     {
@@ -1334,7 +1337,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T69",
       "T71",
       "T73",
       "T75",
@@ -1523,8 +1525,8 @@
       "slug": "prism-ricochet",
       "built": true,
       "shot": true,
-      "updated": "2026-07-16T08:00:00Z",
-      "cost": 158669,
+      "updated": "2026-07-16T13:01:08Z",
+      "cost": 252545,
       "url": "/projects/prism-ricochet/"
     },
     {
@@ -1654,21 +1656,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T60",
-    "current_action": "Forge Tempo polish: quench sizzle + haptics",
+    "current_task": "T69",
+    "current_action": "Prism Ricochet polish: beam glow + level select",
     "agent": "autopilot",
-    "updated": "2026-07-16T12:57:52Z",
+    "updated": "2026-07-16T13:01:58Z",
     "log": [
-      {
-        "at": "2026-07-16T12:37:39Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-16T12:37:39Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
       {
         "at": "2026-07-16T12:39:53Z",
         "agent": "autopilot",
@@ -1718,6 +1710,16 @@
         "at": "2026-07-16T12:57:52Z",
         "agent": "autopilot",
         "msg": "T60: added quench steam burst + stronger ramp; validating"
+      },
+      {
+        "at": "2026-07-16T12:59:50Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T13:01:58Z",
+        "agent": "autopilot",
+        "msg": "Prism Ricochet: added flowing photon beam trail + tappable level-select grid; demo self-wins, jumpTo verified"
       }
     ]
   },

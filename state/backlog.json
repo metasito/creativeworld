@@ -955,9 +955,12 @@
       "title": "Prism Ricochet polish: beam glow + level select",
       "acceptance": "Add animated beam glow trail and a level-select grid; screenshot",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T12:48:02Z"
+      "status": "done",
+      "handoff": "Prism Ricochet polish: flowing beam glow trail + tappable level-select grid",
+      "updated": "2026-07-16T13:02:01Z",
+      "claimed_by": "unknown",
+      "issue": "50",
+      "cost": 93876
     },
     {
       "id": "T70",

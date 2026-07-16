@@ -25,10 +25,14 @@
   .btn { min-height:48px; min-width:120px; padding:0 22px; border:none; border-radius:24px; font-size:16px; font-weight:700;
          color:#05060f; background:linear-gradient(90deg,#3af0ff,#c86bff); cursor:pointer; touch-action:manipulation; }
   .btn:active { transform:scale(.96); }
-  #levels { display:flex; gap:8px; }
-  .dot { width:12px; height:12px; border-radius:50%; background:#26314f; }
-  .dot.done { background:#3af0ff; box-shadow:0 0 8px #3af0ff; }
-  .dot.cur { outline:2px solid #ff4fd0; outline-offset:2px; }
+  #levels { display:flex; gap:10px; }
+  .lvl { width:46px; height:46px; border-radius:12px; border:1px solid rgba(120,160,255,.25);
+         background:#141d38; color:#7fa8c9; font-size:16px; font-weight:800; cursor:pointer;
+         touch-action:manipulation; transition:transform .1s, box-shadow .2s; display:flex; align-items:center; justify-content:center; }
+  .lvl:active { transform:scale(.92); }
+  .lvl.done { color:#3af0ff; border-color:#3af0ff; box-shadow:0 0 10px rgba(58,240,255,.4); }
+  .lvl.cur { color:#05060f; background:linear-gradient(135deg,#3af0ff,#c86bff); border-color:transparent;
+             box-shadow:0 0 16px rgba(200,107,255,.55); }
 </style>
 </head>
 <body>
@@ -132,16 +136,31 @@
     for(let j=0;j<=L.rows;j++){ ctx.beginPath(); ctx.moveTo(0,j*cell); ctx.lineTo(L.cols*cell,j*cell); ctx.stroke(); }
     // beam
     if(path.length>1){
+      // pixel points + cumulative lengths for the flowing trail
+      const pts=path.map(p=>({x:cx(p.c), y:cyf(p.r)}));
+      const seg=[]; let total=0;
+      for(let k=1;k<pts.length;k++){ const dlen=Math.hypot(pts[k].x-pts[k-1].x, pts[k].y-pts[k-1].y); seg.push({from:pts[k-1], to:pts[k], len:dlen, start:total}); total+=dlen; }
       const grad=ctx.createLinearGradient(0,0,cv.width,cv.height);
       grad.addColorStop(0,'#3af0ff'); grad.addColorStop(1,'#ff4fd0');
       ctx.save();
       ctx.lineJoin='round'; ctx.lineCap='round';
+      // soft base glow
       ctx.shadowBlur=14+6*Math.sin(glow); ctx.shadowColor='#4ff0ff';
       ctx.strokeStyle=grad; ctx.lineWidth=4+1.5*Math.sin(glow);
       ctx.beginPath();
-      ctx.moveTo(cx(path[0].c), cyf(path[0].r));
-      for(let k=1;k<path.length;k++){ ctx.lineTo(cx(path[k].c), cyf(path[k].r)); }
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for(let k=1;k<pts.length;k++) ctx.lineTo(pts[k].x, pts[k].y);
       ctx.stroke();
+      // flowing photons travelling toward the crystal
+      const posAt=d=>{ for(const s of seg){ if(d<=s.start+s.len){ const t=s.len?(d-s.start)/s.len:0; return {x:s.from.x+(s.to.x-s.from.x)*t, y:s.from.y+(s.to.y-s.from.y)*t}; } } const l=pts[pts.length-1]; return {x:l.x,y:l.y}; };
+      const gap=cell*1.15, speed=(glow*36)%gap;
+      ctx.globalCompositeOperation='lighter';
+      for(let d=speed; d<total; d+=gap){
+        const p=posAt(d), fade=won?1:0.85;
+        ctx.fillStyle='rgba(120,245,255,'+fade+')';
+        ctx.shadowBlur=16; ctx.shadowColor='#7ff6ff';
+        ctx.beginPath(); ctx.arc(p.x,p.y,3.4+1.2*Math.sin(glow*2+d),0,7); ctx.fill();
+      }
       ctx.restore();
     }
     // tiles
@@ -177,7 +196,19 @@
   function syncHud(){
     $('lvl').textContent=lvl+1; $('tot').textContent=LEVELS.length; $('mv').textContent=moves;
     const box=$('levels'); box.innerHTML='';
-    for(let i=0;i<LEVELS.length;i++){ const d=document.createElement('div'); d.className='dot'+(i<lvl?' done':'')+(i===lvl?' cur':''); box.appendChild(d); }
+    for(let i=0;i<LEVELS.length;i++){
+      const b=document.createElement('button');
+      b.className='lvl'+(i<lvl?' done':'')+(i===lvl?' cur':'');
+      b.textContent=i+1;
+      b.addEventListener('click', ()=>jumpTo(i));
+      box.appendChild(b);
+    }
+  }
+
+  function jumpTo(n){
+    if(n===lvl) return;
+    $('overlay').classList.remove('show');
+    lvl=n; setupLevel();
   }
 
   function rotateAt(r,c){
