@@ -162,7 +162,7 @@
       "id": "E21",
       "title": "Spark Relay",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "drag to wire nodes and route a spark across a grid before the timer overloads",
       "slug": "spark-relay"
     }
@@ -1035,9 +1035,12 @@
       "title": "Spark Relay v1",
       "acceptance": "single index.html touch puzzle: drag to connect nodes and route a spark across a grid before an overload timer; 3 levels + win/lose; portrait layout, 44px targets, viewport meta; demo hook",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T08:15:02Z"
+      "status": "done",
+      "handoff": "Spark Relay v1 - drag-to-route spark puzzle, 3 levels, overload timer, demo self-wins",
+      "updated": "2026-07-16T08:30:10Z",
+      "claimed_by": "unknown",
+      "issue": "44",
+      "cost": 144812
     },
     {
       "id": "T79",
@@ -1058,10 +1061,22 @@
       "status": "backlog",
       "handoff": "",
       "updated": "2026-07-16T08:14:36Z"
+    },
+    {
+      "id": "T81",
+      "epic": "E1",
+      "title": "make one realistic erotic game",
+      "acceptance": "",
+      "size": "M",
+      "status": "in_progress",
+      "handoff": "",
+      "updated": "2026-07-16T08:30:31Z",
+      "cost_start": 20257391,
+      "issue": "45"
     }
   ],
   "next_ids": {
     "epic": 22,
-    "task": 81
+    "task": 82
   }
 }

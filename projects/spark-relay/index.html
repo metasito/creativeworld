@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#05070f">
+<title>Spark Relay</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; background:#05070f; color:#dfe9ff;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    overflow:hidden; user-select:none; -webkit-user-select:none; }
+  #wrap { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; }
+  header { width:100%; max-width:560px; padding:10px 16px 6px; display:flex;
+    align-items:center; gap:12px; }
+  h1 { font-size:17px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+    background:linear-gradient(90deg,#39e6ff,#8b7bff); -webkit-background-clip:text;
+    background-clip:text; color:transparent; }
+  #lvl { margin-left:auto; font-size:13px; color:#7f8db3; letter-spacing:.1em; }
+  #barwrap { width:100%; max-width:560px; padding:0 16px; }
+  #barlabel { display:flex; justify-content:space-between; font-size:11px; color:#6b78a0;
+    letter-spacing:.12em; text-transform:uppercase; margin-bottom:4px; }
+  #bar { height:8px; border-radius:6px; background:#141a2c; overflow:hidden; }
+  #fill { height:100%; width:100%; border-radius:6px;
+    background:linear-gradient(90deg,#2bd9a8,#39e6ff); transition:background .2s; }
+  #stage { flex:1; width:100%; display:flex; align-items:center; justify-content:center;
+    touch-action:none; }
+  canvas { touch-action:none; display:block; }
+  #hint { position:fixed; bottom:14px; left:0; right:0; text-align:center; font-size:12px;
+    color:#6b78a0; letter-spacing:.06em; pointer-events:none; }
+  #overlay { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:18px; background:rgba(5,7,15,.82); backdrop-filter:blur(3px);
+    text-align:center; padding:24px; z-index:10; }
+  #overlay.hidden { display:none; }
+  #otitle { font-size:30px; font-weight:800; letter-spacing:.04em;
+    background:linear-gradient(90deg,#39e6ff,#8b7bff); -webkit-background-clip:text;
+    background-clip:text; color:transparent; }
+  #osub { font-size:14px; color:#9aa7cc; max-width:300px; line-height:1.5; }
+  button { font:inherit; font-size:16px; font-weight:700; letter-spacing:.08em; color:#05070f;
+    background:linear-gradient(90deg,#39e6ff,#8b7bff); border:none; border-radius:14px;
+    padding:15px 34px; min-height:52px; min-width:160px; cursor:pointer; }
+  button:active { transform:scale(.96); }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <header><h1>Spark&nbsp;Relay</h1><span id="lvl">Level 1 / 3</span></header>
+  <div id="barwrap">
+    <div id="barlabel"><span>Overload</span><span id="tsec">0.0s</span></div>
+    <div id="bar"><div id="fill"></div></div>
+  </div>
+  <div id="stage"><canvas id="cv"></canvas></div>
+  <div id="hint">Drag from the green core to the gold node — beat the overload</div>
+</div>
+<div id="overlay">
+  <div id="otitle">Spark Relay</div>
+  <div id="osub">Drag a wire from the charged core across the grid to the gold relay before the circuit overloads. Dodge the dead cells.</div>
+  <button id="btn">Start</button>
+</div>
+<script>
+(function(){
+  const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+  const fill=document.getElementById('fill'), tsec=document.getElementById('tsec');
+  const lvlEl=document.getElementById('lvl'), overlay=document.getElementById('overlay');
+  const otitle=document.getElementById('otitle'), osub=document.getElementById('osub'), btn=document.getElementById('btn');
+  const DEMO=/[?&]demo=1/.test(location.search);
+
+  // ---- levels ----
+  const LEVELS=[
+    { cols:5, rows:6, src:[0,5], tgt:[4,0], time:22,
+      walls:[[1,4],[2,4],[3,2],[1,1],[2,1]] },
+    { cols:6, rows:7, src:[0,6], tgt:[5,0], time:26,
+      walls:[[1,5],[2,5],[3,5],[4,3],[2,3],[1,3],[3,1],[4,1]] },
+    { cols:6, rows:8, src:[0,7], tgt:[5,0], time:30,
+      walls:[[1,6],[2,6],[3,6],[3,5],[3,4],[1,4],[0,4],[4,2],[5,2],[2,2],[1,2],[2,1]] },
+  ];
+
+  let li=0, L, wallSet, path=[], active=false, state='menu';
+  let timeLeft=0, spark=0, sparking=false, advTok=0, t0=performance.now();
+  let ox=0, oy=0, cs=0, W=0, H=0;
+
+  function key(c,r){ return c+','+r; }
+  function isWall(c,r){ return wallSet.has(key(c,r)); }
+  function inGrid(c,r){ return c>=0&&r>=0&&c<L.cols&&r<L.rows; }
+  function eq(a,b){ return a[0]===b[0]&&a[1]===b[1]; }
+
+  function resize(){
+    const stage=document.getElementById('stage');
+    W=stage.clientWidth; H=stage.clientHeight;
+    const dpr=Math.min(devicePixelRatio||1,2);
+    cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    if(L) layout();
+    draw();
+  }
+  function layout(){
+    const pad=18;
+    cs=Math.min((W-2*pad)/L.cols,(H-2*pad)/L.rows);
+    cs=Math.max(cs,30);
+    ox=(W-cs*L.cols)/2; oy=(H-cs*L.rows)/2;
+  }
+  function cxy(c,r){ return [ox+c*cs+cs/2, oy+r*cs+cs/2]; }
+  function cellAt(x,y){
+    const c=Math.floor((x-ox)/cs), r=Math.floor((y-oy)/cs);
+    if(!inGrid(c,r)) return null;
+    // require pointer reasonably near node centre for precision
+    const [px,py]=cxy(c,r);
+    if(Math.hypot(x-px,y-py) > cs*0.62) return null;
+    return [c,r];
+  }
+
+  function loadLevel(i){
+    li=i; L=LEVELS[i];
+    wallSet=new Set(L.walls.map(w=>key(w[0],w[1])));
+    path=[]; active=false; spark=0; sparking=false;
+    timeLeft=L.time; state='play'; advTok++;
+    lvlEl.textContent='Level '+(i+1)+' / '+LEVELS.length;
+    layout();
+    setTitle();
+    if(DEMO) startDemo();
+  }
+  function setTitle(){
+    if(state==='play') document.title='Spark Relay L'+(li+1);
+    else if(state==='lose') document.title='LOSE L'+(li+1);
+    else if(state==='won') document.title='WIN '+LEVELS.length;
+    else if(state==='levelwin') document.title='DONE L'+(li+1);
+  }
+
+  // ---- path building ----
+  function tryStart(cell){
+    if(!cell) return;
+    if(path.length===0){ if(eq(cell,L.src)){ path=[cell]; active=true; } return; }
+    // resume/truncate if tapping an existing path cell
+    for(let k=0;k<path.length;k++){ if(eq(path[k],cell)){ path=path.slice(0,k+1); active=true; return; } }
+  }
+  function extend(cell){
+    if(!active||!cell||sparking) return;
+    const last=path[path.length-1];
+    if(eq(cell,last)) return;
+    // backtrack
+    if(path.length>=2 && eq(cell,path[path.length-2])){ path.pop(); return; }
+    // must be orthogonally adjacent, not wall, not already used
+    const d=Math.abs(cell[0]-last[0])+Math.abs(cell[1]-last[1]);
+    if(d!==1) return;
+    if(isWall(cell[0],cell[1])) return;
+    for(const p of path){ if(eq(p,cell)) return; }
+    path.push(cell);
+    if(eq(cell,L.tgt)) win();
+  }
+
+  function win(){
+    if(sparking||state!=='play') return;
+    active=false; sparking=true; spark=0;
+  }
+  function afterSpark(){
+    sparking=false;
+    if(li+1<LEVELS.length){
+      state='levelwin'; setTitle();
+      const tok=++advTok;
+      if(DEMO){ setTimeout(()=>{ if(tok===advTok) loadLevel(li+1); }, 650); }
+      else showOverlay('Relay Live!','Level '+(li+1)+' cleared. The spark jumps onward.','Next',()=>loadLevel(li+1));
+    } else {
+      state='won'; setTitle();
+      if(DEMO) return;
+      showOverlay('Circuit Complete','All three relays energized. You beat the overload.','Play Again',()=>{ hideOverlay(); loadLevel(0); });
+    }
+  }
+  function lose(){
+    if(state!=='play') return;
+    state='lose'; active=false; setTitle();
+    if(DEMO){ setTimeout(()=>loadLevel(li),500); return; }
+    showOverlay('Overload!','The circuit blew before the spark arrived.','Retry',()=>{ hideOverlay(); loadLevel(li); });
+  }
+
+  function showOverlay(t,s,b,fn){
+    otitle.textContent=t; osub.textContent=s; btn.textContent=b;
+    overlay.classList.remove('hidden'); btn.onclick=()=>{ hideOverlay(); fn(); };
+  }
+  function hideOverlay(){ overlay.classList.add('hidden'); }
+
+  // ---- demo autopilot ----
+  function bfs(){
+    const q=[[L.src]], seen=new Set([key(L.src[0],L.src[1])]);
+    while(q.length){
+      const pth=q.shift(), c=pth[pth.length-1];
+      if(eq(c,L.tgt)) return pth;
+      for(const[dc,dr]of[[0,-1],[0,1],[-1,0],[1,0]]){
+        const nc=c[0]+dc, nr=c[1]+dr;
+        if(!inGrid(nc,nr)||isWall(nc,nr)||seen.has(key(nc,nr))) continue;
+        seen.add(key(nc,nr)); q.push(pth.concat([[nc,nr]]));
+      }
+    }
+    return null;
+  }
+  function startDemo(){
+    const sol=bfs(); if(!sol){ return; }
+    path=[sol[0]]; active=true; let i=1;
+    const tok=advTok;
+    const step=()=>{
+      if(tok!==advTok||state!=='play') return;
+      if(i<sol.length){ extend(sol[i]); i++; setTimeout(step,90); }
+    };
+    setTimeout(step,300);
+  }
+
+  // ---- loop ----
+  function frame(now){
+    const dt=(now-t0)/1000; t0=now;
+    if(state==='play'){
+      if(!sparking){
+        timeLeft-=dt;
+        if(timeLeft<=0){ timeLeft=0; lose(); }
+      }
+      if(sparking){
+        spark+=dt/0.55;
+        if(spark>=1){ spark=1; afterSpark(); }
+      }
+    }
+    draw();
+    requestAnimationFrame(frame);
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    if(!L) return;
+    // frac of time
+    const frac=L?Math.max(0,timeLeft/L.time):0;
+    fill.style.width=(frac*100).toFixed(1)+'%';
+    fill.style.background = frac<.28 ? 'linear-gradient(90deg,#ff5a6a,#ff9a4d)'
+      : frac<.55 ? 'linear-gradient(90deg,#ffb648,#39e6ff)'
+      : 'linear-gradient(90deg,#2bd9a8,#39e6ff)';
+    tsec.textContent=timeLeft.toFixed(1)+'s';
+
+    // wire path
+    if(path.length>0){
+      ctx.lineJoin='round'; ctx.lineCap='round';
+      ctx.strokeStyle='rgba(57,230,255,.28)'; ctx.lineWidth=cs*0.34;
+      strokePath();
+      ctx.strokeStyle='#7fe9ff'; ctx.lineWidth=cs*0.14;
+      strokePath();
+    }
+
+    // nodes
+    for(let r=0;r<L.rows;r++)for(let c=0;c<L.cols;c++){
+      const [x,y]=cxy(c,r);
+      if(isWall(c,r)){
+        ctx.fillStyle='#10131f';
+        roundRect(x-cs*0.3,y-cs*0.3,cs*0.6,cs*0.6,6); ctx.fill();
+        ctx.strokeStyle='#1c2233'; ctx.lineWidth=1.5;
+        roundRect(x-cs*0.3,y-cs*0.3,cs*0.6,cs*0.6,6); ctx.stroke();
+        continue;
+      }
+      const onPath=path.some(p=>p[0]===c&&p[1]===r);
+      ctx.beginPath(); ctx.arc(x,y,cs*0.12,0,7);
+      ctx.fillStyle=onPath?'#bff2ff':'#2a3350'; ctx.fill();
+    }
+
+    // source
+    node(L.src, '#2bd9a8', 'S');
+    // target
+    node(L.tgt, '#ffd257', 'T');
+
+    // spark travelling
+    if(sparking && path.length>1){
+      const seg=(path.length-1)*spark;
+      const idx=Math.min(Math.floor(seg),path.length-2);
+      const f=seg-idx;
+      const [ax,ay]=cxy(path[idx][0],path[idx][1]);
+      const [bx,by]=cxy(path[idx+1][0],path[idx+1][1]);
+      const x=ax+(bx-ax)*f, y=ay+(by-ay)*f;
+      const g=ctx.createRadialGradient(x,y,0,x,y,cs*0.5);
+      g.addColorStop(0,'#ffffff'); g.addColorStop(.4,'#9df0ff'); g.addColorStop(1,'rgba(57,230,255,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,cs*0.5,0,7); ctx.fill();
+    }
+  }
+  function strokePath(){
+    ctx.beginPath();
+    for(let i=0;i<path.length;i++){ const[x,y]=cxy(path[i][0],path[i][1]);
+      if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+    ctx.stroke();
+  }
+  function node(cell,col,letter){
+    const [x,y]=cxy(cell[0],cell[1]);
+    const pulse=1+0.08*Math.sin(performance.now()/300);
+    const g=ctx.createRadialGradient(x,y,0,x,y,cs*0.42*pulse);
+    g.addColorStop(0,col); g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,cs*0.42*pulse,0,7); ctx.fill();
+    ctx.beginPath(); ctx.arc(x,y,cs*0.2,0,7); ctx.fillStyle=col; ctx.fill();
+    ctx.fillStyle='#05070f'; ctx.font='bold '+(cs*0.22)+'px sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(letter,x,y+1);
+  }
+  function roundRect(x,y,w,h,r){
+    ctx.beginPath(); ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+  }
+
+  // ---- input ----
+  function pos(e){ const R=cv.getBoundingClientRect(); return [e.clientX-R.left, e.clientY-R.top]; }
+  cv.addEventListener('pointerdown',e=>{ if(state!=='play'||DEMO)return; e.preventDefault();
+    cv.setPointerCapture(e.pointerId); const[x,y]=pos(e); tryStart(cellAt(x,y)); });
+  cv.addEventListener('pointermove',e=>{ if(state!=='play'||!active||DEMO)return; e.preventDefault();
+    const[x,y]=pos(e); extend(cellAt(x,y)); });
+  cv.addEventListener('pointerup',e=>{ active=false; });
+  cv.addEventListener('pointercancel',e=>{ active=false; });
+  window.addEventListener('resize',resize);
+
+  // test hooks
+  window.__relay={ solve:()=>{ const s=bfs(); if(s){ path=s.slice(); win(); } },
+                   forceLose:()=>lose(), level:()=>li };
+
+  btn.onclick=()=>{ hideOverlay(); loadLevel(0); };
+  resize();
+  if(DEMO){ hideOverlay(); loadLevel(0); }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
