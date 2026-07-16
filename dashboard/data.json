@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-16T08:07:56Z",
+  "generated_at": "2026-07-16T08:12:45Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 870015,
-    "window_used": 870015,
-    "rolling_used": 870015,
+    "used": 1081015,
+    "window_used": 1081015,
+    "rolling_used": 1081015,
     "binding": "window",
     "budget": 4798485,
-    "pct": 18.1,
-    "rate_per_hour": 2669532,
-    "eta_hours": 1.5,
+    "pct": 22.5,
+    "rate_per_hour": 2661447,
+    "eta_hours": 1.4,
     "burn_spark": [
       0,
       0,
@@ -22,13 +22,13 @@
       0,
       0,
       0,
-      870015
+      1081015
     ],
     "window_started_at": "2026-07-16T05:22:33Z",
     "resets_at": "2026-07-16T10:22:33Z",
-    "seconds_to_reset": 8076,
+    "seconds_to_reset": 7787,
     "nap_until": "2026-07-16T10:22:33Z",
-    "nap_seconds": 8076,
+    "nap_seconds": 7787,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -232,10 +232,10 @@
       "id": "E18",
       "title": "Echo Bloom",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Tap-to-pulse rhythm survival: send sonar rings to reveal and pop blooming hazards in the dark to the beat",
       "slug": "echo-bloom",
-      "cost": 0
+      "cost": 163673
     }
   ],
   "tasks": [
@@ -1087,7 +1087,7 @@
       "claimed_by": "unknown",
       "issue": "40",
       "cost": 215117,
-      "commit": null
+      "commit": "bdacb3f"
     },
     {
       "id": "T71",
@@ -1106,9 +1106,12 @@
       "title": "Echo Bloom v1",
       "acceptance": "Single index.html touch game: tap emits sonar ring revealing dark hazards, pop blooms before they reach center; score + game over; portrait, pointer events; shot.png",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T07:57:31Z",
+      "status": "done",
+      "handoff": "Echo Bloom v1 - sonar-ring touch game: tap pings blooms in the dark, pop them before they reach the core; 3 lives, score, restart",
+      "updated": "2026-07-16T08:12:43Z",
+      "claimed_by": "unknown",
+      "issue": "41",
+      "cost": 163673,
       "commit": null
     },
     {
@@ -1126,7 +1129,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T72",
       "T58",
       "T60",
       "T61",
@@ -1334,14 +1336,14 @@
       "id": "E18",
       "title": "Echo Bloom",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Tap-to-pulse rhythm survival: send sonar rings to reveal and pop blooming hazards in the dark to the beat",
       "slug": "echo-bloom",
-      "built": false,
-      "shot": false,
-      "updated": null,
-      "cost": 0,
-      "url": null
+      "built": true,
+      "shot": true,
+      "updated": "2026-07-16T08:10:46Z",
+      "cost": 163673,
+      "url": "/projects/echo-bloom/"
     }
   ],
   "sessions": [
@@ -1379,21 +1381,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T70",
-    "current_action": "Building Bubble Diver v1",
+    "current_task": "T72",
+    "current_action": "Echo Bloom v1: sonar-ring touch game",
     "agent": "autopilot",
-    "updated": "2026-07-16T08:07:51Z",
+    "updated": "2026-07-16T08:10:49Z",
     "log": [
-      {
-        "at": "2026-07-16T00:33:25Z",
-        "agent": "autopilot",
-        "msg": "T57 verified: gameplay screenshot + demo title (L1 strokes:5) + win pipeline (WIN L3)"
-      },
-      {
-        "at": "2026-07-16T00:34:04Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-16T00:40:59Z",
         "agent": "autopilot",
@@ -1443,6 +1435,16 @@
         "at": "2026-07-16T08:07:51Z",
         "agent": "autopilot",
         "msg": "T70 verified: demo self-wins (WIN air:27% reached:100%), forceWin/forceLose hooks, no console errors, gameplay shot"
+      },
+      {
+        "at": "2026-07-16T08:08:21Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T08:10:49Z",
+        "agent": "autopilot",
+        "msg": "T72 echo-bloom index.html written; validating"
       }
     ]
   },

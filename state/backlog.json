@@ -138,7 +138,7 @@
       "id": "E18",
       "title": "Echo Bloom",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Tap-to-pulse rhythm survival: send sonar rings to reveal and pop blooming hazards in the dark to the beat",
       "slug": "echo-bloom"
     }
@@ -942,9 +942,12 @@
       "title": "Echo Bloom v1",
       "acceptance": "Single index.html touch game: tap emits sonar ring revealing dark hazards, pop blooms before they reach center; score + game over; portrait, pointer events; shot.png",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T07:57:31Z"
+      "status": "done",
+      "handoff": "Echo Bloom v1 - sonar-ring touch game: tap pings blooms in the dark, pop them before they reach the core; 3 lives, score, restart",
+      "updated": "2026-07-16T08:12:43Z",
+      "claimed_by": "unknown",
+      "issue": "41",
+      "cost": 163673
     },
     {
       "id": "T73",

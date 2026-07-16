@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#05060f">
+<title>Echo Bloom</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden;background:#05060f;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:#dfe7ff;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+  #wrap{position:fixed;inset:0}
+  canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  #hud{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;
+    align-items:center;padding:calc(env(safe-area-inset-top) + 14px) 20px 0;
+    font-variant-numeric:tabular-nums;pointer-events:none;letter-spacing:.5px}
+  #score{font-size:30px;font-weight:800;text-shadow:0 0 18px #4de0ff}
+  #lives{font-size:26px;letter-spacing:3px;text-shadow:0 0 14px #ff5c8a}
+  .overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+    align-items:center;text-align:center;padding:30px;gap:16px;
+    background:radial-gradient(circle at 50% 42%,rgba(10,14,34,.55),rgba(5,6,15,.92));
+    backdrop-filter:blur(2px);z-index:5}
+  .overlay.hidden{display:none}
+  .title{font-size:clamp(38px,13vw,72px);font-weight:900;letter-spacing:2px;
+    background:linear-gradient(90deg,#4de0ff,#b98bff,#ff5c8a);-webkit-background-clip:text;
+    background-clip:text;color:transparent;text-shadow:0 0 40px rgba(120,140,255,.4)}
+  .sub{font-size:16px;line-height:1.6;max-width:340px;color:#a9b6e0}
+  .sub b{color:#4de0ff}
+  .big{font-size:22px;font-weight:700;color:#fff}
+  .cta{margin-top:8px;font-size:15px;font-weight:700;color:#05060f;
+    background:linear-gradient(90deg,#4de0ff,#b98bff);padding:16px 40px;border-radius:40px;
+    min-height:44px;display:flex;align-items:center;box-shadow:0 0 30px rgba(120,180,255,.5);
+    animation:pulse 1.8s ease-in-out infinite}
+  @keyframes pulse{50%{transform:scale(1.05);filter:brightness(1.15)}}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="c"></canvas>
+  <div id="hud"><div id="score">0</div><div id="lives">♥♥♥</div></div>
+  <div id="start" class="overlay">
+    <div class="title">ECHO&nbsp;BLOOM</div>
+    <div class="sub">The dark hides drifting <b>blooms</b>. Each <b>tap</b> pings a sonar ring
+      that lights them up — and pops any bloom you touch.<br>Keep them off the core.</div>
+    <div class="cta" id="startBtn">TAP TO DIVE</div>
+  </div>
+  <div id="over" class="overlay hidden">
+    <div class="title" style="font-size:clamp(30px,10vw,54px)">DEPTH LOST</div>
+    <div class="big" id="finalScore">0</div>
+    <div class="sub">The core went dark.</div>
+    <div class="cta" id="againBtn">TAP TO DIVE AGAIN</div>
+  </div>
+</div>
+<script>
+(()=>{
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const scoreEl=document.getElementById('score'),livesEl=document.getElementById('lives');
+const startO=document.getElementById('start'),overO=document.getElementById('over'),finalEl=document.getElementById('finalScore');
+const DEMO=new URLSearchParams(location.search).has('demo');
+let W=0,H=0,DPR=1,cx=0,cy=0;
+function resize(){
+  DPR=Math.min(window.devicePixelRatio||1,2);
+  W=innerWidth;H=innerHeight;cx=W/2;cy=H/2;
+  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+addEventListener('resize',resize);resize();
+
+const CORE_R=30;
+let blooms,sonars,parts,score,lives,elapsed,spawnT,running,shake;
+
+function reset(){
+  blooms=[];sonars=[];parts=[];score=0;lives=3;elapsed=0;spawnT=0;running=true;shake=0;
+  updHUD();
+}
+function updHUD(){
+  scoreEl.textContent=score;
+  livesEl.textContent='♥'.repeat(Math.max(0,lives))||'·';
+}
+
+function spawnBloom(){
+  const a=Math.random()*Math.PI*2;
+  const R=Math.hypot(W,H)/2+50;
+  const spd=(20+elapsed*2.2)*(0.85+Math.random()*0.4);
+  blooms.push({
+    x:cx+Math.cos(a)*R, y:cy+Math.sin(a)*R,
+    ang:a+Math.PI, r:24+Math.random()*10, spd,
+    reveal:0, hue:315+Math.random()*40, wob:Math.random()*6.28, dead:false
+  });
+}
+
+function ping(x,y){
+  sonars.push({x,y,r:0,max:Math.hypot(W,H)*0.72,dead:false});
+  // pop nearest bloom in touch range
+  let best=null,bd=1e9;
+  for(const b of blooms){
+    if(b.dead)continue;
+    const d=Math.hypot(b.x-x,b.y-y);
+    if(d<b.r+20 && d<bd){bd=d;best=b;}
+  }
+  if(best){best.dead=true;score++;updHUD();burst(best.x,best.y,best.hue);beep(560+Math.min(score,40)*8,.07);}
+  else beep(200,.05);
+}
+function burst(x,y,hue){
+  for(let i=0;i<14;i++){
+    const a=Math.random()*6.28,s=40+Math.random()*140;
+    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,hue});
+  }
+}
+
+// audio
+let AC=null;
+function beep(freq,dur){
+  if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return;}}
+  const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();
+  o.frequency.value=freq;o.type='sine';g.gain.setValueAtTime(.0001,t);
+  g.gain.exponentialRampToValueAtTime(.18,t+.01);
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+dur+.02);
+}
+
+function breach(b){
+  b.dead=true;lives--;updHUD();shake=14;beep(90,.25);
+  for(let i=0;i<20;i++){const a=Math.random()*6.28,s=60+Math.random()*160;
+    parts.push({x:cx,y:cy,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,hue:0});}
+  if(lives<=0)gameOver();
+}
+function gameOver(){
+  running=false;finalEl.textContent=score+' blooms';overO.classList.remove('hidden');
+}
+
+let last=performance.now();
+function loop(now){
+  const dt=Math.min((now-last)/1000,.05);last=now;
+  if(running){
+    elapsed+=dt;spawnT-=dt;
+    const interval=Math.max(0.45,1.5-elapsed*0.03);
+    if(spawnT<=0){spawnBloom();spawnT=interval;}
+    // blooms
+    for(const b of blooms){
+      if(b.dead)continue;
+      b.x+=Math.cos(b.ang)*b.spd*dt;
+      b.y+=Math.sin(b.ang)*b.spd*dt;
+      b.wob+=dt*4;
+      b.reveal=Math.max(0.14,b.reveal-dt*0.5);
+      if(Math.hypot(b.x-cx,b.y-cy)<=CORE_R+b.r*0.35)breach(b);
+    }
+    // sonars reveal
+    for(const s of sonars){
+      s.r+=Math.hypot(W,H)*0.9*dt;
+      if(s.r>s.max)s.dead=true;
+      for(const b of blooms){
+        if(b.dead)continue;
+        if(Math.abs(Math.hypot(b.x-s.x,b.y-s.y)-s.r)<34)b.reveal=1;
+      }
+    }
+    for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=0.94;p.vy*=0.94;p.life-=dt*1.4;}
+    blooms=blooms.filter(b=>!b.dead);
+    sonars=sonars.filter(s=>!s.dead);
+    parts=parts.filter(p=>p.life>0);
+    if(DEMO)demoAI(dt);
+  }
+  draw();
+  syncTitle();
+  requestAnimationFrame(loop);
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  let ox=0,oy=0;
+  if(shake>0){ox=(Math.random()-.5)*shake;oy=(Math.random()-.5)*shake;shake*=0.86;if(shake<.4)shake=0;}
+  ctx.save();ctx.translate(ox,oy);
+  // vignette bg
+  const bg=ctx.createRadialGradient(cx,cy,20,cx,cy,Math.hypot(W,H)/1.4);
+  bg.addColorStop(0,'#0b1030');bg.addColorStop(1,'#04050d');
+  ctx.fillStyle=bg;ctx.fillRect(-40,-40,W+80,H+80);
+  // sonar rings
+  for(const s of sonars){
+    const a=1-s.r/s.max;
+    ctx.strokeStyle=`rgba(90,220,255,${a*0.55})`;ctx.lineWidth=3;
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.29);ctx.stroke();
+    ctx.strokeStyle=`rgba(150,120,255,${a*0.3})`;ctx.lineWidth=8;
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.29);ctx.stroke();
+  }
+  // core
+  const pulse=1+Math.sin(performance.now()/300)*0.08;
+  const cg=ctx.createRadialGradient(cx,cy,2,cx,cy,CORE_R*3);
+  cg.addColorStop(0,'rgba(120,230,255,.9)');cg.addColorStop(.4,'rgba(90,160,255,.4)');
+  cg.addColorStop(1,'rgba(90,160,255,0)');
+  ctx.fillStyle=cg;ctx.beginPath();ctx.arc(cx,cy,CORE_R*3,0,6.29);ctx.fill();
+  ctx.fillStyle='#eaf6ff';ctx.beginPath();ctx.arc(cx,cy,CORE_R*pulse,0,6.29);ctx.fill();
+  ctx.strokeStyle='rgba(120,230,255,.7)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,CORE_R*pulse+7,0,6.29);ctx.stroke();
+  // blooms
+  for(const b of blooms){
+    const near=1-Math.min(1,Math.hypot(b.x-cx,b.y-cy)/(Math.hypot(W,H)/2));
+    const op=b.reveal;
+    const g=ctx.createRadialGradient(b.x,b.y,1,b.x,b.y,b.r*1.6);
+    g.addColorStop(0,`hsla(${b.hue},95%,70%,${op})`);
+    g.addColorStop(.6,`hsla(${b.hue},90%,55%,${op*0.6})`);
+    g.addColorStop(1,`hsla(${b.hue},90%,50%,0)`);
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(b.x,b.y,b.r*1.6,0,6.29);ctx.fill();
+    // petals
+    ctx.strokeStyle=`hsla(${b.hue},100%,80%,${op})`;ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let k=0;k<10;k++){
+      const a=k/10*6.29, rr=b.r*(0.7+0.3*Math.sin(b.wob+k));
+      const px=b.x+Math.cos(a)*rr,py=b.y+Math.sin(a)*rr;
+      k?ctx.lineTo(px,py):ctx.moveTo(px,py);
+    }
+    ctx.closePath();ctx.stroke();
+    // danger tick when close
+    if(near>0.55){ctx.fillStyle=`hsla(0,100%,65%,${op*near})`;
+      ctx.beginPath();ctx.arc(b.x,b.y,3,0,6.29);ctx.fill();}
+  }
+  // particles
+  for(const p of parts){
+    ctx.fillStyle=`hsla(${p.hue},100%,70%,${p.life})`;
+    ctx.beginPath();ctx.arc(p.x,p.y,3*p.life+1,0,6.29);ctx.fill();
+  }
+  ctx.restore();
+}
+
+function syncTitle(){
+  if(!DEMO)return;
+  document.title=running?`Echo Bloom · score:${score} lives:${lives}`:`GAMEOVER score:${score}`;
+}
+
+// ---- demo autopilot ----
+let demoT=0;
+function demoAI(dt){
+  demoT-=dt;
+  if(demoT>0)return;
+  demoT=0.28;
+  // ping+pop the bloom nearest the core (most urgent)
+  let best=null,bd=1e9;
+  for(const b of blooms){const d=Math.hypot(b.x-cx,b.y-cy);if(d<bd){bd=d;best=b;}}
+  if(best)ping(best.x,best.y);
+  else ping(cx+(Math.random()-.5)*W*0.5,cy+(Math.random()-.5)*H*0.5);
+}
+
+// ---- input ----
+function onDown(e){
+  e.preventDefault();
+  const r=cv.getBoundingClientRect();
+  const t=e.touches?e.touches[0]:e;
+  if(running)ping(t.clientX-r.left,t.clientY-r.top);
+}
+cv.addEventListener('pointerdown',onDown,{passive:false});
+
+function start(){reset();startO.classList.add('hidden');overO.classList.add('hidden');}
+document.getElementById('startBtn').addEventListener('click',e=>{e.stopPropagation();start();});
+document.getElementById('againBtn').addEventListener('click',e=>{e.stopPropagation();start();});
+
+// test hook
+window.__echo={
+  start,
+  forceGameOver(){if(running){lives=0;gameOver();}},
+  state(){return {score,lives,running,blooms:blooms.length};}
+};
+
+reset();running=false;
+if(DEMO){start();}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
