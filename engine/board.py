@@ -34,12 +34,36 @@ def gh_safe(fn, *a, **kw):
         return None
 
 
+def id_num(tid):
+    """Numeric part of a task id (T59 -> 59) for older-first tiebreaks."""
+    try:
+        return int(str(tid).lstrip("T"))
+    except ValueError:
+        return 10 ** 9
+
+
+def priority_score(t, epic):
+    """Higher = worked first. Direction (issue #24): a project's v1/build beats
+    creative polish, which beats engine/dashboard (meta) chores. Ties break
+    older-first on the task id (see sort_key)."""
+    kind = (epic or {}).get("kind", "")
+    is_polish = "polish" in t.get("title", "").lower()
+    if kind == "project":
+        return 2 if is_polish else 3   # mobile-game v1 > creative polish
+    return 1                            # engine/dashboard meta epics
+
+
+def sort_key(t, epics):
+    """Order next by descending priority, older task id first on a tie."""
+    return (-priority_score(t, epics.get(t["epic"])), id_num(t["id"]))
+
+
 def sync_queue(b):
     q = lib.load("queue.json")
     inprog = [t["id"] for t in b["tasks"] if t["status"] == "in_progress"]
     nxt = [t for t in b["tasks"] if t["status"] == "next"]
-    old_order = {tid: i for i, tid in enumerate(q.get("next", []))}
-    nxt.sort(key=lambda t: old_order.get(t["id"], 999))
+    epics = {e["id"]: e for e in b["epics"]}
+    nxt.sort(key=lambda t: sort_key(t, epics))
     q["in_progress"] = inprog[0] if inprog else None
     q["next"] = [t["id"] for t in nxt]
     lib.save("queue.json", q)
@@ -206,7 +230,7 @@ def main():
         # whole claim under the state lock: two concurrent claims must not both win
         with lib.state_lock():
             b = lib.load("backlog.json")
-            q = lib.load("queue.json")
+            q = sync_queue(b)  # order by priority so we claim the top-scored task
             if q.get("in_progress"):
                 holder = next((x.get("claimed_by") for x in b["tasks"]
                                if x["id"] == q["in_progress"]), None)

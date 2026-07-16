@@ -856,9 +856,12 @@
       "title": "Engine: priority scoring for queue ordering",
       "acceptance": "board.py computes a priority score per next task (mobile-game v1 > creative polish > engine/dashboard, older-first tiebreak) and orders next by it; claim takes the top score; test_engine.py covers the ordering.",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T00:27:45Z"
+      "status": "done",
+      "handoff": "priority scoring: board.py orders next by project-v1 > polish > meta, older-id tiebreak; claim takes top score; test_engine covers it",
+      "updated": "2026-07-16T07:51:25Z",
+      "claimed_by": "unknown",
+      "issue": "37",
+      "cost": 120465
     }
   ],
   "next_ids": {

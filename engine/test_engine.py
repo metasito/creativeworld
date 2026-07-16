@@ -55,6 +55,27 @@ def main():
         q = lib.load("queue.json")
         assert q["in_progress"] is None and q["next"] == [], "queue not cleared"
 
+        # priority scoring: project v1 > project polish > meta, older id breaks ties
+        proj = board.create_epic(b, "project", "Game Epic", "d", slug="game")
+        meta = board.create_epic(b, "meta", "Engine", "d")
+        # create out of priority order to prove the sort, not insertion order, wins
+        v1_old = board.create_task(b, proj["id"], "M", "Game v1", "build", status="next")
+        meta_t = board.create_task(b, meta["id"], "S", "Engine: chore", "meta", status="next")
+        polish_t = board.create_task(b, proj["id"], "S", "Game polish: sfx", "p", status="next")
+        v1_new = board.create_task(b, proj["id"], "M", "Other v1", "build", status="next")
+        assert (board.priority_score(v1_old, proj) == 3
+                and board.priority_score(polish_t, proj) == 2
+                and board.priority_score(meta_t, meta) == 1), "wrong scores"
+        order = board.sync_queue(b)["next"]
+        # two v1s (score 3) lead, older id first; then polish (2); meta (1) last
+        assert order == [v1_old["id"], v1_new["id"], polish_t["id"], meta_t["id"]], \
+            f"bad priority order: {order}"
+        for t in b["tasks"]:                 # reset queue for later brief tests
+            if t["status"] == "next":
+                t["status"] = "done"
+        lib.save("backlog.json", b)
+        assert board.sync_queue(b)["next"] == [], "queue not reset after scoring test"
+
         # lock: acquires, releases, cleans up its file
         with lib.state_lock():
             lib.save("backlog.json", b2)
