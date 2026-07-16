@@ -181,6 +181,14 @@
       "status": "planned",
       "description": "drag matching crystals together on a grid to merge them into higher tiers toward a target gem, 2048-style touch puzzle",
       "slug": "crystal-merge"
+    },
+    {
+      "id": "E24",
+      "title": "Circuit Surge",
+      "kind": "project",
+      "status": "planned",
+      "description": "route power through a neon grid by drag-connecting nodes before the overload timer blows",
+      "slug": "circuit-surge"
     }
   ],
   "tasks": [
@@ -1007,9 +1015,12 @@
       "title": "Echo Bloom polish: beat sync + combo",
       "acceptance": "Sync spawns to a beat and add combo multiplier; screenshot",
       "size": "S",
-      "status": "next",
+      "status": "in_progress",
       "handoff": "",
-      "updated": "2026-07-16T12:48:03Z"
+      "updated": "2026-07-16T13:07:03Z",
+      "claimed_by": "unknown",
+      "cost_start": 21699630,
+      "issue": "52"
     },
     {
       "id": "T74",
@@ -1076,9 +1087,9 @@
       "title": "Spark Relay polish: spark travel animation + haptics",
       "acceptance": "animate the spark travelling the completed path, add node pulse and vibration feedback",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T08:14:36Z"
+      "updated": "2026-07-16T22:20:40Z"
     },
     {
       "id": "T80",
@@ -1121,9 +1132,9 @@
       "title": "Aurora Surfer polish: trail bloom + haptics",
       "acceptance": "add tapered glowing trail, particle sparkle on gate pass, and vibration feedback where supported; screenshot",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T12:47:57Z"
+      "updated": "2026-07-16T22:20:40Z"
     },
     {
       "id": "T84",
@@ -1144,13 +1155,33 @@
       "title": "Crystal Merge polish: merge burst + combo",
       "acceptance": "add merge particle burst, chain-combo scoring, and next-crystal preview; screenshot",
       "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T22:20:41Z"
+    },
+    {
+      "id": "T86",
+      "epic": "E24",
+      "title": "Circuit Surge v1 - drag-connect neon nodes to route power before overload; demo self-plays",
+      "acceptance": "Single index.html mobile game: drag from node to node to build a power path, overload timer creates tension, win when all nodes lit; touch targets >=44px, viewport meta, ?demo=1 self-plays; screenshot",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T22:20:53Z"
+    },
+    {
+      "id": "T87",
+      "epic": "E24",
+      "title": "Circuit Surge polish: surge pulse along wires + haptics",
+      "acceptance": "Animate a light pulse travelling completed wires and add vibration on connect; screenshot",
+      "size": "S",
       "status": "backlog",
       "handoff": "",
-      "updated": "2026-07-16T12:47:57Z"
+      "updated": "2026-07-16T22:20:49Z"
     }
   ],
   "next_ids": {
-    "epic": 24,
-    "task": 86
+    "epic": 25,
+    "task": 88
   }
 }
