@@ -170,7 +170,7 @@
       "id": "E22",
       "title": "Aurora Surfer",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "endless light-rider that surfs undulating aurora ribbons, thread glowing gates and dodge dark voids while speed climbs",
       "slug": "aurora-surfer"
     },
@@ -1099,9 +1099,12 @@
       "title": "Aurora Surfer v1",
       "acceptance": "Single index.html touch game: drag/hold to steer a glowing light-rider along scrolling aurora ribbons; thread bright gates for score, dodge dark voids (lose); speed ramps; viewport meta, portrait, 44px targets; win/endless score + restart; ?demo=1 auto-plays with state in document.title; shot.png",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T12:48:02Z"
+      "status": "done",
+      "handoff": "Aurora Surfer v1 - light-rider weaves scrolling aurora, thread gates dodge voids, demo self-plays to score",
+      "updated": "2026-07-16T12:51:06Z",
+      "claimed_by": "unknown",
+      "issue": "47",
+      "cost": 144762
     },
     {
       "id": "T83",

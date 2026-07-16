@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-07-16T12:46:24Z",
+  "generated_at": "2026-07-16T12:51:09Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2139572,
-    "window_used": 224003,
-    "rolling_used": 2139572,
+    "used": 2282944,
+    "window_used": 497548,
+    "rolling_used": 2282944,
     "binding": "trailing",
     "budget": 4798485,
-    "pct": 44.6,
-    "rate_per_hour": 430768,
-    "eta_hours": 6.2,
+    "pct": 47.6,
+    "rate_per_hour": 456571,
+    "eta_hours": 5.5,
     "burn_spark": [
-      1009752,
-      905816,
+      1093843,
+      691552,
       0,
       0,
       0,
@@ -22,13 +22,13 @@
       0,
       0,
       0,
-      224003
+      497548
     ],
     "window_started_at": "2026-07-16T10:22:33Z",
     "resets_at": "2026-07-16T15:22:33Z",
-    "seconds_to_reset": 9368,
-    "nap_until": "2026-07-16T12:48:23Z",
-    "nap_seconds": 119,
+    "seconds_to_reset": 9083,
+    "nap_until": "2026-07-16T12:51:08Z",
+    "nap_seconds": 0,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -268,6 +268,24 @@
       "description": "drag to wire nodes and route a spark across a grid before the timer overloads",
       "slug": "spark-relay",
       "cost": 144812
+    },
+    {
+      "id": "E22",
+      "title": "Aurora Surfer",
+      "kind": "project",
+      "status": "shipped",
+      "description": "endless light-rider that surfs undulating aurora ribbons, thread glowing gates and dodge dark voids while speed climbs",
+      "slug": "aurora-surfer",
+      "cost": 144762
+    },
+    {
+      "id": "E23",
+      "title": "Crystal Merge",
+      "kind": "project",
+      "status": "planned",
+      "description": "drag matching crystals together on a grid to merge them into higher tiers toward a target gem, 2048-style touch puzzle",
+      "slug": "crystal-merge",
+      "cost": 0
     }
   ],
   "tasks": [
@@ -966,7 +984,7 @@
       "claimed_by": "unknown",
       "issue": "46",
       "cost": 290391,
-      "commit": null
+      "commit": "568e920"
     },
     {
       "id": "T59",
@@ -1105,9 +1123,9 @@
       "title": "Prism Ricochet polish: beam glow + level select",
       "acceptance": "Add animated beam glow trail and a level-select grid; screenshot",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T07:57:22Z",
+      "updated": "2026-07-16T12:48:02Z",
       "commit": null
     },
     {
@@ -1130,9 +1148,9 @@
       "title": "Bubble Diver polish: jellyfish hazard + bubbles",
       "acceptance": "Add jellyfish hazards and rising bubble particles; screenshot",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T07:57:22Z",
+      "updated": "2026-07-16T12:48:02Z",
       "commit": null
     },
     {
@@ -1155,9 +1173,9 @@
       "title": "Echo Bloom polish: beat sync + combo",
       "acceptance": "Sync spawns to a beat and add combo multiplier; screenshot",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T07:57:23Z",
+      "updated": "2026-07-16T12:48:03Z",
       "commit": null
     },
     {
@@ -1180,9 +1198,9 @@
       "title": "Kite Weaver polish: wind gust visuals + haptics",
       "acceptance": "add animated wind-streak particles, tapered ribbon trails, and vibration on ribbon/collision where supported",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T08:14:36Z",
+      "updated": "2026-07-16T12:48:03Z",
       "commit": null
     },
     {
@@ -1205,9 +1223,9 @@
       "title": "Glyph Lock polish: ring glow + solve fanfare",
       "acceptance": "add per-ring glow on alignment, snap feedback, and a win particle burst",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-16T08:14:36Z",
+      "updated": "2026-07-16T12:48:03Z",
       "commit": null
     },
     {
@@ -1258,12 +1276,65 @@
       "cost_start": 20257391,
       "issue": "45",
       "commit": null
+    },
+    {
+      "id": "T82",
+      "epic": "E22",
+      "title": "Aurora Surfer v1",
+      "acceptance": "Single index.html touch game: drag/hold to steer a glowing light-rider along scrolling aurora ribbons; thread bright gates for score, dodge dark voids (lose); speed ramps; viewport meta, portrait, 44px targets; win/endless score + restart; ?demo=1 auto-plays with state in document.title; shot.png",
+      "size": "M",
+      "status": "done",
+      "handoff": "Aurora Surfer v1 - light-rider weaves scrolling aurora, thread gates dodge voids, demo self-plays to score",
+      "updated": "2026-07-16T12:51:06Z",
+      "claimed_by": "unknown",
+      "issue": "47",
+      "cost": 144762,
+      "commit": null
+    },
+    {
+      "id": "T83",
+      "epic": "E22",
+      "title": "Aurora Surfer polish: trail bloom + haptics",
+      "acceptance": "add tapered glowing trail, particle sparkle on gate pass, and vibration feedback where supported; screenshot",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T12:47:57Z",
+      "commit": null
+    },
+    {
+      "id": "T84",
+      "epic": "E23",
+      "title": "Crystal Merge v1",
+      "acceptance": "Single index.html touch puzzle: drag a crystal onto a matching one to merge into the next tier on a grid; new crystals spawn; reach a target tier to win, board-full = lose; portrait, pointer events, 44px targets, viewport meta; ?demo=1 hook; shot.png",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T12:48:02Z",
+      "commit": null
+    },
+    {
+      "id": "T85",
+      "epic": "E23",
+      "title": "Crystal Merge polish: merge burst + combo",
+      "acceptance": "add merge particle burst, chain-combo scoring, and next-crystal preview; screenshot",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T12:47:57Z",
+      "commit": null
     }
   ],
   "queue": {
     "in_progress": null,
     "next": [
+      "T84",
       "T60",
+      "T69",
+      "T71",
+      "T73",
+      "T75",
+      "T77",
       "T61",
       "T66"
     ],
@@ -1516,6 +1587,32 @@
       "updated": "2026-07-16T08:29:00Z",
       "cost": 144812,
       "url": "/projects/spark-relay/"
+    },
+    {
+      "id": "E22",
+      "title": "Aurora Surfer",
+      "kind": "project",
+      "status": "shipped",
+      "description": "endless light-rider that surfs undulating aurora ribbons, thread glowing gates and dodge dark voids while speed climbs",
+      "slug": "aurora-surfer",
+      "built": true,
+      "shot": true,
+      "updated": "2026-07-16T12:50:01Z",
+      "cost": 144762,
+      "url": "/projects/aurora-surfer/"
+    },
+    {
+      "id": "E23",
+      "title": "Crystal Merge",
+      "kind": "project",
+      "status": "planned",
+      "description": "drag matching crystals together on a grid to merge them into higher tiers toward a target gem, 2048-style touch puzzle",
+      "slug": "crystal-merge",
+      "built": false,
+      "shot": false,
+      "updated": null,
+      "cost": 0,
+      "url": null
     }
   ],
   "sessions": [
@@ -1553,26 +1650,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T58",
-    "current_action": "resume Comet Sling polish: supernova hazard + level select",
+    "current_task": "T82",
+    "current_action": "building Aurora Surfer v1",
     "agent": "autopilot",
-    "updated": "2026-07-16T12:46:19Z",
+    "updated": "2026-07-16T12:50:06Z",
     "log": [
-      {
-        "at": "2026-07-16T12:29:07Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-16T12:31:13Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-16T12:31:13Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
       {
         "at": "2026-07-16T12:33:19Z",
         "agent": "autopilot",
@@ -1617,6 +1699,21 @@
         "at": "2026-07-16T12:46:19Z",
         "agent": "autopilot",
         "msg": "T58: supernova hazard + level-select wired, demo loop + forceWin verified"
+      },
+      {
+        "at": "2026-07-16T12:46:53Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T12:48:26Z",
+        "agent": "autopilot",
+        "msg": "claimed T82 Aurora Surfer v1"
+      },
+      {
+        "at": "2026-07-16T12:50:06Z",
+        "agent": "autopilot",
+        "msg": "built aurora-surfer index.html, validating"
       }
     ]
   },

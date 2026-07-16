@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#04070f">
+<title>Aurora Surfer</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:#04070f;overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    color:#dff6ff;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+  #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  canvas{display:block;touch-action:none;width:100%;height:100%}
+  #hud{position:fixed;top:calc(env(safe-area-inset-top) + 14px);left:0;right:0;
+    display:flex;justify-content:center;gap:26px;pointer-events:none;
+    font-variant-numeric:tabular-nums;font-weight:700;letter-spacing:.05em;
+    text-shadow:0 0 12px rgba(90,200,255,.7)}
+  #hud .lbl{font-size:12px;opacity:.6;font-weight:600;letter-spacing:.18em}
+  #hud .val{font-size:26px}
+  .stat{display:flex;flex-direction:column;align-items:center;gap:2px}
+  #overlay{position:fixed;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:18px;padding:32px;text-align:center;
+    background:radial-gradient(120% 90% at 50% 12%,rgba(20,60,110,.45),rgba(3,6,14,.86) 70%);
+    backdrop-filter:blur(2px)}
+  #overlay.hide{display:none}
+  h1{font-size:clamp(34px,11vw,58px);font-weight:800;letter-spacing:.02em;
+    background:linear-gradient(120deg,#7cffd4,#59c8ff 45%,#c58bff);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 22px rgba(90,200,255,.45))}
+  #sub{max-width:320px;font-size:15px;line-height:1.5;opacity:.82}
+  #big{font-size:20px;font-weight:700;opacity:.95}
+  button{pointer-events:auto;font:inherit;font-weight:700;font-size:18px;letter-spacing:.04em;
+    color:#04121c;border:0;border-radius:999px;padding:16px 40px;min-height:56px;cursor:pointer;
+    background:linear-gradient(120deg,#7cffd4,#59c8ff);
+    box-shadow:0 0 30px rgba(90,200,255,.5),0 6px 20px rgba(0,0,0,.4);
+    transition:transform .12s ease}
+  button:active{transform:scale(.94)}
+  .hint{font-size:13px;opacity:.5;letter-spacing:.1em}
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c"></canvas></div>
+<div id="hud">
+  <div class="stat"><span class="lbl">SCORE</span><span class="val" id="score">0</span></div>
+  <div class="stat"><span class="lbl">BEST</span><span class="val" id="best">0</span></div>
+</div>
+<div id="overlay" class="hide" id="ov">
+  <h1 id="title">Aurora Surfer</h1>
+  <div id="big"></div>
+  <div id="sub">Hold and drag to steer your light-rider.<br>Thread the glowing gates, dodge the dark voids.</div>
+  <button id="btn">Surf</button>
+  <div class="hint">touch anywhere to steer</div>
+</div>
+<script>
+(() => {
+  const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  const ov = document.getElementById('overlay'), titleEl = document.getElementById('title');
+  const bigEl = document.getElementById('big'), subEl = document.getElementById('sub');
+  const btn = document.getElementById('btn'), hintEl = document.querySelector('.hint');
+  const scoreEl = document.getElementById('score'), bestEl = document.getElementById('best');
+  const params = new URLSearchParams(location.search);
+  const DEMO = params.get('demo') === '1';
+  // deterministic RNG
+  let seed = (parseInt(params.get('seed')) || (Date.now() & 0xffffff)) >>> 0;
+  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  const rr = (a, b) => a + (b - a) * rnd();
+
+  let W = 0, H = 0, DPR = 1;
+  function resize() {
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+
+  let best = +(localStorage.getItem('aurora_best') || 0);
+  bestEl.textContent = best;
+
+  const rider = { x: 0, y: 0, tx: 0, vx: 0 };
+  let gates = [], voids = [], sparks = [], ribbons = [];
+  let score = 0, speed = 0, dist = 0, running = false, over = false, t = 0;
+  let spawnGate = 0, spawnVoid = 0, hue = 0;
+
+  function initRibbons() {
+    ribbons = [];
+    for (let i = 0; i < 5; i++)
+      ribbons.push({ y: rr(0, 1), amp: rr(40, 130), len: rr(0.7, 1.6),
+        hue: 150 + i * 26, off: rr(0, 6.28), spd: rr(0.15, 0.5), a: rr(0.06, 0.16) });
+  }
+
+  function reset() {
+    rider.x = W / 2; rider.tx = W / 2; rider.y = H * 0.72; rider.vx = 0;
+    gates = []; voids = []; sparks = [];
+    score = 0; speed = 240; dist = 0; over = false; t = 0;
+    spawnGate = 0.4; spawnVoid = 1.6; hue = 160;
+    scoreEl.textContent = 0;
+    initRibbons();
+  }
+
+  function start() {
+    resize(); reset(); running = true;
+    ov.classList.add('hide');
+    document.title = 'Aurora Surfer — score:0';
+  }
+
+  function gameOver() {
+    over = true; running = false;
+    if (score > best) { best = score; localStorage.setItem('aurora_best', best); }
+    bestEl.textContent = best;
+    titleEl.textContent = 'Wiped Out';
+    bigEl.textContent = 'Score ' + score + '  ·  Best ' + best;
+    subEl.innerHTML = 'A dark void swallowed your light.<br>Ride again?';
+    btn.textContent = 'Surf Again';
+    hintEl.style.display = 'none';
+    ov.classList.remove('hide');
+    document.title = 'Aurora Surfer — GAME OVER score:' + score;
+  }
+
+  // ---- input ----
+  let pointing = false;
+  function setTarget(clientX) {
+    const r = cv.getBoundingClientRect();
+    rider.tx = Math.max(24, Math.min(W - 24, clientX - r.left));
+  }
+  cv.addEventListener('pointerdown', e => { pointing = true; setTarget(e.clientX); cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', e => { if (pointing) setTarget(e.clientX); });
+  cv.addEventListener('pointerup', () => pointing = false);
+  cv.addEventListener('pointercancel', () => pointing = false);
+  btn.addEventListener('click', start);
+
+  // ---- spawns ----
+  function addGate() {
+    const gap = rr(90, 130);
+    const cx = rr(gap / 2 + 20, W - gap / 2 - 20);
+    gates.push({ y: -30, cx, gap, hue: (hue += 14) % 360, scored: false });
+  }
+  function addVoid() {
+    const rad = rr(26, 46);
+    voids.push({ x: rr(rad, W - rad), y: -rad - 10, r: rad,
+      drift: rr(-30, 30), ph: rr(0, 6.28) });
+  }
+
+  // ---- demo AI ----
+  function demoSteer() {
+    // nearest approaching void above rider
+    let dv = null, dd = 1e9;
+    for (const v of voids) { const d = rider.y - v.y; if (d > -60 && d < dd) { dd = d; dv = v; } }
+    // nearest un-scored gate above rider
+    let dg = null, gd = 1e9;
+    for (const g of gates) { if (g.scored) continue; const d = rider.y - g.y; if (d > 0 && d < gd) { gd = d; dg = g; } }
+    let target = dg ? dg.cx : W / 2;
+    if (dv && Math.abs(dv.x - rider.x) < dv.r + 46 && dd < 150) {
+      // dodge: go to whichever side is farther from the void, biased to gate
+      target = dv.x < W / 2 ? Math.min(W - 30, dv.x + dv.r + 70) : Math.max(30, dv.x - dv.r - 70);
+    }
+    rider.tx = Math.max(24, Math.min(W - 24, target));
+  }
+
+  // ---- loop ----
+  let last = 0;
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = Math.min(0.04, (now - last) / 1000 || 0); last = now;
+    if (running) step(dt);
+    draw();
+  }
+
+  function step(dt) {
+    t += dt; dist += speed * dt;
+    speed = 240 + dist * 0.02;           // ramps with distance
+    if (DEMO) demoSteer();
+
+    // rider physics — smooth spring toward target
+    rider.vx += (rider.tx - rider.x) * 26 * dt;
+    rider.vx *= Math.pow(0.0008, dt);
+    rider.x += rider.vx * dt;
+
+    // spawn
+    spawnGate -= dt; spawnVoid -= dt;
+    if (spawnGate <= 0) { addGate(); spawnGate = Math.max(0.7, 1.5 - dist * 0.00012); }
+    if (spawnVoid <= 0) { addVoid(); spawnVoid = Math.max(0.55, 1.4 - dist * 0.00013); }
+
+    // gates
+    for (const g of gates) {
+      g.y += speed * dt;
+      if (!g.scored && g.y > rider.y) {
+        g.scored = true;
+        if (Math.abs(rider.x - g.cx) < g.gap / 2) {
+          score++; scoreEl.textContent = score;
+          document.title = 'Aurora Surfer — score:' + score;
+          for (let i = 0; i < 14; i++) sparks.push({ x: rider.x, y: rider.y,
+            vx: rr(-120, 120), vy: rr(-160, 40), life: 1, hue: g.hue });
+        }
+      }
+    }
+    gates = gates.filter(g => g.y < H + 40);
+
+    // voids
+    for (const v of voids) {
+      v.y += speed * dt; v.x += v.drift * dt; v.ph += dt * 2;
+      if (v.x < v.r || v.x > W - v.r) v.drift *= -1;
+      const dx = v.x - rider.x, dy = v.y - rider.y;
+      if (dx * dx + dy * dy < (v.r + 10) * (v.r + 10)) {
+        for (let i = 0; i < 30; i++) sparks.push({ x: rider.x, y: rider.y,
+          vx: rr(-220, 220), vy: rr(-220, 220), life: 1, hue: rr(180, 300) });
+        gameOver();
+      }
+    }
+    voids = voids.filter(v => v.y < H + 60);
+
+    // sparks
+    for (const s of sparks) { s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 240 * dt; s.life -= dt * 1.6; }
+    sparks = sparks.filter(s => s.life > 0);
+
+    // ribbons drift
+    for (const rb of ribbons) rb.off += rb.spd * dt;
+  }
+
+  function draw() {
+    // background
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, '#05122a'); bg.addColorStop(0.55, '#04091a'); bg.addColorStop(1, '#04070f');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+    // stars
+    ctx.save();
+    for (let i = 0; i < 40; i++) {
+      const sx = (i * 97.3) % W, sy = (i * 53.7 + (t * 20)) % H;
+      ctx.globalAlpha = 0.25 + 0.25 * Math.sin(i + t * 2);
+      ctx.fillStyle = '#bfe8ff';
+      ctx.fillRect(sx, sy, 1.5, 1.5);
+    }
+    ctx.restore();
+
+    // aurora ribbons
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (const rb of ribbons) {
+      const baseY = rb.y * H;
+      ctx.beginPath();
+      for (let x = 0; x <= W; x += 12) {
+        const y = baseY + Math.sin(x * 0.006 * rb.len + rb.off) * rb.amp
+          + Math.sin(x * 0.013 + rb.off * 1.7) * rb.amp * 0.35;
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      const grad = ctx.createLinearGradient(0, baseY - rb.amp, 0, baseY + rb.amp);
+      grad.addColorStop(0, `hsla(${rb.hue},90%,65%,0)`);
+      grad.addColorStop(0.5, `hsla(${rb.hue},90%,65%,${rb.a})`);
+      grad.addColorStop(1, `hsla(${rb.hue + 40},90%,60%,0)`);
+      ctx.strokeStyle = grad; ctx.lineWidth = 60; ctx.lineCap = 'round';
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // gates
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (const g of gates) {
+      const col = `hsl(${g.hue},95%,68%)`;
+      ctx.strokeStyle = col; ctx.lineWidth = 4;
+      ctx.shadowColor = col; ctx.shadowBlur = 22;
+      const l = g.cx - g.gap / 2, r = g.cx + g.gap / 2;
+      // posts
+      ctx.beginPath(); ctx.moveTo(l, g.y - 26); ctx.lineTo(l, g.y + 26); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(r, g.y - 26); ctx.lineTo(r, g.y + 26); ctx.stroke();
+      // gap shimmer
+      ctx.globalAlpha = 0.35 + 0.25 * Math.sin(t * 4 + g.y * 0.02);
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(l, g.y); ctx.lineTo(r, g.y); ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+    ctx.restore();
+
+    // voids
+    for (const v of voids) {
+      const pr = v.r * (1 + 0.06 * Math.sin(v.ph));
+      const rg = ctx.createRadialGradient(v.x, v.y, pr * 0.2, v.x, v.y, pr * 1.5);
+      rg.addColorStop(0, 'rgba(2,2,6,1)');
+      rg.addColorStop(0.7, 'rgba(30,6,46,.92)');
+      rg.addColorStop(1, 'rgba(60,10,80,0)');
+      ctx.fillStyle = rg;
+      ctx.beginPath(); ctx.arc(v.x, v.y, pr * 1.5, 0, 6.2832); ctx.fill();
+      ctx.strokeStyle = 'rgba(150,70,220,.55)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(v.x, v.y, pr, 0, 6.2832); ctx.stroke();
+    }
+
+    // sparks
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (const s of sparks) {
+      ctx.globalAlpha = Math.max(0, s.life);
+      ctx.fillStyle = `hsl(${s.hue},95%,68%)`;
+      ctx.beginPath(); ctx.arc(s.x, s.y, 3 * s.life + 0.6, 0, 6.2832); ctx.fill();
+    }
+    ctx.restore();
+
+    // rider
+    if (running || over) {
+      const tilt = Math.max(-0.5, Math.min(0.5, rider.vx * 0.0016));
+      ctx.save();
+      ctx.translate(rider.x, rider.y); ctx.rotate(tilt);
+      ctx.globalCompositeOperation = 'lighter';
+      const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, 34);
+      glow.addColorStop(0, 'rgba(190,255,240,.95)');
+      glow.addColorStop(0.4, 'rgba(90,200,255,.55)');
+      glow.addColorStop(1, 'rgba(90,200,255,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath(); ctx.arc(0, 0, 34, 0, 6.2832); ctx.fill();
+      // core diamond
+      ctx.fillStyle = '#eaffff';
+      ctx.beginPath();
+      ctx.moveTo(0, -11); ctx.lineTo(8, 0); ctx.lineTo(0, 11); ctx.lineTo(-8, 0); ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // boot
+  resize();
+  requestAnimationFrame(frame);
+  if (DEMO) {
+    bigEl.textContent = 'demo';
+    start();
+  } else {
+    ov.classList.remove('hide');
+  }
+})();
+</script>
+</body>
+</html>
