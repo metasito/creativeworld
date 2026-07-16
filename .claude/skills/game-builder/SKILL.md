@@ -47,4 +47,5 @@ Whenever you fix a bug, hit a platform quirk, or find a pattern that made the ga
 
 ## Lessons Learned
 
+- Rhythm/timing games: drive a normalized 0..1 spark position (ping-pong `pos+=dir*speed*dt/1000`) and judge on `abs(pos-0.5)` vs a `zoneHalf()` derived from DOM widths — decouples hit logic from pixel layout so it works at any viewport. `?demo=1` can auto-strike near centre with a cooldown to prove the loop; still ship a `window.__forge.forceWin()` hook for the WIN path.
 - Gravity/aim games: a `?demo=1` player aiming straight at a small goal rarely scores (wells bend the path). Prove the loop with strokes-in-title, and prove the WIN path with a synchronous `window.__comet._forceWin()` test hook a single `drive.py --js` can assert — don't rely on random demo play to reach game-over.

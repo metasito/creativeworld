@@ -114,7 +114,7 @@
       "id": "E15",
       "title": "Forge Tempo",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Rhythm blacksmith: tap the anvil when the spark pulse crosses the strike zone to forge a glowing blade, molten metal and spark-burst feedback",
       "slug": "forge-tempo"
     }
@@ -764,9 +764,12 @@
       "title": "Forge Tempo v1 - rhythm blacksmith",
       "acceptance": "Single index.html, tap/pointer-down hammer strike timed to a moving spark pulse crossing the strike zone; combo meter, blade heats/glows toward completion over >=10 strikes, miss cools blade, win state with forged sword reveal; viewport meta, portrait layout; ?demo=1 autoplay with state in document.title; verified via drive.py screenshot",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T00:12:48Z"
+      "status": "done",
+      "handoff": "Forge Tempo v1 - touch rhythm blacksmith: timed spark-strike, combo/heat meter, forged sword win",
+      "updated": "2026-07-16T07:55:52Z",
+      "claimed_by": "unknown",
+      "issue": "38",
+      "cost": 181511
     },
     {
       "id": "T60",
