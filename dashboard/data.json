@@ -1,18 +1,17 @@
 {
-  "generated_at": "2026-07-16T00:25:39Z",
+  "generated_at": "2026-07-16T00:28:09Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2050244,
-    "window_used": 216170,
-    "rolling_used": 2050244,
+    "used": 2102970,
+    "window_used": 365216,
+    "rolling_used": 2102970,
     "binding": "trailing",
     "budget": 4798485,
-    "pct": 42.7,
-    "rate_per_hour": 410214,
-    "eta_hours": 6.7,
+    "pct": 43.8,
+    "rate_per_hour": 420577,
+    "eta_hours": 6.4,
     "burn_spark": [
-      926426,
-      0,
+      822314,
       0,
       0,
       0,
@@ -22,13 +21,14 @@
       0,
       0,
       0,
-      825757
+      0,
+      974803
     ],
     "window_started_at": "2026-07-16T00:22:33Z",
     "resets_at": "2026-07-16T05:22:33Z",
-    "seconds_to_reset": 17813,
-    "nap_until": "2026-07-16T00:25:46Z",
-    "nap_seconds": 7,
+    "seconds_to_reset": 17663,
+    "nap_until": "2026-07-16T00:28:08Z",
+    "nap_seconds": 0,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -78,7 +78,7 @@
       "kind": "meta",
       "status": "active",
       "description": "The autonomous engine itself: budget tracking, board, boot/wrap-up flow, CI cron. Permanent epic \u2014 always improvable.",
-      "cost": 1454520
+      "cost": 1524734
     },
     {
       "id": "E2",
@@ -937,9 +937,12 @@
       "title": "Plan tasks for a better dashbord, better queue , better priorisation better controll. add also button for start and stop. Start focusing on mobile game.",
       "acceptance": "",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T22:25:04Z",
+      "status": "done",
+      "handoff": "Planned issue #34: reprioritized next to lead with mobile game T57; filed T66 (dashboard queue control panel) + T67 (engine priority scoring); T65 start/stop button already queued",
+      "updated": "2026-07-16T00:28:08Z",
+      "claimed_by": "unknown",
+      "issue": "34",
+      "cost": 70214,
       "commit": null
     },
     {
@@ -954,7 +957,7 @@
       "claimed_by": "unknown",
       "issue": "33",
       "cost": 344858,
-      "commit": null
+      "commit": "284538e"
     },
     {
       "id": "T64",
@@ -980,18 +983,41 @@
       "handoff": "",
       "updated": "2026-07-16T00:12:49Z",
       "commit": null
+    },
+    {
+      "id": "T66",
+      "epic": "E2",
+      "title": "Dashboard: queue control panel \u2014 reorder/promote/demote/delete next tasks from UI",
+      "acceptance": "Each task card in the next-queue has promote/demote/remove buttons that call board.py (move/reorder) and persist queue.json order; page reflects new order after action; verified by screenshot.",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T00:27:45Z",
+      "commit": null
+    },
+    {
+      "id": "T67",
+      "epic": "E1",
+      "title": "Engine: priority scoring for queue ordering",
+      "acceptance": "board.py computes a priority score per next task (mobile-game v1 > creative polish > engine/dashboard, older-first tiebreak) and orders next by it; claim takes the top score; test_engine.py covers the ordering.",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T00:27:45Z",
+      "commit": null
     }
   ],
   "queue": {
     "in_progress": null,
     "next": [
-      "T62",
-      "T61",
       "T57",
+      "T65",
+      "T67",
+      "T66",
       "T59",
+      "T61",
       "T58",
-      "T60",
-      "T65"
+      "T60"
     ],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
   },
@@ -1201,16 +1227,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T63",
-    "current_action": "investigate dashboard token math bugs",
+    "current_task": "T62",
+    "current_action": "reading task + planning dashboard/control improvements",
     "agent": "autopilot",
-    "updated": "2026-07-16T00:24:06Z",
+    "updated": "2026-07-16T00:26:47Z",
     "log": [
-      {
-        "at": "2026-07-16T00:03:47Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
       {
         "at": "2026-07-16T00:05:51Z",
         "agent": "autopilot",
@@ -1265,6 +1286,11 @@
         "at": "2026-07-16T00:24:06Z",
         "agent": "autopilot",
         "msg": "T63: anchored reset (stops sliding), split nap_until, dashboard binding breakdown"
+      },
+      {
+        "at": "2026-07-16T00:26:25Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
       }
     ]
   }

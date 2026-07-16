@@ -791,9 +791,12 @@
       "title": "Plan tasks for a better dashbord, better queue , better priorisation better controll. add also button for start and stop. Start focusing on mobile game.",
       "acceptance": "",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-15T22:25:04Z"
+      "status": "done",
+      "handoff": "Planned issue #34: reprioritized next to lead with mobile game T57; filed T66 (dashboard queue control panel) + T67 (engine priority scoring); T65 start/stop button already queued",
+      "updated": "2026-07-16T00:28:08Z",
+      "claimed_by": "unknown",
+      "issue": "34",
+      "cost": 70214
     },
     {
       "id": "T63",
@@ -830,10 +833,30 @@
       "status": "next",
       "handoff": "",
       "updated": "2026-07-16T00:12:49Z"
+    },
+    {
+      "id": "T66",
+      "epic": "E2",
+      "title": "Dashboard: queue control panel \u2014 reorder/promote/demote/delete next tasks from UI",
+      "acceptance": "Each task card in the next-queue has promote/demote/remove buttons that call board.py (move/reorder) and persist queue.json order; page reflects new order after action; verified by screenshot.",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T00:27:45Z"
+    },
+    {
+      "id": "T67",
+      "epic": "E1",
+      "title": "Engine: priority scoring for queue ordering",
+      "acceptance": "board.py computes a priority score per next task (mobile-game v1 > creative polish > engine/dashboard, older-first tiebreak) and orders next by it; claim takes the top score; test_engine.py covers the ordering.",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T00:27:45Z"
     }
   ],
   "next_ids": {
     "epic": 16,
-    "task": 66
+    "task": 68
   }
 }
