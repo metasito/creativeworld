@@ -1,17 +1,31 @@
 {
-  "generated_at": "2026-07-15T19:47:07Z",
+  "generated_at": "2026-07-16T00:15:30Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 1401829,
-    "window_used": 928054,
-    "rolling_used": 1401829,
+    "used": 1910207,
+    "window_used": 1604368,
+    "rolling_used": 1910207,
     "budget": 4798485,
-    "pct": 29.2,
-    "rate_per_hour": 281791,
-    "eta_hours": 12.1,
+    "pct": 39.8,
+    "rate_per_hour": 382132,
+    "eta_hours": 7.6,
+    "burn_spark": [
+      998081,
+      356976,
+      0,
+      0,
+      0,
+      0,
+      0,
+      298061,
+      0,
+      0,
+      0,
+      257090
+    ],
     "window_started_at": "2026-07-15T19:22:33Z",
-    "resets_at": "2026-07-15T19:48:38Z",
-    "seconds_to_reset": 91,
+    "resets_at": "2026-07-16T00:15:34Z",
+    "seconds_to_reset": 4,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -64,7 +78,7 @@
       "kind": "meta",
       "status": "active",
       "description": "The realtime PM dashboard. Permanent epic \u2014 always improvable.",
-      "cost": 263044
+      "cost": 871260
     },
     {
       "id": "E3",
@@ -799,7 +813,7 @@
       "claimed_by": "unknown",
       "issue": "30",
       "cost": 135932,
-      "commit": null
+      "commit": "492c66e"
     },
     {
       "id": "T53",
@@ -846,9 +860,12 @@
       "title": "Dashboard: trailing-5h burn sparkline + cap ETA on budget panel",
       "acceptance": "Budget panel shows a sparkline of trailing-5h weighted burn from tokens.json history plus estimated time-to-cap; verified via Chromium screenshot",
       "size": "S",
-      "status": "next",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T14:19:41Z",
+      "updated": "2026-07-16T00:15:25Z",
+      "claimed_by": "unknown",
+      "issue": "31",
+      "cost": 608216,
       "commit": null
     },
     {
@@ -859,7 +876,7 @@
       "size": "M",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T19:30:37Z",
+      "updated": "2026-07-16T00:12:48Z",
       "commit": null
     },
     {
@@ -868,9 +885,9 @@
       "title": "Comet Sling polish: supernova hazard + level select",
       "acceptance": "Add a pulsing supernova hazard that destroys the comet on contact, and a 44px+ touch level-select screen; verified via screenshot",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T19:30:30Z",
+      "updated": "2026-07-16T00:12:49Z",
       "commit": null
     },
     {
@@ -881,7 +898,7 @@
       "size": "M",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T19:30:37Z",
+      "updated": "2026-07-16T00:12:48Z",
       "commit": null
     },
     {
@@ -890,9 +907,9 @@
       "title": "Forge Tempo polish: quench sizzle + haptics",
       "acceptance": "Quench animation (steam burst) on completion, navigator.vibrate haptics on strike where supported, difficulty ramps pulse speed; verified via screenshot",
       "size": "S",
-      "status": "backlog",
+      "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T19:30:30Z",
+      "updated": "2026-07-16T00:12:49Z",
       "commit": null
     },
     {
@@ -903,17 +920,66 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T19:30:38Z",
+      "updated": "2026-07-15T22:27:38Z",
+      "commit": null
+    },
+    {
+      "id": "T62",
+      "epic": "E1",
+      "title": "Plan tasks for a better dashbord, better queue , better priorisation better controll. add also button for start and stop. Start focusing on mobile game.",
+      "acceptance": "",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T22:25:04Z",
+      "commit": null
+    },
+    {
+      "id": "T63",
+      "epic": "E1",
+      "title": "token dashboard sucs window budged used is wrong, weighted tokens spent i dont know, window rest is rwong and also vergict is wrong, wrap and stoped is wrong",
+      "acceptance": "",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T22:26:48Z",
+      "commit": null
+    },
+    {
+      "id": "T64",
+      "epic": "E1",
+      "title": "token usage optimisation, get yourself more perfrmant and efficient",
+      "acceptance": "",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T22:27:17Z",
+      "commit": null
+    },
+    {
+      "id": "T65",
+      "epic": "E2",
+      "title": "Dashboard: start/stop autopilot control button",
+      "acceptance": "Dashboard has a Start/Stop control that toggles the autopilot loop (writes a control flag autopilot reads); button reflects live running/stopped state; verified in Chromium",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T00:12:49Z",
       "commit": null
     }
   ],
   "queue": {
     "in_progress": null,
     "next": [
-      "T56",
+      "T64",
+      "T63",
+      "T62",
+      "T61",
       "T57",
       "T59",
-      "T61"
+      "T58",
+      "T60",
+      "T65"
     ],
     "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
   },
@@ -1123,70 +1189,70 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T52",
-    "current_action": "Abyss Lantern polish: predator sweep + parallax snow",
+    "current_task": "T56",
+    "current_action": "resume: trailing-5h burn sparkline + cap ETA on budget panel",
     "agent": "autopilot",
-    "updated": "2026-07-15T19:45:14Z",
+    "updated": "2026-07-16T00:15:25Z",
     "log": [
       {
-        "at": "2026-07-15T19:22:01Z",
+        "at": "2026-07-15T23:59:34Z",
+        "agent": "autopilot",
+        "msg": "agent error rc=1 \u2014 120s backoff"
+      },
+      {
+        "at": "2026-07-16T00:01:43Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T19:24:00Z",
+        "at": "2026-07-16T00:01:43Z",
         "agent": "autopilot",
-        "msg": "T51: abyss-lantern index.html written; validating with drive.py"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-15T19:28:00Z",
-        "agent": "autopilot",
-        "msg": "T51: validated (seed determinism, swarm shot, no console errors); checkpointing"
-      },
-      {
-        "at": "2026-07-15T19:28:55Z",
+        "at": "2026-07-16T00:03:47Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T19:30:52Z",
+        "at": "2026-07-16T00:03:47Z",
         "agent": "autopilot",
-        "msg": "pm done: +E14 Comet Sling, +E15 Forge Tempo, queue now 6; starting T53"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-15T19:33:57Z",
-        "agent": "autopilot",
-        "msg": "T53: brief output tests green (burn line, WARN, RESUME, no-weights path)"
-      },
-      {
-        "at": "2026-07-15T19:34:41Z",
+        "at": "2026-07-16T00:05:51Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T19:38:23Z",
+        "at": "2026-07-16T00:05:51Z",
         "agent": "autopilot",
-        "msg": "T50: shafts+chime+shimmer coded; validating with drive.py"
+        "msg": "agent error rc=1 \u2014 120s backoff"
       },
       {
-        "at": "2026-07-15T19:41:50Z",
-        "agent": "autopilot",
-        "msg": "T50 validated: shafts in shot, live sec 3->6 proves chime/shimmer path, no console errors"
-      },
-      {
-        "at": "2026-07-15T19:42:21Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished (T50 shipped)"
-      },
-      {
-        "at": "2026-07-15T19:42:37Z",
+        "at": "2026-07-16T00:07:56Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
       },
       {
-        "at": "2026-07-15T19:45:14Z",
+        "at": "2026-07-16T00:07:56Z",
         "agent": "autopilot",
-        "msg": "T52: snow layers + leviathan implemented, verifying in Chromium"
+        "msg": "agent error rc=1 \u2014 120s backoff"
+      },
+      {
+        "at": "2026-07-16T00:10:00Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T00:10:00Z",
+        "agent": "autopilot",
+        "msg": "agent error rc=1 \u2014 120s backoff"
+      },
+      {
+        "at": "2026-07-16T00:15:25Z",
+        "agent": "autopilot",
+        "msg": "T56 verified: burn sparkline + cap ETA on budget panel"
       }
     ]
   }

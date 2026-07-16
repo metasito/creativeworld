@@ -47,6 +47,12 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
 .hist .b.lim { background: var(--crit); }
 .hist .b.now { opacity: .45; outline: 1px dashed var(--muted); outline-offset: -1px; }
 .hist-label { color: var(--muted); font-size: 11px; margin-top: 4px; }
+/* trailing-5h burn sparkline */
+.spark { display: flex; gap: 2px; align-items: flex-end; height: 34px; margin-top: 14px; }
+.spark .s { flex: 1; min-height: 2px; background: var(--accent); border-radius: 2px 2px 0 0; opacity: .55; }
+.spark .s.hot { opacity: 1; }
+.spark-label { color: var(--muted); font-size: 11px; margin-top: 4px; display: flex; justify-content: space-between; }
+.spark-label b { color: var(--ink-2); font-weight: 600; }
 /* kanban */
 .board { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
 .col h3 { font-size: 12px; color: var(--ink-2); font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between; }
@@ -129,6 +135,8 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
   </div>
   <div class="hist" id="hist"></div>
   <div class="hist-label" id="hist-label"></div>
+  <div class="spark" id="spark"></div>
+  <div class="spark-label"><span id="spark-label"></span><span id="cap-eta"></span></div>
   <div id="epiccost" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px"></div>
 </div>
 
@@ -259,6 +267,20 @@ function render(d) {
     return `<div class="b${cls}" style="height:${Math.max(4, Math.round(100 * (h.used || 0) / maxV))}%" title="${when} — ${fmt(h.used || 0)} of ${fmt(h.budget || 0)}${note}"></div>`;
   }).join("");
   $("hist-label").textContent = `last ${hist.length - 1} window(s) + current · bar = weighted spend`;
+
+  // trailing-5h burn sparkline: weighted tokens per time slice + cap ETA
+  const spark = b.burn_spark || [];
+  const sMax = Math.max(1, ...spark);
+  $("spark").innerHTML = spark.map((v, i) => {
+    const hot = i >= spark.length - 2 && v > 0 ? " hot" : "";
+    return `<div class="s${hot}" style="height:${Math.max(2, Math.round(100 * v / sMax))}%" title="~${fmt(v)} weighted tokens"></div>`;
+  }).join("");
+  $("spark-label").innerHTML = b.rate_per_hour != null
+    ? `trailing 5h burn · <b>${fmt(b.rate_per_hour)}/h</b>` : "trailing 5h burn";
+  const eta = b.eta_hours;
+  $("cap-eta").innerHTML = eta != null
+    ? `cap in <b>~${eta < 1 ? Math.round(eta * 60) + "m" : eta.toFixed(1) + "h"}</b>`
+    : (b.pct >= 100 ? `<b>at cap</b>` : "");
 
   // measured spend per epic (from per-task cost attribution)
   $("epiccost").innerHTML = d.epics.filter(e => e.cost > 0)

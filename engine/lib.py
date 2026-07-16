@@ -299,6 +299,44 @@ def calibrate_floor_from_history(tokens):
     return tokens
 
 
+def burn_series(weights, window_hours, buckets=12):
+    """Weighted usage bucketed into `buckets` equal time slices over the trailing
+    window_hours (oldest first). Feeds the budget-panel burn sparkline. Dedupes by
+    message id (streaming rewrites the same message) keeping the max per id; a
+    message's timestamp is constant across rewrites so its bucket never moves."""
+    span_start = now() - timedelta(hours=window_hours)
+    slice_s = window_hours * 3600.0 / buckets
+    sums = [0.0] * buckets
+    root = project_transcript_dir()
+    files = root.glob("*.jsonl") if root else TRANSCRIPTS.glob("*/*.jsonl")
+    for f in files:
+        by_mid = {}
+        for line in f.open(encoding="utf-8"):
+            try:
+                d = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if d.get("type") != "assistant":
+                continue
+            msg = d.get("message") or {}
+            usage = msg.get("usage")
+            ts = d.get("timestamp")
+            if not usage or not ts:
+                continue
+            dt = parse_iso(ts)
+            if dt < span_start:
+                continue
+            idx = min(max(int((dt - span_start).total_seconds() // slice_s), 0), buckets - 1)
+            mid = msg.get("id") or ts
+            w = weighted(usage, weights)
+            cur = by_mid.get(mid)
+            if cur is None or w > cur[1]:
+                by_mid[mid] = (idx, w)
+        for idx, w in by_mid.values():
+            sums[idx] += w
+    return [round(s) for s in sums]
+
+
 def budget_summary(tokens):
     """Budget verdict input. The REAL subscription cap behaves like a trailing
     window, so `used` is the max of (a) the anchored engine window — keeps
@@ -309,11 +347,12 @@ def budget_summary(tokens):
     cfg = tokens["config"]
     win_used = round(sum(tokens["window"].get("by_session", {}).values()))
     used, roll_used, roll_end = win_used, None, None
-    rate, eta_h = None, None
+    rate, eta_h, spark = None, None, None
     if cfg.get("weights"):  # rolling needs transcript access (tests may omit it)
         span_start = now() - timedelta(hours=cfg["window_hours"])
         per, _, first_in = scan_transcripts(cfg["weights"], since=span_start)
         roll_used = round(sum(per.values()))
+        spark = burn_series(cfg["weights"], cfg["window_hours"])
         if first_in:
             roll_end = first_in + timedelta(hours=cfg["window_hours"])
             hours = max((now() - first_in).total_seconds() / 3600.0, 0.1)
@@ -335,6 +374,7 @@ def budget_summary(tokens):
         "pct": round(pct, 1),
         "rate_per_hour": rate,
         "eta_hours": eta_h,
+        "burn_spark": spark,
         "window_started_at": tokens["window"].get("started_at"),
         "resets_at": iso(end) if end else None,
         "seconds_to_reset": max(0, int((end - now()).total_seconds())) if end else None,

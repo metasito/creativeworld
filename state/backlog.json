@@ -728,12 +728,12 @@
       "title": "Dashboard: trailing-5h burn sparkline + cap ETA on budget panel",
       "acceptance": "Budget panel shows a sparkline of trailing-5h weighted burn from tokens.json history plus estimated time-to-cap; verified via Chromium screenshot",
       "size": "S",
-      "status": "in_progress",
+      "status": "done",
       "handoff": "",
-      "updated": "2026-07-15T19:48:45Z",
+      "updated": "2026-07-16T00:15:25Z",
       "claimed_by": "unknown",
-      "cost_start": 16556808,
-      "issue": "31"
+      "issue": "31",
+      "cost": 608216
     },
     {
       "id": "T57",
