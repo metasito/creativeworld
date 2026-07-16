@@ -47,5 +47,6 @@ Whenever you fix a bug, hit a platform quirk, or find a pattern that made the ga
 
 ## Lessons Learned
 
+- Grid/laser puzzles: store each mirror's *solution* orientation in the level def and start it at the opposite — then `?demo=1` (rotate any wrong mirror toward its `sol` each tick) and `window.__prism.solve()` (set all to `sol`) both fall out for free, so one `drive.py --js` loop can assert every level is solvable (`__prism.solve()` returned true × N). Trace the beam with a visited-`(cell,dir)` set to kill infinite bounce loops.
 - Rhythm/timing games: drive a normalized 0..1 spark position (ping-pong `pos+=dir*speed*dt/1000`) and judge on `abs(pos-0.5)` vs a `zoneHalf()` derived from DOM widths — decouples hit logic from pixel layout so it works at any viewport. `?demo=1` can auto-strike near centre with a cooldown to prove the loop; still ship a `window.__forge.forceWin()` hook for the WIN path.
 - Gravity/aim games: a `?demo=1` player aiming straight at a small goal rarely scores (wells bend the path). Prove the loop with strokes-in-title, and prove the WIN path with a synchronous `window.__comet._forceWin()` test hook a single `drive.py --js` can assert — don't rely on random demo play to reach game-over.

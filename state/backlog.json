@@ -122,7 +122,7 @@
       "id": "E16",
       "title": "Prism Ricochet",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "Touch puzzle: tap to rotate mirror tiles and bend a laser beam into the goal crystal across levels",
       "slug": "prism-ricochet"
     },
@@ -896,9 +896,12 @@
       "title": "Prism Ricochet v1",
       "acceptance": "Single index.html touch game: tap mirror tiles to rotate 90deg, laser bends and must hit goal crystal to win a level; >=3 levels, portrait, 44px targets, win state shown; shot.png",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T07:57:30Z"
+      "status": "done",
+      "handoff": "Prism Ricochet v1: laser-mirror touch puzzle, 3 levels, win state, demo+solve hooks",
+      "updated": "2026-07-16T08:01:41Z",
+      "claimed_by": "unknown",
+      "issue": "39",
+      "cost": 158669
     },
     {
       "id": "T69",

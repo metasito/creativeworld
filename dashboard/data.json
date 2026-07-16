@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-07-16T07:55:54Z",
+  "generated_at": "2026-07-16T08:01:42Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 369229,
-    "window_used": 369229,
-    "rolling_used": 369229,
+    "used": 617034,
+    "window_used": 617034,
+    "rolling_used": 617034,
     "binding": "window",
     "budget": 4798485,
-    "pct": 7.7,
-    "rate_per_hour": 2949916,
+    "pct": 12.9,
+    "rate_per_hour": 2779428,
     "eta_hours": 1.5,
     "burn_spark": [
       0,
@@ -22,13 +22,13 @@
       0,
       0,
       0,
-      369229
+      617033
     ],
     "window_started_at": "2026-07-16T05:22:33Z",
     "resets_at": "2026-07-16T10:22:33Z",
-    "seconds_to_reset": 8798,
+    "seconds_to_reset": 8450,
     "nap_until": "2026-07-16T10:22:33Z",
-    "nap_seconds": 8798,
+    "nap_seconds": 8450,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -209,6 +209,33 @@
       "description": "Rhythm blacksmith: tap the anvil when the spark pulse crosses the strike zone to forge a glowing blade, molten metal and spark-burst feedback",
       "slug": "forge-tempo",
       "cost": 181511
+    },
+    {
+      "id": "E16",
+      "title": "Prism Ricochet",
+      "kind": "project",
+      "status": "shipped",
+      "description": "Touch puzzle: tap to rotate mirror tiles and bend a laser beam into the goal crystal across levels",
+      "slug": "prism-ricochet",
+      "cost": 158669
+    },
+    {
+      "id": "E17",
+      "title": "Bubble Diver",
+      "kind": "project",
+      "status": "planned",
+      "description": "Drag a pearl diver through drifting whirlpools and jellyfish to reach the surface before air runs out",
+      "slug": "bubble-diver",
+      "cost": 0
+    },
+    {
+      "id": "E18",
+      "title": "Echo Bloom",
+      "kind": "project",
+      "status": "planned",
+      "description": "Tap-to-pulse rhythm survival: send sonar rings to reveal and pop blooming hazards in the dark to the beat",
+      "slug": "echo-bloom",
+      "cost": 0
     }
   ],
   "tasks": [
@@ -918,7 +945,7 @@
       "claimed_by": "unknown",
       "issue": "38",
       "cost": 181511,
-      "commit": null
+      "commit": "2bb5e79"
     },
     {
       "id": "T60",
@@ -1022,11 +1049,82 @@
       "issue": "37",
       "cost": 120465,
       "commit": "e24e291"
+    },
+    {
+      "id": "T68",
+      "epic": "E16",
+      "title": "Prism Ricochet v1",
+      "acceptance": "Single index.html touch game: tap mirror tiles to rotate 90deg, laser bends and must hit goal crystal to win a level; >=3 levels, portrait, 44px targets, win state shown; shot.png",
+      "size": "M",
+      "status": "done",
+      "handoff": "Prism Ricochet v1: laser-mirror touch puzzle, 3 levels, win state, demo+solve hooks",
+      "updated": "2026-07-16T08:01:41Z",
+      "claimed_by": "unknown",
+      "issue": "39",
+      "cost": 158669,
+      "commit": null
+    },
+    {
+      "id": "T69",
+      "epic": "E16",
+      "title": "Prism Ricochet polish: beam glow + level select",
+      "acceptance": "Add animated beam glow trail and a level-select grid; screenshot",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T07:57:22Z",
+      "commit": null
+    },
+    {
+      "id": "T70",
+      "epic": "E17",
+      "title": "Bubble Diver v1",
+      "acceptance": "Single index.html touch game: drag diver, drifting whirlpools push, air meter drains, reach surface to win / 0 air = lose; portrait, pointer events, win+lose states; shot.png",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T07:57:30Z",
+      "commit": null
+    },
+    {
+      "id": "T71",
+      "epic": "E17",
+      "title": "Bubble Diver polish: jellyfish hazard + bubbles",
+      "acceptance": "Add jellyfish hazards and rising bubble particles; screenshot",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T07:57:22Z",
+      "commit": null
+    },
+    {
+      "id": "T72",
+      "epic": "E18",
+      "title": "Echo Bloom v1",
+      "acceptance": "Single index.html touch game: tap emits sonar ring revealing dark hazards, pop blooms before they reach center; score + game over; portrait, pointer events; shot.png",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T07:57:31Z",
+      "commit": null
+    },
+    {
+      "id": "T73",
+      "epic": "E18",
+      "title": "Echo Bloom polish: beat sync + combo",
+      "acceptance": "Sync spawns to a beat and add combo multiplier; screenshot",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T07:57:23Z",
+      "commit": null
     }
   ],
   "queue": {
     "in_progress": null,
     "next": [
+      "T70",
+      "T72",
       "T58",
       "T60",
       "T61",
@@ -1203,6 +1301,45 @@
       "updated": "2026-07-16T07:54:18Z",
       "cost": 181511,
       "url": "/projects/forge-tempo/"
+    },
+    {
+      "id": "E16",
+      "title": "Prism Ricochet",
+      "kind": "project",
+      "status": "shipped",
+      "description": "Touch puzzle: tap to rotate mirror tiles and bend a laser beam into the goal crystal across levels",
+      "slug": "prism-ricochet",
+      "built": true,
+      "shot": true,
+      "updated": "2026-07-16T08:00:00Z",
+      "cost": 158669,
+      "url": "/projects/prism-ricochet/"
+    },
+    {
+      "id": "E17",
+      "title": "Bubble Diver",
+      "kind": "project",
+      "status": "planned",
+      "description": "Drag a pearl diver through drifting whirlpools and jellyfish to reach the surface before air runs out",
+      "slug": "bubble-diver",
+      "built": false,
+      "shot": false,
+      "updated": null,
+      "cost": 0,
+      "url": null
+    },
+    {
+      "id": "E18",
+      "title": "Echo Bloom",
+      "kind": "project",
+      "status": "planned",
+      "description": "Tap-to-pulse rhythm survival: send sonar rings to reveal and pop blooming hazards in the dark to the beat",
+      "slug": "echo-bloom",
+      "built": false,
+      "shot": false,
+      "updated": null,
+      "cost": 0,
+      "url": null
     }
   ],
   "sessions": [
@@ -1240,21 +1377,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T59",
-    "current_action": "Forge Tempo v1 rhythm blacksmith",
+    "current_task": "T68",
+    "current_action": "Prism Ricochet v1: laser-mirror puzzle",
     "agent": "autopilot",
-    "updated": "2026-07-16T07:55:13Z",
+    "updated": "2026-07-16T08:00:06Z",
     "log": [
-      {
-        "at": "2026-07-16T00:19:09Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-16T00:24:06Z",
-        "agent": "autopilot",
-        "msg": "T63: anchored reset (stops sliding), split nap_until, dashboard binding breakdown"
-      },
       {
         "at": "2026-07-16T00:26:25Z",
         "agent": "autopilot",
@@ -1304,6 +1431,16 @@
         "at": "2026-07-16T07:55:13Z",
         "agent": "autopilot",
         "msg": "T59 verified: demo loop (heat 73% strikes 7) + win path (FORGED perfect:10) + gameplay/win screenshots"
+      },
+      {
+        "at": "2026-07-16T07:56:16Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T08:00:06Z",
+        "agent": "autopilot",
+        "msg": "T68 built index.html; validating"
       }
     ]
   },

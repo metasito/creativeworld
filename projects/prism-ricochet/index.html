@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05060f">
+<title>Prism Ricochet</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; background:#05060f; color:#cfe9ff; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; overflow:hidden; }
+  #app { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:14px; }
+  h1 { font-size:clamp(20px,6vw,30px); font-weight:800; letter-spacing:2px;
+       background:linear-gradient(90deg,#3af0ff,#c86bff,#ff4fd0); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  #hud { display:flex; gap:14px; align-items:center; font-size:14px; color:#7fa8c9; }
+  #hud b { color:#3af0ff; }
+  #wrap { position:relative; touch-action:none; }
+  canvas { display:block; border-radius:14px; background:#0a0d1e;
+           box-shadow:0 0 0 1px rgba(120,160,255,.18), 0 12px 40px rgba(0,0,0,.6); }
+  #hint { font-size:13px; color:#6f86a8; text-align:center; min-height:18px; }
+  #overlay { position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center;
+             gap:16px; border-radius:14px; background:rgba(5,6,15,.72); backdrop-filter:blur(3px); text-align:center; padding:20px; }
+  #overlay.show { display:flex; }
+  #overlay h2 { font-size:26px; background:linear-gradient(90deg,#3af0ff,#ff4fd0); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  #overlay p { font-size:14px; color:#9fb6d6; }
+  .btn { min-height:48px; min-width:120px; padding:0 22px; border:none; border-radius:24px; font-size:16px; font-weight:700;
+         color:#05060f; background:linear-gradient(90deg,#3af0ff,#c86bff); cursor:pointer; touch-action:manipulation; }
+  .btn:active { transform:scale(.96); }
+  #levels { display:flex; gap:8px; }
+  .dot { width:12px; height:12px; border-radius:50%; background:#26314f; }
+  .dot.done { background:#3af0ff; box-shadow:0 0 8px #3af0ff; }
+  .dot.cur { outline:2px solid #ff4fd0; outline-offset:2px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <h1>PRISM RICOCHET</h1>
+  <div id="hud">Level <b id="lvl">1</b> / <span id="tot">3</span> &nbsp;·&nbsp; Moves <b id="mv">0</b></div>
+  <div id="levels"></div>
+  <div id="wrap">
+    <canvas id="c"></canvas>
+    <div id="overlay">
+      <h2 id="ovt">SOLVED</h2>
+      <p id="ovp">Beam reached the crystal.</p>
+      <button class="btn" id="ovb">Next</button>
+    </div>
+  </div>
+  <div id="hint">Tap a mirror to spin it — bend the beam into the crystal.</div>
+</div>
+<script>
+(() => {
+  "use strict";
+  const R={r:0,c:1,name:'R'},L={r:0,c:-1,name:'L'},U={r:-1,c:0,name:'U'},D={r:1,c:0,name:'D'};
+  const DIR={R,L,U,D};
+  // Mirror reflection: '/' and '\'
+  const REF = {
+    '/': {R:U, L:D, U:R, D:L},
+    '\\':{R:D, L:U, U:L, D:R}
+  };
+  // Levels: emitter dir, goal, mirrors with solution orientation (start = the opposite)
+  const LEVELS = [
+    { cols:5, rows:5, emitter:{r:2,c:0,dir:'R'}, goal:{r:0,c:2},
+      mirrors:[ {r:2,c:2,sol:'/'} ] },
+    { cols:5, rows:5, emitter:{r:0,c:0,dir:'D'}, goal:{r:4,c:4},
+      mirrors:[ {r:2,c:0,sol:'\\'}, {r:2,c:4,sol:'\\'} ] },
+    { cols:5, rows:6, emitter:{r:5,c:0,dir:'U'}, goal:{r:4,c:2},
+      mirrors:[ {r:1,c:0,sol:'/'}, {r:1,c:4,sol:'\\'}, {r:4,c:4,sol:'/'} ] },
+  ];
+  const other = o => o==='/'?'\\':'/';
+
+  const cv=document.getElementById('c'), ctx=cv.getContext('2d');
+  const $=id=>document.getElementById(id);
+  let lvl=0, moves=0, cells=null, path=[], won=false, dpr=1, cell=64;
+  const demo = new URLSearchParams(location.search).get('demo')==='1';
+
+  function setupLevel(){
+    const L=LEVELS[lvl];
+    won=false; moves=0;
+    // cells map key "r,c" -> {type, dir?, orient?}
+    cells={};
+    for(const m of L.mirrors) cells[m.r+','+m.c]={type:'mirror', orient:other(m.sol), sol:m.sol};
+    cells[L.emitter.r+','+L.emitter.c]={type:'emitter', dir:L.emitter.dir};
+    cells[L.goal.r+','+L.goal.c]={type:'goal'};
+    layout(); trace(); render(); syncHud();
+  }
+
+  function layout(){
+    const L=LEVELS[lvl];
+    const maxW=Math.min(window.innerWidth-28, 440);
+    const maxH=window.innerHeight-230;
+    cell=Math.floor(Math.min(maxW/L.cols, maxH/L.rows, 84));
+    cell=Math.max(cell,46); // >=44px touch targets
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    const w=cell*L.cols, h=cell*L.rows;
+    cv.style.width=w+'px'; cv.style.height=h+'px';
+    cv.width=w*dpr; cv.height=h*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function trace(){
+    const L=LEVELS[lvl];
+    let r=L.emitter.r, c=L.emitter.c, dir=L.emitter.dir;
+    path=[{r,c}];
+    const seen=new Set();
+    won=false;
+    for(let i=0;i<400;i++){
+      const key=r+','+c+','+dir;
+      if(seen.has(key)) break; seen.add(key);
+      const d=DIR[dir];
+      r+=d.r; c+=d.c;
+      if(r<0||c<0||r>=L.rows||c>=L.cols){ path.push({r,c,off:true}); break; }
+      path.push({r,c});
+      const cellObj=cells[r+','+c];
+      if(cellObj){
+        if(cellObj.type==='goal'){ won=true; break; }
+        if(cellObj.type==='mirror'){ dir=REF[cellObj.orient][dir].name; }
+        if(cellObj.type==='emitter'){ break; } // hit emitter body -> stop
+      }
+    }
+    document.title = 'Prism L'+(lvl+1)+' '+(won?'WIN':'play');
+  }
+
+  function cx(c){ return c*cell + cell/2; }
+  function cyf(r){ return r*cell + cell/2; }
+
+  let glow=0;
+  function render(){
+    const L=LEVELS[lvl];
+    ctx.clearRect(0,0,cv.width,cv.height);
+    // grid
+    ctx.strokeStyle='rgba(120,150,220,.10)'; ctx.lineWidth=1;
+    for(let i=0;i<=L.cols;i++){ ctx.beginPath(); ctx.moveTo(i*cell,0); ctx.lineTo(i*cell,L.rows*cell); ctx.stroke(); }
+    for(let j=0;j<=L.rows;j++){ ctx.beginPath(); ctx.moveTo(0,j*cell); ctx.lineTo(L.cols*cell,j*cell); ctx.stroke(); }
+    // beam
+    if(path.length>1){
+      const grad=ctx.createLinearGradient(0,0,cv.width,cv.height);
+      grad.addColorStop(0,'#3af0ff'); grad.addColorStop(1,'#ff4fd0');
+      ctx.save();
+      ctx.lineJoin='round'; ctx.lineCap='round';
+      ctx.shadowBlur=14+6*Math.sin(glow); ctx.shadowColor='#4ff0ff';
+      ctx.strokeStyle=grad; ctx.lineWidth=4+1.5*Math.sin(glow);
+      ctx.beginPath();
+      ctx.moveTo(cx(path[0].c), cyf(path[0].r));
+      for(let k=1;k<path.length;k++){ ctx.lineTo(cx(path[k].c), cyf(path[k].r)); }
+      ctx.stroke();
+      ctx.restore();
+    }
+    // tiles
+    for(const key in cells){
+      const [r,c]=key.split(',').map(Number); const o=cells[key];
+      const x=c*cell, y=r*cell;
+      if(o.type==='emitter'){
+        ctx.fillStyle='#152444'; roundRect(x+6,y+6,cell-12,cell-12,8); ctx.fill();
+        ctx.fillStyle='#ffd24f'; ctx.beginPath(); ctx.arc(cx(c),cyf(r),cell*0.16,0,7); ctx.fill();
+        ctx.shadowBlur=12; ctx.shadowColor='#ffd24f'; ctx.fill(); ctx.shadowBlur=0;
+      } else if(o.type==='goal'){
+        const s=cell*0.28, X=cx(c), Y=cyf(r);
+        ctx.save(); ctx.translate(X,Y); ctx.rotate(glow*0.4);
+        ctx.fillStyle=won?'#5effa0':'#c86bff';
+        ctx.shadowBlur=won?24:14; ctx.shadowColor=won?'#5effa0':'#c86bff';
+        ctx.beginPath(); ctx.moveTo(0,-s); ctx.lineTo(s,0); ctx.lineTo(0,s); ctx.lineTo(-s,0); ctx.closePath(); ctx.fill();
+        ctx.restore(); ctx.shadowBlur=0;
+      } else if(o.type==='mirror'){
+        ctx.fillStyle='rgba(58,240,255,.06)'; roundRect(x+4,y+4,cell-8,cell-8,10); ctx.fill();
+        ctx.strokeStyle='rgba(120,160,255,.25)'; ctx.lineWidth=1; ctx.stroke();
+        ctx.save(); ctx.strokeStyle='#dff3ff'; ctx.lineWidth=5; ctx.lineCap='round';
+        ctx.shadowBlur=8; ctx.shadowColor='#9fd8ff';
+        const m=cell*0.28;
+        ctx.beginPath();
+        if(o.orient==='/'){ ctx.moveTo(cx(c)+m,cyf(r)-m); ctx.lineTo(cx(c)-m,cyf(r)+m); }
+        else { ctx.moveTo(cx(c)-m,cyf(r)-m); ctx.lineTo(cx(c)+m,cyf(r)+m); }
+        ctx.stroke(); ctx.restore(); ctx.shadowBlur=0;
+      }
+    }
+  }
+  function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  function syncHud(){
+    $('lvl').textContent=lvl+1; $('tot').textContent=LEVELS.length; $('mv').textContent=moves;
+    const box=$('levels'); box.innerHTML='';
+    for(let i=0;i<LEVELS.length;i++){ const d=document.createElement('div'); d.className='dot'+(i<lvl?' done':'')+(i===lvl?' cur':''); box.appendChild(d); }
+  }
+
+  function rotateAt(r,c){
+    const o=cells[r+','+c];
+    if(!o||o.type!=='mirror'||won) return;
+    o.orient=other(o.orient); moves++;
+    if(navigator.vibrate) navigator.vibrate(12);
+    trace(); syncHud();
+    if(won) win();
+  }
+
+  function win(){
+    won=true;
+    $('ovt').textContent = lvl+1<LEVELS.length ? 'SOLVED' : 'ALL CLEAR';
+    $('ovp').textContent = lvl+1<LEVELS.length ? 'Beam reached the crystal in '+moves+' moves.' : 'You bent every beam. Master of light!';
+    $('ovb').textContent = lvl+1<LEVELS.length ? 'Next' : 'Play again';
+    $('overlay').classList.add('show');
+    if(navigator.vibrate) navigator.vibrate([20,40,20]);
+  }
+
+  cv.addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    const rect=cv.getBoundingClientRect();
+    const c=Math.floor((e.clientX-rect.left)/rect.width*LEVELS[lvl].cols);
+    const r=Math.floor((e.clientY-rect.top)/rect.height*LEVELS[lvl].rows);
+    rotateAt(r,c);
+  },{passive:false});
+
+  $('ovb').addEventListener('click', ()=>{
+    $('overlay').classList.remove('show');
+    lvl = (lvl+1) % LEVELS.length;
+    setupLevel();
+  });
+
+  window.addEventListener('resize', ()=>{ layout(); render(); });
+
+  // rAF glow loop
+  function loop(){ glow+=0.06; render(); requestAnimationFrame(loop); }
+
+  // Test / demo hooks
+  window.__prism = {
+    solve(){ for(const k in cells){ const o=cells[k]; if(o.type==='mirror') o.orient=o.sol; } trace(); syncHud(); if(won) win(); return won; },
+    state(){ return {lvl:lvl+1, moves, won}; }
+  };
+
+  setupLevel();
+  requestAnimationFrame(loop);
+
+  if(demo){
+    // autopilot: rotate one wrong mirror toward its solution each tick until solved, then advance
+    let advancing=false;
+    setInterval(()=>{
+      if(won){
+        if(!advancing){ advancing=true; setTimeout(()=>{ $('ovb').click(); advancing=false; }, 900); }
+        return;
+      }
+      for(const k in cells){ const o=cells[k]; if(o.type==='mirror' && o.orient!==o.sol){ const [r,c]=k.split(',').map(Number); rotateAt(r,c); break; } }
+    }, 550);
+  }
+})();
+</script>
+</body>
+</html>
