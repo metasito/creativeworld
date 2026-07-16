@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-07-16T00:28:09Z",
+  "generated_at": "2026-07-16T00:33:29Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 2102970,
-    "window_used": 365216,
-    "rolling_used": 2102970,
+    "used": 2139518,
+    "window_used": 600664,
+    "rolling_used": 2139518,
     "binding": "trailing",
     "budget": 4798485,
-    "pct": 43.8,
-    "rate_per_hour": 420577,
-    "eta_hours": 6.4,
+    "pct": 44.6,
+    "rate_per_hour": 428127,
+    "eta_hours": 6.2,
     "burn_spark": [
-      822314,
+      631206,
       0,
       0,
       0,
@@ -22,13 +22,13 @@
       0,
       0,
       0,
-      974803
+      1210252
     ],
     "window_started_at": "2026-07-16T00:22:33Z",
     "resets_at": "2026-07-16T05:22:33Z",
-    "seconds_to_reset": 17663,
-    "nap_until": "2026-07-16T00:28:08Z",
-    "nap_seconds": 0,
+    "seconds_to_reset": 17343,
+    "nap_until": "2026-07-16T00:33:39Z",
+    "nap_seconds": 9,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -194,7 +194,7 @@
       "status": "planned",
       "description": "One-finger orbital golf: drag-and-release to slingshot a comet through star gates using planet gravity assists, glowing trails on a parallax starfield",
       "slug": "comet-sling",
-      "cost": 0
+      "cost": 190705
     },
     {
       "id": "E15",
@@ -882,9 +882,12 @@
       "title": "Comet Sling v1 - touch orbital golf",
       "acceptance": "Single index.html, pointer-event drag-aim slingshot; comet with glowing trail, >=3 levels with planets whose gravity bends the path, star-gate goal, strokes counter, win state; viewport meta, portrait-friendly, touch targets >=44px; ?seed= deterministic + ?demo=1 auto-shot with state in document.title; verified via drive.py screenshot",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T00:12:48Z",
+      "status": "done",
+      "handoff": "Comet Sling v1: pointer drag-aim orbital golf, 3 gravity levels, star-gate, strokes, ?seed/?demo, win state",
+      "updated": "2026-07-16T00:33:28Z",
+      "claimed_by": "unknown",
+      "issue": "35",
+      "cost": 190705,
       "commit": null
     },
     {
@@ -943,7 +946,7 @@
       "claimed_by": "unknown",
       "issue": "34",
       "cost": 70214,
-      "commit": null
+      "commit": "e2d2f5e"
     },
     {
       "id": "T63",
@@ -1010,7 +1013,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T57",
       "T65",
       "T67",
       "T66",
@@ -1172,11 +1174,11 @@
       "status": "planned",
       "description": "One-finger orbital golf: drag-and-release to slingshot a comet through star gates using planet gravity assists, glowing trails on a parallax starfield",
       "slug": "comet-sling",
-      "built": false,
-      "shot": false,
-      "updated": null,
-      "cost": 0,
-      "url": null
+      "built": true,
+      "shot": true,
+      "updated": "2026-07-16T00:32:49Z",
+      "cost": 190705,
+      "url": "/projects/comet-sling/"
     },
     {
       "id": "E15",
@@ -1227,26 +1229,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T62",
-    "current_action": "reading task + planning dashboard/control improvements",
+    "current_task": "T57",
+    "current_action": "building Comet Sling v1 orbital golf game",
     "agent": "autopilot",
-    "updated": "2026-07-16T00:26:47Z",
+    "updated": "2026-07-16T00:33:25Z",
     "log": [
-      {
-        "at": "2026-07-16T00:05:51Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-16T00:05:51Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-16T00:07:56Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-16T00:07:56Z",
         "agent": "autopilot",
@@ -1291,6 +1278,21 @@
         "at": "2026-07-16T00:26:25Z",
         "agent": "autopilot",
         "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T00:28:32Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T00:30:35Z",
+        "agent": "autopilot",
+        "msg": "T57 comet-sling index.html written; validating"
+      },
+      {
+        "at": "2026-07-16T00:33:25Z",
+        "agent": "autopilot",
+        "msg": "T57 verified: gameplay screenshot + demo title (L1 strokes:5) + win pipeline (WIN L3)"
       }
     ]
   }

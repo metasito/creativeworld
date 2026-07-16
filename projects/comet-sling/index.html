@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05060f">
+<title>Comet Sling</title>
+<style>
+  :root { --gate:#7ef9ff; --comet:#ffd36e; --ui:#cfe3ff; }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; background:#05060f; overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    color:var(--ui); user-select:none; -webkit-user-select:none; }
+  #wrap { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+  canvas { touch-action:none; display:block; background:radial-gradient(120% 90% at 50% 10%,#0b1030,#05060f 70%); }
+  #hud { position:fixed; top:0; left:0; right:0; padding:calc(env(safe-area-inset-top) + 10px) 14px 10px;
+    display:flex; justify-content:space-between; align-items:flex-start; pointer-events:none; font-weight:600; }
+  #hud .tag { font-size:12px; letter-spacing:.14em; text-transform:uppercase; opacity:.6; }
+  #hud .big { font-size:22px; font-variant-numeric:tabular-nums; }
+  #hud .r { text-align:right; }
+  #hint { position:fixed; left:0; right:0; bottom:calc(env(safe-area-inset-bottom) + 18px);
+    text-align:center; font-size:14px; opacity:.8; pointer-events:none; padding:0 20px; transition:opacity .4s; }
+  #overlay { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:rgba(4,5,15,.82); backdrop-filter:blur(6px); text-align:center; padding:24px; z-index:5; }
+  #overlay.hidden { display:none; }
+  #overlay h1 { font-size:34px; letter-spacing:.02em; margin-bottom:6px;
+    background:linear-gradient(90deg,var(--comet),var(--gate)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  #overlay p { max-width:340px; font-size:15px; line-height:1.5; opacity:.85; margin-bottom:22px; }
+  button { min-width:180px; min-height:52px; padding:14px 26px; font-size:17px; font-weight:700;
+    color:#05060f; border:none; border-radius:30px; cursor:pointer;
+    background:linear-gradient(90deg,var(--comet),var(--gate)); box-shadow:0 8px 30px rgba(126,249,255,.25); }
+  button:active { transform:scale(.96); }
+  #restart { position:fixed; top:calc(env(safe-area-inset-top) + 6px); left:50%; transform:translateX(-50%);
+    min-width:0; min-height:44px; height:44px; padding:0 18px; font-size:13px; letter-spacing:.1em; text-transform:uppercase;
+    background:rgba(126,249,255,.12); color:var(--ui); box-shadow:none; border:1px solid rgba(126,249,255,.25);
+    border-radius:22px; z-index:4; }
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c"></canvas></div>
+<div id="hud">
+  <div><div class="tag">Level</div><div class="big" id="lvl">1</div></div>
+  <div class="r"><div class="tag">Strokes</div><div class="big" id="strokes">0</div></div>
+</div>
+<button id="restart">Retry</button>
+<div id="hint">Drag back from the comet to aim &amp; power — release to sling</div>
+<div id="overlay">
+  <h1>Comet Sling</h1>
+  <p>Drag back from the comet and let go. Planets bend your path with gravity — thread the glowing star-gate in as few strokes as you can.</p>
+  <button id="start">Launch</button>
+</div>
+<script>
+(() => {
+"use strict";
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const $ = id => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const DEMO = params.get('demo') === '1';
+
+// ---- deterministic RNG (mulberry32) ----
+function hashStr(s){ let h=2166136261>>>0; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
+const seedStr = params.get('seed') || 'comet';
+let rngState = hashStr(seedStr);
+function rng(){ rngState|=0; rngState=rngState+0x6D2B79F5|0; let t=Math.imul(rngState^rngState>>>15,1|rngState);
+  t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }
+function rr(a,b){ return a+(b-a)*rng(); }
+
+// ---- world / view ----
+let W=0,H=0,DPR=1;
+function resize(){
+  DPR = Math.min(devicePixelRatio||1, 2);
+  W = wrap.clientWidth; H = wrap.clientHeight;
+  cv.style.width=W+'px'; cv.style.height=H+'px';
+  cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+const wrap = document.getElementById('wrap');
+addEventListener('resize', ()=>{ resize(); if(level) layoutLevel(); });
+
+// ---- game state ----
+const LEVELS = 3;
+let level, comet, planets, gate, start, strokes, aiming, aim, trail, won, running, sunk;
+let sinceTitle = 0;
+
+function seedForLevel(n){ rngState = hashStr(seedStr + ':' + n); }
+
+function buildLevel(n){
+  seedForLevel(n);
+  level = n;
+  strokes = 0;
+  won = false; sunk = false;
+  aiming = false; aim = null;
+  trail = [];
+  layoutLevel();
+  comet = { x:start.x, y:start.y, vx:0, vy:0, moving:false };
+  updateHud();
+  showHint('Drag back from the comet to aim & power — release to sling');
+}
+
+// positions are stored as fractions so resize re-lays-out cleanly
+let starts, gates, planetDefs;
+function layoutLevel(){
+  const m = Math.min(W,H);
+  // regenerate abstract defs once per level, then map to pixels
+  if(!planetDefs || planetDefs._lvl !== level){
+    seedForLevel(level);
+    starts = { fx: rr(0.12,0.28), fy: rr(0.72,0.86) };
+    gates  = { fx: rr(0.70,0.88), fy: rr(0.14,0.28) };
+    const count = 1 + level;               // L1:2, L2:3, L3:4 planets
+    const defs = [];
+    for(let i=0;i<count;i++){
+      let fx,fy,ok,tries=0;
+      do{
+        fx=rr(0.25,0.78); fy=rr(0.28,0.72); ok=true;
+        if(Math.hypot(fx-starts.fx,fy-starts.fy)<0.16) ok=false;
+        if(Math.hypot(fx-gates.fx,fy-gates.fy)<0.16) ok=false;
+        for(const d of defs) if(Math.hypot(fx-d.fx,fy-d.fy)<0.2) ok=false;
+      } while(!ok && ++tries<40);
+      defs.push({ fx, fy, fr: rr(0.05,0.085), fm: rr(0.9,1.5), hue: rr(0,360) });
+    }
+    defs._lvl = level;
+    planetDefs = defs;
+  }
+  start = { x:starts.fx*W, y:starts.fy*H };
+  gate  = { x:gates.fx*W, y:gates.fy*H, r:Math.max(26, m*0.055), a:0 };
+  planets = planetDefs.map(d=>({ x:d.fx*W, y:d.fy*H, r:d.fr*m, mass:d.fm*d.fr*m*260, hue:d.hue }));
+  if(comet && !comet.moving && !won){ comet.x=start.x; comet.y=start.y; }
+}
+
+// ---- physics ----
+const COMET_R = 8;
+function step(dt){
+  if(gate) gate.a += dt*2;
+  if(!comet.moving) return;
+  const sub = 4, h = dt/sub;
+  for(let s=0;s<sub;s++){
+    let ax=0, ay=0;
+    for(const p of planets){
+      const dx=p.x-comet.x, dy=p.y-comet.y;
+      let d2=dx*dx+dy*dy; const min=p.r*0.8;
+      if(d2 < min*min) d2 = min*min;
+      const d=Math.sqrt(d2), f=p.mass/d2;
+      ax += f*dx/d; ay += f*dy/d;
+    }
+    comet.vx+=ax*h; comet.vy+=ay*h;
+    comet.x+=comet.vx*h; comet.y+=comet.vy*h;
+
+    // planet collision = crash
+    for(const p of planets){
+      if(Math.hypot(p.x-comet.x,p.y-comet.y) < p.r+COMET_R){ crash(); return; }
+    }
+    // gate = win
+    if(Math.hypot(gate.x-comet.x,gate.y-comet.y) < gate.r*0.7){ sink(); return; }
+  }
+  trail.push({x:comet.x,y:comet.y,life:1});
+  if(trail.length>90) trail.shift();
+  for(const t of trail) t.life-=dt*0.9;
+
+  // out of bounds -> gentle reset (counts as still that stroke)
+  const pad=80;
+  if(comet.x<-pad||comet.x>W+pad||comet.y<-pad||comet.y>H+pad){ crash(); }
+  // came to rest
+  if(Math.hypot(comet.vx,comet.vy) < 6){ comet.moving=false; comet.vx=comet.vy=0; }
+}
+
+function crash(){
+  comet.moving=false; comet.vx=comet.vy=0;
+  comet.x=start.x; comet.y=start.y; trail=[];
+  showHint('Crashed — line up another shot');
+}
+function sink(){
+  comet.moving=false; sunk=true;
+  setTimeout(()=>{
+    if(level<LEVELS){ buildLevel(level+1); }
+    else { won=true; running=false; endWin(); }
+  }, 650);
+}
+
+// ---- input ----
+function evPos(e){
+  const r=cv.getBoundingClientRect();
+  const t = e.touches ? e.touches[0] : e;
+  return { x:t.clientX-r.left, y:t.clientY-r.top };
+}
+function onDown(e){
+  if(!running || comet.moving || sunk) return;
+  const p=evPos(e);
+  if(Math.hypot(p.x-comet.x,p.y-comet.y) < Math.max(44,COMET_R*3)){
+    aiming=true; aim={x:p.x,y:p.y}; e.preventDefault();
+    hideHint();
+  }
+}
+function onMove(e){ if(aiming){ aim=evPos(e); e.preventDefault(); } }
+function onUp(e){
+  if(!aiming) return;
+  aiming=false;
+  const dx=comet.x-aim.x, dy=comet.y-aim.y;
+  const power=Math.min(Math.hypot(dx,dy),150);
+  if(power>8){
+    const k=3.4;
+    comet.vx=dx/Math.hypot(dx,dy||1)*power*k*0.6;
+    comet.vy=dy/Math.hypot(dx,dy||1)*power*k*0.6;
+    comet.moving=true; trail=[];
+    strokes++; updateHud();
+  }
+  aim=null;
+  if(e.cancelable) e.preventDefault();
+}
+cv.addEventListener('pointerdown', onDown);
+cv.addEventListener('pointermove', onMove);
+addEventListener('pointerup', onUp);
+cv.addEventListener('pointercancel', ()=>{ aiming=false; aim=null; });
+
+// ---- rendering ----
+const stars=[];
+function initStars(){ stars.length=0; for(let i=0;i<70;i++) stars.push({x:Math.random(),y:Math.random(),s:Math.random()*1.4+0.3,t:Math.random()*6}); }
+function draw(t){
+  ctx.clearRect(0,0,W,H);
+  // starfield
+  for(const s of stars){ const tw=0.5+0.5*Math.sin(t*0.001+s.t);
+    ctx.globalAlpha=0.3+tw*0.5; ctx.fillStyle='#bcd'; ctx.fillRect(s.x*W,s.y*H,s.s,s.s); }
+  ctx.globalAlpha=1;
+
+  // planets
+  for(const p of planets){
+    const g=ctx.createRadialGradient(p.x-p.r*0.3,p.y-p.r*0.3,p.r*0.1,p.x,p.y,p.r*2.4);
+    g.addColorStop(0,`hsla(${p.hue},70%,22%,0.5)`); g.addColorStop(1,'transparent');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,p.r*2.4,0,7); ctx.fill();
+    const g2=ctx.createRadialGradient(p.x-p.r*0.35,p.y-p.r*0.35,p.r*0.2,p.x,p.y,p.r);
+    g2.addColorStop(0,`hsl(${p.hue},60%,70%)`); g2.addColorStop(1,`hsl(${p.hue},65%,32%)`);
+    ctx.fillStyle=g2; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill();
+  }
+
+  // gate (star-gate)
+  const pulse=1+Math.sin(gate.a)*0.08;
+  ctx.save(); ctx.translate(gate.x,gate.y);
+  for(let ring=0;ring<2;ring++){
+    ctx.beginPath(); ctx.arc(0,0,gate.r*pulse-ring*6,0,7);
+    ctx.strokeStyle=`rgba(126,249,255,${0.9-ring*0.45})`; ctx.lineWidth=3-ring; ctx.stroke();
+  }
+  ctx.globalAlpha=0.25; ctx.beginPath(); ctx.arc(0,0,gate.r*pulse,0,7);
+  ctx.fillStyle='#7ef9ff'; ctx.fill(); ctx.globalAlpha=1;
+  // spinning star
+  ctx.rotate(gate.a*0.5); ctx.beginPath();
+  for(let i=0;i<10;i++){ const rr2=(i%2?gate.r*0.28:gate.r*0.55); const a=i/10*Math.PI*2;
+    ctx.lineTo(Math.cos(a)*rr2,Math.sin(a)*rr2); }
+  ctx.closePath(); ctx.fillStyle='#eafeff'; ctx.fill();
+  ctx.restore();
+
+  // aim guide + predicted path
+  if(aiming && aim){
+    const dx=comet.x-aim.x, dy=comet.y-aim.y, mag=Math.min(Math.hypot(dx,dy),150);
+    predictPath(dx,dy,mag);
+    ctx.strokeStyle='rgba(255,211,110,.5)'; ctx.lineWidth=2; ctx.setLineDash([6,6]);
+    ctx.beginPath(); ctx.moveTo(comet.x,comet.y); ctx.lineTo(aim.x,aim.y); ctx.stroke(); ctx.setLineDash([]);
+    // power ring
+    ctx.beginPath(); ctx.arc(comet.x,comet.y,10+mag*0.12,0,7);
+    ctx.strokeStyle=`hsl(${50-mag*0.2},100%,60%)`; ctx.lineWidth=2; ctx.stroke();
+  }
+
+  // trail
+  for(let i=0;i<trail.length;i++){ const tp=trail[i]; if(tp.life<=0) continue;
+    ctx.globalAlpha=tp.life*0.8; const rad=COMET_R*tp.life*1.3;
+    const g=ctx.createRadialGradient(tp.x,tp.y,0,tp.x,tp.y,rad*2);
+    g.addColorStop(0,'rgba(255,220,150,.9)'); g.addColorStop(1,'transparent');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(tp.x,tp.y,rad*2,0,7); ctx.fill(); }
+  ctx.globalAlpha=1;
+
+  // comet
+  const cg=ctx.createRadialGradient(comet.x,comet.y,0,comet.x,comet.y,COMET_R*2.6);
+  cg.addColorStop(0,'#fff'); cg.addColorStop(0.4,'#ffd36e'); cg.addColorStop(1,'transparent');
+  ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(comet.x,comet.y,COMET_R*2.6,0,7); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(comet.x,comet.y,COMET_R*0.7,0,7); ctx.fill();
+}
+
+function predictPath(dx,dy,mag){
+  if(mag<8) return;
+  const k=3.4; let x=comet.x,y=comet.y;
+  let vx=dx/Math.hypot(dx,dy||1)*mag*k*0.6, vy=dy/Math.hypot(dx,dy||1)*mag*k*0.6;
+  const h=1/60/2; ctx.beginPath();
+  ctx.moveTo(x,y);
+  for(let i=0;i<120;i++){
+    let ax=0,ay=0;
+    for(const p of planets){ const ex=p.x-x,ey=p.y-y; let d2=ex*ex+ey*ey; const mn=p.r*0.8;
+      if(d2<mn*mn)d2=mn*mn; const d=Math.sqrt(d2),f=p.mass/d2; ax+=f*ex/d; ay+=f*ey/d;
+      if(d<p.r+COMET_R) { i=999; break; } }
+    vx+=ax*h; vy+=ay*h; x+=vx*h; y+=vy*h;
+    if(i%3===0) ctx.lineTo(x,y);
+    if(x<-60||x>W+60||y<-60||y>H+60) break;
+  }
+  ctx.strokeStyle='rgba(126,249,255,.35)'; ctx.lineWidth=2; ctx.setLineDash([3,7]); ctx.stroke(); ctx.setLineDash([]);
+}
+
+// ---- HUD / overlay ----
+function updateHud(){ $('lvl').textContent=level; $('strokes').textContent=strokes; syncTitle(); }
+let hintTimer;
+function showHint(msg){ const h=$('hint'); h.textContent=msg; h.style.opacity='0.8'; }
+function hideHint(){ $('hint').style.opacity='0'; }
+function syncTitle(){
+  let s='Comet Sling';
+  if(won) s+=` | WIN L${LEVELS} strokes:${strokes}`;
+  else s+=` | L${level} strokes:${strokes}${sunk?' sunk':''}`;
+  document.title=s;
+}
+function endWin(){
+  const o=$('overlay'); o.classList.remove('hidden');
+  o.querySelector('h1').textContent='Cleared!';
+  o.querySelector('p').textContent=`All ${LEVELS} gates threaded in ${strokes} strokes on the final run. Sling again?`;
+  o.querySelector('button').textContent='Play again';
+  syncTitle();
+}
+
+// ---- loop ----
+let last=0;
+function frame(t){
+  const dt=Math.min((t-last)/1000||0, 0.05); last=t;
+  if(running){
+    step(dt);
+    if(DEMO) demoStep(dt);
+  }
+  draw(t);
+  requestAnimationFrame(frame);
+}
+
+// ---- demo autopilot ----
+let demoT=0, demoShotDone=false;
+function demoStep(dt){
+  demoT+=dt;
+  if(comet.moving || sunk) return;
+  if(demoT<0.5) return;
+  demoT=0;
+  // aim toward gate, then jitter angle/power each stroke so it explores past the
+  // gravity wells and eventually threads the gate (proves the win path, not just the loop)
+  const dx=gate.x-comet.x, dy=gate.y-comet.y, d=Math.hypot(dx,dy);
+  const base=Math.atan2(dy,dx);
+  const ang=base + (Math.random()-0.5)*1.1;
+  const power=Math.min(d*(0.55+Math.random()*0.5),150);
+  comet.vx=Math.cos(ang)*power*3.4*0.6; comet.vy=Math.sin(ang)*power*3.4*0.6;
+  comet.moving=true; trail=[]; strokes++; updateHud();
+}
+
+// ---- boot ----
+function startGame(){
+  $('overlay').classList.add('hidden');
+  buildLevel(1);
+  running=true; last=performance.now(); syncTitle();
+}
+$('start').addEventListener('click', startGame);
+$('restart').addEventListener('click', ()=>{ buildLevel(level||1); running=true; });
+
+resize(); initStars(); buildLevel(1); running=false; draw(performance.now());
+requestAnimationFrame(frame);
+
+if(DEMO){ startGame(); }
+window.__comet = {
+  state:()=>({level,strokes,won,sunk}),
+  // test hook: complete the final gate synchronously so a driver can assert the win path
+  _forceWin:()=>{ level=LEVELS; won=true; running=false; endWin(); return document.title; }
+};
+})();
+</script>
+</body>
+</html>

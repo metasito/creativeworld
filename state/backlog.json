@@ -741,9 +741,12 @@
       "title": "Comet Sling v1 - touch orbital golf",
       "acceptance": "Single index.html, pointer-event drag-aim slingshot; comet with glowing trail, >=3 levels with planets whose gravity bends the path, star-gate goal, strokes counter, win state; viewport meta, portrait-friendly, touch targets >=44px; ?seed= deterministic + ?demo=1 auto-shot with state in document.title; verified via drive.py screenshot",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T00:12:48Z"
+      "status": "done",
+      "handoff": "Comet Sling v1: pointer drag-aim orbital golf, 3 gravity levels, star-gate, strokes, ?seed/?demo, win state",
+      "updated": "2026-07-16T00:33:28Z",
+      "claimed_by": "unknown",
+      "issue": "35",
+      "cost": 190705
     },
     {
       "id": "T58",
