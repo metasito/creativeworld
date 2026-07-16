@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-07-16T08:12:45Z",
+  "generated_at": "2026-07-16T08:20:11Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 1081015,
-    "window_used": 1081015,
-    "rolling_used": 1081015,
+    "used": 1343459,
+    "window_used": 1343459,
+    "rolling_used": 1343459,
     "binding": "window",
     "budget": 4798485,
-    "pct": 22.5,
-    "rate_per_hour": 2661447,
+    "pct": 28.0,
+    "rate_per_hour": 2535451,
     "eta_hours": 1.4,
     "burn_spark": [
       0,
@@ -21,14 +21,14 @@
       0,
       0,
       0,
-      0,
-      1081015
+      317845,
+      1025614
     ],
     "window_started_at": "2026-07-16T05:22:33Z",
     "resets_at": "2026-07-16T10:22:33Z",
-    "seconds_to_reset": 7787,
+    "seconds_to_reset": 7341,
     "nap_until": "2026-07-16T10:22:33Z",
-    "nap_seconds": 7787,
+    "nap_seconds": 7341,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -236,6 +236,33 @@
       "description": "Tap-to-pulse rhythm survival: send sonar rings to reveal and pop blooming hazards in the dark to the beat",
       "slug": "echo-bloom",
       "cost": 163673
+    },
+    {
+      "id": "E19",
+      "title": "Kite Weaver",
+      "kind": "project",
+      "status": "shipped",
+      "description": "swipe-steer a kite through wind currents, collect ribbons, dodge storm cells",
+      "slug": "kite-weaver",
+      "cost": 148963
+    },
+    {
+      "id": "E20",
+      "title": "Glyph Lock",
+      "kind": "project",
+      "status": "planned",
+      "description": "drag concentric rune rings to align a glowing path, timed combination puzzle across levels",
+      "slug": "glyph-lock",
+      "cost": 0
+    },
+    {
+      "id": "E21",
+      "title": "Spark Relay",
+      "kind": "project",
+      "status": "planned",
+      "description": "drag to wire nodes and route a spark across a grid before the timer overloads",
+      "slug": "spark-relay",
+      "cost": 0
     }
   ],
   "tasks": [
@@ -1112,7 +1139,7 @@
       "claimed_by": "unknown",
       "issue": "41",
       "cost": 163673,
-      "commit": null
+      "commit": "afd03f1"
     },
     {
       "id": "T73",
@@ -1124,11 +1151,93 @@
       "handoff": "",
       "updated": "2026-07-16T07:57:23Z",
       "commit": null
+    },
+    {
+      "id": "T74",
+      "epic": "E19",
+      "title": "Kite Weaver v1",
+      "acceptance": "single index.html touch game: swipe/drag to steer a kite through scrolling wind currents; collect ribbons for score, dodge storm cells (lose), viewport meta + portrait layout + 44px targets; win/lose state; demo=1 hook",
+      "size": "M",
+      "status": "done",
+      "handoff": "Kite Weaver v1 - swipe-steer kite touch game: catch ribbons, ride wind, dodge storm cells, climb to win; demo autopilot wins on its own",
+      "updated": "2026-07-16T08:20:08Z",
+      "claimed_by": "unknown",
+      "issue": "42",
+      "cost": 148963,
+      "commit": null
+    },
+    {
+      "id": "T75",
+      "epic": "E19",
+      "title": "Kite Weaver polish: wind gust visuals + haptics",
+      "acceptance": "add animated wind-streak particles, tapered ribbon trails, and vibration on ribbon/collision where supported",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T08:14:36Z",
+      "commit": null
+    },
+    {
+      "id": "T76",
+      "epic": "E20",
+      "title": "Glyph Lock v1",
+      "acceptance": "single index.html touch puzzle: drag concentric rune rings to rotate them and align a glowing path; 3 levels + win state; portrait layout, 44px targets, viewport meta; demo+solve hooks",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T08:15:02Z",
+      "commit": null
+    },
+    {
+      "id": "T77",
+      "epic": "E20",
+      "title": "Glyph Lock polish: ring glow + solve fanfare",
+      "acceptance": "add per-ring glow on alignment, snap feedback, and a win particle burst",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T08:14:36Z",
+      "commit": null
+    },
+    {
+      "id": "T78",
+      "epic": "E21",
+      "title": "Spark Relay v1",
+      "acceptance": "single index.html touch puzzle: drag to connect nodes and route a spark across a grid before an overload timer; 3 levels + win/lose; portrait layout, 44px targets, viewport meta; demo hook",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T08:15:02Z",
+      "commit": null
+    },
+    {
+      "id": "T79",
+      "epic": "E21",
+      "title": "Spark Relay polish: spark travel animation + haptics",
+      "acceptance": "animate the spark travelling the completed path, add node pulse and vibration feedback",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T08:14:36Z",
+      "commit": null
+    },
+    {
+      "id": "T80",
+      "epic": "E1",
+      "title": "Engine: autopilot cycle summary line in sessions.json",
+      "acceptance": "each autopilot cycle appends a one-line summary (task id, size, tokens) to sessions.json for the dashboard",
+      "size": "S",
+      "status": "backlog",
+      "handoff": "",
+      "updated": "2026-07-16T08:14:36Z",
+      "commit": null
     }
   ],
   "queue": {
     "in_progress": null,
     "next": [
+      "T76",
+      "T78",
       "T58",
       "T60",
       "T61",
@@ -1344,6 +1453,45 @@
       "updated": "2026-07-16T08:10:46Z",
       "cost": 163673,
       "url": "/projects/echo-bloom/"
+    },
+    {
+      "id": "E19",
+      "title": "Kite Weaver",
+      "kind": "project",
+      "status": "shipped",
+      "description": "swipe-steer a kite through wind currents, collect ribbons, dodge storm cells",
+      "slug": "kite-weaver",
+      "built": true,
+      "shot": true,
+      "updated": "2026-07-16T08:18:07Z",
+      "cost": 148963,
+      "url": "/projects/kite-weaver/"
+    },
+    {
+      "id": "E20",
+      "title": "Glyph Lock",
+      "kind": "project",
+      "status": "planned",
+      "description": "drag concentric rune rings to align a glowing path, timed combination puzzle across levels",
+      "slug": "glyph-lock",
+      "built": false,
+      "shot": false,
+      "updated": null,
+      "cost": 0,
+      "url": null
+    },
+    {
+      "id": "E21",
+      "title": "Spark Relay",
+      "kind": "project",
+      "status": "planned",
+      "description": "drag to wire nodes and route a spark across a grid before the timer overloads",
+      "slug": "spark-relay",
+      "built": false,
+      "shot": false,
+      "updated": null,
+      "cost": 0,
+      "url": null
     }
   ],
   "sessions": [
@@ -1381,26 +1529,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T72",
-    "current_action": "Echo Bloom v1: sonar-ring touch game",
+    "current_task": "T74",
+    "current_action": "Kite Weaver v1: scaffold touch game",
     "agent": "autopilot",
-    "updated": "2026-07-16T08:10:49Z",
+    "updated": "2026-07-16T08:17:28Z",
     "log": [
-      {
-        "at": "2026-07-16T00:40:59Z",
-        "agent": "autopilot",
-        "msg": "T65 verified: /api/autopilot flag round-trips; dashboard Start/Stop button reflects live run/stop state (DOM+screenshot)"
-      },
-      {
-        "at": "2026-07-16T07:51:09Z",
-        "agent": "autopilot",
-        "msg": "T67: added priority_score/sort_key to board.py, sync_queue+claim order by it, test_engine covers ordering"
-      },
-      {
-        "at": "2026-07-16T07:51:51Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-16T07:52:40Z",
         "agent": "autopilot",
@@ -1445,6 +1578,21 @@
         "at": "2026-07-16T08:10:49Z",
         "agent": "autopilot",
         "msg": "T72 echo-bloom index.html written; validating"
+      },
+      {
+        "at": "2026-07-16T08:13:00Z",
+        "agent": "autopilot",
+        "msg": "T72 shipped: Echo Bloom v1, verified demo loop (score climbs) + forceGameOver path; committed+pushed"
+      },
+      {
+        "at": "2026-07-16T08:13:09Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T08:17:28Z",
+        "agent": "autopilot",
+        "msg": "Kite Weaver v1 built; validating"
       }
     ]
   },

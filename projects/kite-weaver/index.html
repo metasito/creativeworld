@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0a1230">
+<title>Kite Weaver</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; background:#0a1230; overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; color:#eaf2ff; }
+  #wrap { position:fixed; inset:0; touch-action:none; user-select:none; }
+  canvas { display:block; width:100%; height:100%; }
+  .hud { position:absolute; top:0; left:0; right:0; padding:14px 18px;
+    display:flex; align-items:center; gap:12px; pointer-events:none;
+    font-variant-numeric:tabular-nums; text-shadow:0 1px 4px rgba(0,0,0,.6); }
+  .score { font-size:22px; font-weight:700; letter-spacing:.5px; }
+  .score small { font-size:12px; opacity:.7; font-weight:500; }
+  .altbar { flex:1; height:10px; border-radius:6px; background:rgba(255,255,255,.13);
+    overflow:hidden; box-shadow:inset 0 0 0 1px rgba(255,255,255,.12); }
+  .altfill { height:100%; width:0%; border-radius:6px;
+    background:linear-gradient(90deg,#3fe0c5,#7cf,#ffd76b); transition:width .12s linear; }
+  .overlay { position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; gap:18px; padding:28px;
+    background:radial-gradient(120% 90% at 50% 30%,rgba(12,20,52,.35),rgba(6,10,28,.86)); }
+  .overlay.hidden { display:none; }
+  h1 { font-size:clamp(32px,11vw,58px); font-weight:800; letter-spacing:1px; line-height:1;
+    background:linear-gradient(180deg,#fff,#8fd6ff); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; filter:drop-shadow(0 4px 18px rgba(90,190,255,.35)); }
+  .sub { font-size:16px; max-width:16em; opacity:.85; line-height:1.5; }
+  .big { font-size:clamp(28px,9vw,44px); font-weight:800; }
+  .win .big { color:#8ff0d4; } .lose .big { color:#ff9a8f; }
+  button { pointer-events:auto; font:inherit; font-size:19px; font-weight:700; color:#08122e;
+    background:linear-gradient(180deg,#bfeaff,#7cc8ff); border:none; border-radius:16px;
+    padding:16px 34px; min-height:56px; min-width:180px; cursor:pointer;
+    box-shadow:0 8px 24px rgba(80,170,255,.35), inset 0 1px 0 rgba(255,255,255,.6); }
+  button:active { transform:translateY(2px); }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="c"></canvas>
+  <div class="hud">
+    <div class="score" id="score">0 <small>ribbons</small></div>
+    <div class="altbar"><div class="altfill" id="altfill"></div></div>
+  </div>
+  <div class="overlay" id="overlay">
+    <h1>Kite<br>Weaver</h1>
+    <div class="sub">Drag anywhere to steer your kite. Catch <b>ribbons</b>, ride the wind, and dodge the dark <b>storm cells</b> as you climb to the top.</div>
+    <button id="startBtn">Fly</button>
+  </div>
+</div>
+<script>
+(function(){
+  "use strict";
+  var cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  var overlay = document.getElementById('overlay');
+  var scoreEl = document.getElementById('score');
+  var altEl = document.getElementById('altfill');
+  var startBtn = document.getElementById('startBtn');
+  var params = new URLSearchParams(location.search);
+  var DEMO = params.get('demo') === '1';
+
+  var W=0,H=0,DPR=1;
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio||1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = W*DPR; cv.height = H*DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  window.addEventListener('resize', resize); resize();
+
+  var WIN_MS = 42000;         // time of clean climb to reach the top
+  var state='title';          // title | play | win | lose
+  var alt=0, score=0, t=0;
+  var kite, ribbons, storms, streaks, sparks, tail;
+  var pointerX=null, spawnR=0, spawnS=0;
+
+  function reset(){
+    alt=0; score=0; t=0; spawnR=700; spawnS=1600;
+    kite = { x:W*0.5, y:H*0.72, vx:0, r:Math.max(15, Math.min(W,H)*0.05) };
+    ribbons=[]; storms=[]; sparks=[]; tail=[];
+    streaks=[]; for(var i=0;i<46;i++) streaks.push(newStreak(true));
+    pointerX=null;
+  }
+  function newStreak(rand){
+    return { x:Math.random()*W, y:rand?Math.random()*H:-10,
+      len:18+Math.random()*40, sp:0.05+Math.random()*0.10, a:0.05+Math.random()*0.10 };
+  }
+  function wind(y){ // lateral wind force field (px/s^2-ish), varies with height + time
+    return Math.sin(y*0.006 + t*0.0009)*0.9 + Math.sin(t*0.0016+1.7)*0.5;
+  }
+
+  function start(){
+    reset(); state='play'; overlay.className='overlay hidden';
+  }
+  function endGame(win){
+    state = win?'win':'lose';
+    overlay.className = 'overlay ' + (win?'win':'lose');
+    overlay.innerHTML =
+      '<div class="big">'+(win?'You reached the sky!':'Storm-struck!')+'</div>'+
+      '<div class="sub">Ribbons caught: <b>'+score+'</b> &middot; Altitude: <b>'+Math.round(alt)+'%</b></div>'+
+      '<button id="againBtn">'+(win?'Fly again':'Retry')+'</button>';
+    document.getElementById('againBtn').addEventListener('click', start);
+    document.title = (win?'WIN':'LOSE')+' Kite score:'+score+' alt:'+Math.round(alt);
+  }
+
+  // ---- input ----
+  function px(e){ var t = e.touches?e.touches[0]:e; return t.clientX; }
+  function down(e){ if(state==='play'){ pointerX = px(e); } e.preventDefault(); }
+  function move(e){ if(state==='play' && pointerX!==null){ pointerX = px(e); } e.preventDefault(); }
+  function up(e){ pointerX=null; }
+  var wrap=document.getElementById('wrap');
+  wrap.addEventListener('pointerdown', down);
+  wrap.addEventListener('pointermove', move);
+  wrap.addEventListener('pointerup', up);
+  wrap.addEventListener('pointercancel', up);
+  startBtn.addEventListener('click', start);
+
+  // ---- spawns ----
+  function spawnRibbon(){
+    ribbons.push({ x:40+Math.random()*(W-80), y:-24, r:13,
+      hue: 30+Math.random()*40, ph:Math.random()*6.28, sway:20+Math.random()*30 });
+  }
+  function spawnStorm(){
+    var r = 26 + Math.random()*Math.min(46, W*0.10);
+    storms.push({ x:r+Math.random()*(W-2*r), y:-r-10, r:r, drift:(Math.random()-0.5)*0.05, sp:Math.random()*6.28 });
+  }
+
+  // ---- demo autopilot ----
+  function demoSteer(){
+    // avoid the nearest storm ahead; else chase nearest ribbon above
+    var threat=null, td=1e9;
+    for(var i=0;i<storms.length;i++){ var s=storms[i];
+      if(s.y < kite.y+30 && s.y > kite.y-300){ var d=Math.abs(s.x-kite.x);
+        if(d < s.r+kite.r+90 && d<td){ td=d; threat=s; } } }
+    if(threat){
+      var away = threat.x < kite.x ? kite.x+170 : kite.x-170;
+      pointerX = Math.max(20, Math.min(W-20, away)); return;
+    }
+    var best=null, bd=1e9;
+    for(var j=0;j<ribbons.length;j++){ var rb=ribbons[j];
+      if(rb.y < kite.y+30){ var dd=Math.abs(rb.x-kite.x)+ (kite.y-rb.y)*0.2; if(dd<bd){bd=dd;best=rb;} } }
+    pointerX = best ? best.x : W*0.5;
+  }
+
+  // ---- update ----
+  function update(dt){
+    t += dt;
+    var scroll = 0.16*dt * (1 + alt*0.004);   // world scroll speed (px)
+    if(DEMO) demoSteer();
+
+    // kite steering + wind
+    var target = pointerX!==null ? pointerX : kite.x;
+    var w = wind(kite.y) * 0.06 * dt;
+    kite.vx += (target - kite.x)*0.012 + w;
+    kite.vx *= 0.86;
+    kite.x += kite.vx;
+    if(kite.x < kite.r){ kite.x=kite.r; kite.vx*=-0.4; }
+    if(kite.x > W-kite.r){ kite.x=W-kite.r; kite.vx*=-0.4; }
+    // tail history
+    tail.unshift({x:kite.x, y:kite.y}); if(tail.length>26) tail.pop();
+
+    // altitude
+    alt += 100*dt/WIN_MS;
+    if(alt>=100){ alt=100; endGame(true); return; }
+
+    // spawns (ramp up)
+    spawnR -= dt; spawnS -= dt;
+    if(spawnR<=0){ spawnRibbon(); spawnR = 900 - Math.min(400,alt*4) + Math.random()*400; }
+    if(spawnS<=0){ spawnStorm(); spawnS = 1700 - Math.min(1050,alt*10) + Math.random()*500; }
+
+    // ribbons
+    for(var i=ribbons.length-1;i>=0;i--){ var rb=ribbons[i];
+      rb.y += scroll; var rx = rb.x + Math.sin(t*0.003+rb.ph)*0 ; rb._x=rx;
+      var dx=rx-kite.x, dy=rb.y-kite.y;
+      if(dx*dx+dy*dy < (rb.r+kite.r)*(rb.r+kite.r)){
+        score++; scoreEl.firstChild.nodeValue = score+' ';
+        for(var k=0;k<10;k++) sparks.push({x:rx,y:rb.y,vx:(Math.random()-0.5)*3,vy:(Math.random()-0.5)*3-1,life:1,hue:rb.hue});
+        buzz(12); ribbons.splice(i,1); continue;
+      }
+      if(rb.y>H+30) ribbons.splice(i,1);
+    }
+    // storms
+    for(var s2=storms.length-1;s2>=0;s2--){ var s=storms[s2];
+      s.y += scroll*0.94; s.x += s.drift*dt; s.sp += dt*0.003;
+      if(s.x<s.r){s.x=s.r;s.drift*=-1;} if(s.x>W-s.r){s.x=W-s.r;s.drift*=-1;}
+      var ex=s.x-kite.x, ey=s.y-kite.y, rr=s.r*0.72+kite.r*0.6;
+      if(ex*ex+ey*ey < rr*rr){ buzz(60); endGame(false); return; }
+      if(s.y>H+s.r+20) storms.splice(s2,1);
+    }
+    // wind streaks
+    for(var st=0;st<streaks.length;st++){ var q=streaks[st];
+      q.y += (q.sp*dt) + scroll*0.4; q.x += wind(q.y)*0.4;
+      if(q.y>H+20){ streaks[st]=newStreak(false); } }
+    // sparks
+    for(var sp=sparks.length-1;sp>=0;sp--){ var p=sparks[sp];
+      p.x+=p.vx; p.y+=p.vy; p.vy+=0.06; p.life-=dt*0.0022; if(p.life<=0) sparks.splice(sp,1); }
+
+    if(DEMO) document.title = 'Kite alt:'+Math.round(alt)+' score:'+score;
+  }
+
+  // ---- render ----
+  function draw(){
+    // sky gradient shifts with altitude
+    var g = ctx.createLinearGradient(0,0,0,H);
+    var top = 6 + alt*0.4;
+    g.addColorStop(0, 'hsl('+(220-alt*0.3)+','+(60-alt*0.2)+'%,'+(8+alt*0.12)+'%)');
+    g.addColorStop(1, 'hsl(230,55%,'+(4+alt*0.05)+'%)');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+    // wind streaks
+    ctx.lineCap='round';
+    for(var i=0;i<streaks.length;i++){ var q=streaks[i];
+      ctx.strokeStyle='rgba(180,215,255,'+q.a+')'; ctx.lineWidth=1.4;
+      var wd=wind(q.y);
+      ctx.beginPath(); ctx.moveTo(q.x,q.y); ctx.lineTo(q.x+wd*8, q.y+q.len); ctx.stroke();
+    }
+
+    // ribbons
+    for(var r=0;r<ribbons.length;r++){ var rb=ribbons[r]; var rx=rb._x||rb.x;
+      var wob = Math.sin(t*0.006+rb.ph)*4;
+      ctx.save(); ctx.translate(rx,rb.y);
+      ctx.shadowColor='hsl('+rb.hue+',100%,65%)'; ctx.shadowBlur=16;
+      ctx.fillStyle='hsl('+rb.hue+',95%,62%)';
+      ctx.beginPath();
+      ctx.moveTo(0,-rb.r); ctx.quadraticCurveTo(rb.r+wob,-2, 0,rb.r);
+      ctx.quadraticCurveTo(-rb.r+wob,2, 0,-rb.r); ctx.fill();
+      ctx.restore();
+    }
+
+    // storms
+    for(var s=0;s<storms.length;s++){ var st=storms[s];
+      ctx.save(); ctx.translate(st.x,st.y);
+      var rg=ctx.createRadialGradient(0,0,st.r*0.2,0,0,st.r);
+      rg.addColorStop(0,'rgba(60,50,90,.96)'); rg.addColorStop(.7,'rgba(30,26,54,.9)'); rg.addColorStop(1,'rgba(20,18,40,0)');
+      ctx.fillStyle=rg; ctx.beginPath(); ctx.arc(0,0,st.r,0,6.2832); ctx.fill();
+      // swirl
+      ctx.strokeStyle='rgba(150,140,200,.35)'; ctx.lineWidth=2;
+      ctx.beginPath();
+      for(var a=0;a<6.28;a+=0.3){ var rr=st.r*(0.35+0.5*a/6.28); var xx=Math.cos(a+st.sp)*rr, yy=Math.sin(a+st.sp)*rr;
+        a===0?ctx.moveTo(xx,yy):ctx.lineTo(xx,yy);} ctx.stroke();
+      // spark flick
+      if((s+((t*0.01)|0))%7===0){ ctx.strokeStyle='rgba(190,200,255,.8)'; ctx.lineWidth=1.5;
+        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo((Math.random()-.5)*st.r, (Math.random()-.5)*st.r); ctx.stroke(); }
+      ctx.restore();
+    }
+
+    // kite tail
+    if(tail.length>1){
+      for(var ti=tail.length-1; ti>0; ti--){ var a=ti/tail.length;
+        ctx.strokeStyle='rgba(120,220,255,'+(0.5*(1-a))+')';
+        ctx.lineWidth=(1-a)*6+1;
+        ctx.beginPath(); ctx.moveTo(tail[ti].x, tail[ti].y+kite.r); ctx.lineTo(tail[ti-1].x, tail[ti-1].y+kite.r); ctx.stroke();
+      }
+    }
+
+    // kite
+    if(kite){
+      ctx.save(); ctx.translate(kite.x,kite.y);
+      ctx.rotate(kite.vx*0.03);
+      var kr=kite.r;
+      ctx.shadowColor='rgba(120,220,255,.7)'; ctx.shadowBlur=18;
+      // diamond
+      ctx.beginPath(); ctx.moveTo(0,-kr); ctx.lineTo(kr*0.8,0); ctx.lineTo(0,kr); ctx.lineTo(-kr*0.8,0); ctx.closePath();
+      var kg=ctx.createLinearGradient(-kr,-kr,kr,kr);
+      kg.addColorStop(0,'#bff0ff'); kg.addColorStop(1,'#5aa8ff');
+      ctx.fillStyle=kg; ctx.fill();
+      ctx.shadowBlur=0; ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(0,-kr); ctx.lineTo(0,kr); ctx.moveTo(-kr*0.8,0); ctx.lineTo(kr*0.8,0); ctx.stroke();
+      ctx.restore();
+    }
+
+    // sparks
+    for(var p=0;p<sparks.length;p++){ var pt=sparks[p];
+      ctx.globalAlpha=Math.max(0,pt.life); ctx.fillStyle='hsl('+pt.hue+',100%,70%)';
+      ctx.beginPath(); ctx.arc(pt.x,pt.y,2.4,0,6.28); ctx.fill(); }
+    ctx.globalAlpha=1;
+  }
+
+  function buzz(ms){ if(navigator.vibrate) try{ navigator.vibrate(ms); }catch(e){} }
+
+  // ---- loop ----
+  var last=performance.now();
+  function frame(now){
+    var dt = Math.min(48, now-last); last=now;
+    if(state==='play'){ update(dt); }
+    if(state!=='title') draw();
+    altEl.style.width = alt.toFixed(1)+'%';
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // test hooks
+  window.__kite = {
+    forceWin:function(){ if(state==='play'){ alt=100; endGame(true); } },
+    forceLose:function(){ if(state==='play'){ endGame(false); } },
+    state:function(){ return {state:state, score:score, alt:Math.round(alt)}; }
+  };
+
+  if(DEMO){ start(); }
+})();
+</script>
+</body>
+</html>

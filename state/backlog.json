@@ -146,7 +146,7 @@
       "id": "E19",
       "title": "Kite Weaver",
       "kind": "project",
-      "status": "planned",
+      "status": "shipped",
       "description": "swipe-steer a kite through wind currents, collect ribbons, dodge storm cells",
       "slug": "kite-weaver"
     },
@@ -989,9 +989,12 @@
       "title": "Kite Weaver v1",
       "acceptance": "single index.html touch game: swipe/drag to steer a kite through scrolling wind currents; collect ribbons for score, dodge storm cells (lose), viewport meta + portrait layout + 44px targets; win/lose state; demo=1 hook",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T08:15:02Z"
+      "status": "done",
+      "handoff": "Kite Weaver v1 - swipe-steer kite touch game: catch ribbons, ride wind, dodge storm cells, climb to win; demo autopilot wins on its own",
+      "updated": "2026-07-16T08:20:08Z",
+      "claimed_by": "unknown",
+      "issue": "42",
+      "cost": 148963
     },
     {
       "id": "T75",
