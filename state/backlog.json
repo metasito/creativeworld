@@ -1165,9 +1165,12 @@
       "title": "Circuit Surge v1 - drag-connect neon nodes to route power before overload; demo self-plays",
       "acceptance": "Single index.html mobile game: drag from node to node to build a power path, overload timer creates tension, win when all nodes lit; touch targets >=44px, viewport meta, ?demo=1 self-plays; screenshot",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T22:20:53Z"
+      "status": "done",
+      "handoff": "Circuit Surge v1 - drag-connect neon nodes, surge overload timer, demo self-plays through grids",
+      "updated": "2026-07-16T22:27:34Z",
+      "claimed_by": "unknown",
+      "issue": "53",
+      "cost": 119269
     },
     {
       "id": "T87",

@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05060f">
+<title>Circuit Surge</title>
+<style>
+  :root{ --neon:#39f0ff; --hot:#ff4d6d; --gold:#ffd23f; --bg:#05060f; }
+  *{ box-sizing:border-box; margin:0; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; background:var(--bg); overflow:hidden; }
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+    color:#eaf6ff; display:flex; align-items:center; justify-content:center;
+    touch-action:none; user-select:none; -webkit-user-select:none;
+  }
+  #wrap{ position:relative; width:100vw; height:100vh; max-width:560px; }
+  canvas{ display:block; width:100%; height:100%; }
+
+  #hud{
+    position:absolute; top:0; left:0; right:0; padding:14px 16px;
+    display:flex; align-items:center; gap:12px; pointer-events:none;
+    font-variant-numeric:tabular-nums;
+  }
+  #lvl{ font-weight:800; letter-spacing:.14em; font-size:13px; color:var(--neon);
+    text-shadow:0 0 12px var(--neon); }
+  #lit{ font-weight:800; font-size:13px; letter-spacing:.06em; }
+  #surgeWrap{ flex:1; height:12px; border-radius:8px; background:#0e1430;
+    box-shadow:inset 0 0 0 1px #1d2b57; overflow:hidden; }
+  #surge{ height:100%; width:0%; border-radius:8px;
+    background:linear-gradient(90deg,#2fe38a,var(--gold) 55%,var(--hot));
+    box-shadow:0 0 14px rgba(255,80,110,.5); transition:width .08s linear; }
+
+  #overlay{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:20px; text-align:center;
+    padding:32px; background:radial-gradient(circle at 50% 40%,rgba(8,12,30,.72),rgba(4,5,14,.94));
+    backdrop-filter:blur(3px); z-index:5;
+  }
+  #overlay.hide{ display:none; }
+  h1{ font-size:clamp(34px,12vw,60px); font-weight:900; letter-spacing:.02em;
+    line-height:.98;
+    background:linear-gradient(180deg,#eafcff,var(--neon));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 22px rgba(57,240,255,.55)); }
+  #ov-sub{ max-width:340px; font-size:15px; line-height:1.5; color:#9fb6d8; }
+  #ov-sub b{ color:var(--gold); font-weight:700; }
+  button{
+    font:inherit; font-weight:800; letter-spacing:.05em; font-size:17px;
+    color:#04121a; background:linear-gradient(180deg,#8ffcff,var(--neon));
+    border:0; border-radius:16px; padding:16px 40px; min-height:56px; min-width:180px;
+    box-shadow:0 0 28px rgba(57,240,255,.55); cursor:pointer; pointer-events:auto;
+  }
+  button:active{ transform:translateY(2px); }
+  #tag{ position:absolute; bottom:14px; left:0; right:0; text-align:center;
+    font-size:11px; letter-spacing:.32em; color:#3f5480; pointer-events:none; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="c"></canvas>
+  <div id="hud">
+    <span id="lvl">GRID 1</span>
+    <span id="lit">0/0</span>
+    <div id="surgeWrap"><div id="surge"></div></div>
+  </div>
+  <div id="overlay">
+    <h1>CIRCUIT<br>SURGE</h1>
+    <p id="ov-sub">Drag from a <b>lit</b> node to a dark one to route power.<br>
+      Light the whole grid before the <b>surge</b> maxes out.</p>
+    <button id="go">CONNECT</button>
+  </div>
+  <div id="tag">DRAG&nbsp;·&nbsp;ROUTE&nbsp;·&nbsp;SURVIVE THE SURGE</div>
+</div>
+<script>
+(function(){
+  const cv=document.getElementById('c'), ctx=cv.getContext('2d');
+  const overlay=document.getElementById('overlay'), goBtn=document.getElementById('go');
+  const litEl=document.getElementById('lit'), lvlEl=document.getElementById('lvl');
+  const surgeEl=document.getElementById('surge'), subEl=document.getElementById('ov-sub');
+  const DEMO=/[?&]demo=1/.test(location.search);
+
+  let W=0,H=0,DPR=1;
+  function resize(){
+    DPR=Math.min(devicePixelRatio||1,2);
+    W=cv.clientWidth; H=cv.clientHeight;
+    cv.width=W*DPR; cv.height=H*DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  window.addEventListener('resize',resize);
+
+  // ---- level layout: rings of nodes ----
+  const LINK=0.42;              // max link distance as fraction of min(W,H)
+  let nodes=[], edges=[], src=0;
+  let level=1, lit=0, surge=0, state='title'; // title|play|win|over
+  let surgeRate=0;              // per second
+  const sparks=[];              // travelling power pulses
+  const bursts=[];              // node-light particle bursts
+
+  function rand(a,b){ return a+Math.random()*(b-a); }
+
+  function buildLevel(n){
+    nodes=[]; edges=[]; lit=0; surge=0;
+    const cx=W/2, cy=H/2+8;
+    const R=Math.min(W,H)*0.36;
+    const count=n;
+    // ring(s) + centre
+    nodes.push({x:cx,y:cy,on:true,r:24,pulse:0}); // source at centre
+    const ringN=count-1;
+    for(let i=0;i<ringN;i++){
+      const ang=-Math.PI/2 + i/ringN*Math.PI*2;
+      const rr=R*(0.62 + 0.38*((i%2)));       // alternate two radii -> web feel
+      const jx=rand(-14,14), jy=rand(-14,14);
+      nodes.push({x:cx+Math.cos(ang)*rr+jx, y:cy+Math.sin(ang)*rr+jy, on:false, r:24, pulse:0});
+    }
+    src=0; nodes[0].on=true; nodes[0].pulse=1; lit=1;
+    surgeRate = 6.5 + level*1.6;              // % per second, ramps with level
+    maxLink = Math.min(W,H)*LINK;
+  }
+  let maxLink=200;
+
+  function canLink(a,b){
+    const A=nodes[a], B=nodes[b];
+    return Math.hypot(A.x-B.x,A.y-B.y) <= maxLink+1;
+  }
+  function hasEdge(a,b){
+    return edges.some(e=>(e.a===a&&e.b===b)||(e.a===b&&e.b===a));
+  }
+
+  function lightNode(from,to){
+    if(nodes[to].on || !nodes[from].on) return false;
+    if(!canLink(from,to) || hasEdge(from,to)) return false;
+    edges.push({a:from,b:to});
+    nodes[to].on=true; nodes[to].pulse=1; lit++;
+    sparks.push({a:from,b:to,t:0});
+    for(let i=0;i<14;i++){
+      const ang=rand(0,Math.PI*2), sp=rand(30,140);
+      bursts.push({x:nodes[to].x,y:nodes[to].y,vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp,life:1});
+    }
+    if(navigator.vibrate) navigator.vibrate(12);
+    if(lit>=nodes.length) win();
+    return true;
+  }
+
+  function startLevel(){
+    const n = 5 + Math.min(level,6);          // 6,7,8... nodes
+    buildLevel(n);
+    state='play'; overlay.classList.add('hide');
+    lvlEl.textContent='GRID '+level;
+    updateHud();
+    if(DEMO) queueDemo();
+  }
+
+  function win(){
+    state='win';
+    if(navigator.vibrate) navigator.vibrate([20,40,20]);
+    setTimeout(()=>{
+      level++;
+      if(DEMO){ startLevel(); return; }
+      overlay.classList.remove('hide');
+      document.querySelector('h1').innerHTML='GRID<br>ONLINE';
+      subEl.innerHTML='Full power routed with <b>'+Math.round(100-surge)+'%</b> surge to spare.<br>Next grid is hotter.';
+      goBtn.textContent='NEXT GRID';
+    }, 620);
+    setTitle('WIN '+ (level));
+  }
+  function over(){
+    state='over';
+    if(navigator.vibrate) navigator.vibrate([60,30,60]);
+    for(let i=0;i<40;i++){ const ang=rand(0,Math.PI*2),sp=rand(40,220);
+      bursts.push({x:W/2,y:H/2,vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp,life:1,hot:1}); }
+    overlay.classList.remove('hide');
+    document.querySelector('h1').innerHTML='OVER<br>LOAD';
+    subEl.innerHTML='The grid surged out at <b>Grid '+level+'</b> — '+lit+'/'+nodes.length+' lit.';
+    goBtn.textContent='RETRY';
+    level=1;
+    setTitle('OVER lit:'+lit);
+  }
+
+  function updateHud(){
+    litEl.textContent=lit+'/'+nodes.length;
+    surgeEl.style.width=Math.min(100,surge).toFixed(1)+'%';
+    if(DEMO) setTitle('lit:'+lit+'/'+nodes.length+' surge:'+surge.toFixed(0)+'%');
+  }
+  let _t='';
+  function setTitle(s){ if(DEMO && s!==_t){ document.title=s; _t=s; } }
+
+  // ---- drag input ----
+  let drag=null; // {from, x, y}
+  function nodeAt(x,y){
+    for(let i=0;i<nodes.length;i++){
+      if(Math.hypot(nodes[i].x-x,nodes[i].y-y)<=nodes[i].r+16) return i;
+    }
+    return -1;
+  }
+  function pt(e){ const r=cv.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top}; }
+
+  cv.addEventListener('pointerdown',e=>{
+    if(state!=='play'||DEMO) return;
+    const p=pt(e); const i=nodeAt(p.x,p.y);
+    if(i>=0 && nodes[i].on){ drag={from:i,x:p.x,y:p.y}; cv.setPointerCapture(e.pointerId); }
+  });
+  cv.addEventListener('pointermove',e=>{ if(drag){ const p=pt(e); drag.x=p.x; drag.y=p.y; } });
+  cv.addEventListener('pointerup',e=>{
+    if(!drag) return;
+    const p=pt(e); const i=nodeAt(p.x,p.y);
+    if(i>=0) lightNode(drag.from,i);
+    drag=null;
+  });
+  cv.addEventListener('pointercancel',()=>{ drag=null; });
+
+  // ---- demo autopilot ----
+  function nearestLightable(){
+    let best=null,bd=1e9;
+    for(let t=0;t<nodes.length;t++){
+      if(nodes[t].on) continue;
+      for(let f=0;f<nodes.length;f++){
+        if(!nodes[f].on || !canLink(f,t) || hasEdge(f,t)) continue;
+        const d=Math.hypot(nodes[f].x-nodes[t].x,nodes[f].y-nodes[t].y);
+        if(d<bd){ bd=d; best={f,t}; }
+      }
+    }
+    return best;
+  }
+  function queueDemo(){
+    if(!DEMO) return;
+    const step=()=>{
+      if(state!=='play') return;
+      const m=nearestLightable();
+      if(m){ lightNode(m.f,m.t); setTimeout(step,150); }
+      else setTimeout(step,150); // shouldn't happen; wait
+    };
+    setTimeout(step,300);
+  }
+
+  // ---- render + loop ----
+  let last=performance.now();
+  function frame(now){
+    const dt=Math.min(0.05,(now-last)/1000); last=now;
+    if(state==='play'){
+      surge += surgeRate*dt;
+      if(surge>=100){ surge=100; updateHud(); over(); }
+      else updateHud();
+    }
+    // physics
+    for(const s of sparks){ s.t += dt*2.4; }
+    for(let i=sparks.length-1;i>=0;i--) if(sparks[i].t>=1) sparks.splice(i,1);
+    for(const b of bursts){ b.x+=b.vx*dt; b.y+=b.vy*dt; b.vx*=0.9; b.vy*=0.9; b.life-=dt*1.6; }
+    for(let i=bursts.length-1;i>=0;i--) if(bursts[i].life<=0) bursts.splice(i,1);
+    for(const n of nodes) if(n.pulse>0) n.pulse=Math.max(0,n.pulse-dt*1.8);
+    render(now);
+    requestAnimationFrame(frame);
+  }
+
+  function render(now){
+    ctx.clearRect(0,0,W,H);
+    // faint grid backdrop
+    ctx.save();
+    ctx.globalAlpha=.5; ctx.strokeStyle='#0c1330'; ctx.lineWidth=1;
+    const g=44;
+    for(let x=(W/2)%g;x<W;x+=g){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for(let y=(H/2)%g;y<H;y+=g){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+    ctx.restore();
+
+    if(!nodes.length){ return; }
+
+    const danger = surge/100;
+    ctx.globalCompositeOperation='lighter';
+
+    // edges
+    for(const e of edges){
+      const A=nodes[e.a],B=nodes[e.b];
+      ctx.strokeStyle='rgba(57,240,255,.9)';
+      ctx.lineWidth=3; ctx.shadowColor='#39f0ff'; ctx.shadowBlur=14;
+      ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y); ctx.stroke();
+    }
+    ctx.shadowBlur=0;
+
+    // travelling sparks
+    for(const s of sparks){
+      const A=nodes[s.a],B=nodes[s.b];
+      const x=A.x+(B.x-A.x)*s.t, y=A.y+(B.y-A.y)*s.t;
+      ctx.fillStyle='#eafffb'; ctx.shadowColor='#8ffcff'; ctx.shadowBlur=18;
+      ctx.beginPath(); ctx.arc(x,y,4.5,0,7); ctx.fill();
+    }
+    ctx.shadowBlur=0;
+
+    // drag wire preview
+    if(drag){
+      const A=nodes[drag.from];
+      const tgt=nodeAt(drag.x,drag.y);
+      const ok = tgt>=0 && !nodes[tgt].on && canLink(drag.from,tgt) && !hasEdge(drag.from,tgt);
+      ctx.strokeStyle = ok? 'rgba(120,255,190,.95)' : 'rgba(255,90,120,.7)';
+      ctx.lineWidth=3; ctx.setLineDash([9,9]);
+      ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(drag.x,drag.y); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // burst particles
+    for(const b of bursts){
+      ctx.globalAlpha=Math.max(0,b.life);
+      ctx.fillStyle=b.hot?'#ff5a6e':'#8ffcff';
+      ctx.beginPath(); ctx.arc(b.x,b.y,b.hot?3.4:2.4,0,7); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+
+    // nodes
+    for(let i=0;i<nodes.length;i++){
+      const n=nodes[i];
+      const isSrc=i===src;
+      const glow = n.on ? (isSrc?'#ffd23f':'#39f0ff') : '#33456e';
+      const rr=n.r + n.pulse*8;
+      // outer aura
+      if(n.on){
+        ctx.fillStyle=glow; ctx.shadowColor=glow; ctx.shadowBlur=26+ n.pulse*20;
+        ctx.beginPath(); ctx.arc(n.x,n.y,rr*0.72,0,7); ctx.globalAlpha=.35; ctx.fill(); ctx.globalAlpha=1;
+      }
+      ctx.shadowBlur = n.on?18:0;
+      ctx.shadowColor=glow;
+      ctx.fillStyle = n.on ? (isSrc?'#3a2f05':'#062431') : '#0b1330';
+      ctx.beginPath(); ctx.arc(n.x,n.y,rr,0,7); ctx.fill();
+      ctx.lineWidth=3; ctx.strokeStyle=glow; ctx.stroke();
+      // core dot
+      ctx.shadowBlur=0;
+      ctx.fillStyle=glow;
+      ctx.beginPath(); ctx.arc(n.x,n.y,isSrc?8:5,0,7); ctx.fill();
+    }
+    ctx.globalCompositeOperation='source-over';
+    ctx.shadowBlur=0;
+  }
+
+  goBtn.addEventListener('click',startLevel);
+  resize();
+  buildLevel(6);           // pre-render a grid behind the title
+  requestAnimationFrame(frame);
+  if(DEMO) startLevel();
+
+  // synchronous test hooks
+  window.__surge = {
+    solve(){ // light everything reachable, then win
+      let guard=0;
+      while(lit<nodes.length && guard++<200){
+        const m=nearestLightable(); if(!m) break; lightNode(m.f,m.t);
+      }
+      return lit>=nodes.length;
+    },
+    state:()=>({level,lit,total:nodes.length,surge,state}),
+    forceOver(){ surge=100; over(); }
+  };
+})();
+</script>
+</body>
+</html>

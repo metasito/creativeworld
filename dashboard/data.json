@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-16T22:23:24Z",
+  "generated_at": "2026-07-16T22:27:38Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 256874,
-    "window_used": 178095,
-    "rolling_used": 256874,
+    "used": 419782,
+    "window_used": 341003,
+    "rolling_used": 419782,
     "binding": "trailing",
     "budget": 4798485,
-    "pct": 5.4,
-    "rate_per_hour": 51660,
-    "eta_hours": 87.9,
+    "pct": 8.7,
+    "rate_per_hour": 84455,
+    "eta_hours": 51.8,
     "burn_spark": [
       78779,
       0,
@@ -22,13 +22,13 @@
       0,
       0,
       0,
-      178095
+      341002
     ],
     "window_started_at": "2026-07-16T20:22:33Z",
     "resets_at": "2026-07-17T01:22:33Z",
-    "seconds_to_reset": 10748,
-    "nap_until": "2026-07-16T22:25:03Z",
-    "nap_seconds": 99,
+    "seconds_to_reset": 10494,
+    "nap_until": "2026-07-16T22:29:24Z",
+    "nap_seconds": 106,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -304,7 +304,7 @@
       "status": "planned",
       "description": "route power through a neon grid by drag-connecting nodes before the overload timer blows",
       "slug": "circuit-surge",
-      "cost": 0
+      "cost": 119269
     }
   ],
   "tasks": [
@@ -1207,7 +1207,7 @@
       "claimed_by": "unknown",
       "issue": "52",
       "cost": 425958,
-      "commit": null
+      "commit": "5c5f82c"
     },
     {
       "id": "T74",
@@ -1364,9 +1364,12 @@
       "title": "Circuit Surge v1 - drag-connect neon nodes to route power before overload; demo self-plays",
       "acceptance": "Single index.html mobile game: drag from node to node to build a power path, overload timer creates tension, win when all nodes lit; touch targets >=44px, viewport meta, ?demo=1 self-plays; screenshot",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T22:20:53Z",
+      "status": "done",
+      "handoff": "Circuit Surge v1 - drag-connect neon nodes, surge overload timer, demo self-plays through grids",
+      "updated": "2026-07-16T22:27:34Z",
+      "claimed_by": "unknown",
+      "issue": "53",
+      "cost": 119269,
       "commit": null
     },
     {
@@ -1384,7 +1387,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T86",
       "T75",
       "T77",
       "T79",
@@ -1676,11 +1678,11 @@
       "status": "planned",
       "description": "route power through a neon grid by drag-connecting nodes before the overload timer blows",
       "slug": "circuit-surge",
-      "built": false,
-      "shot": false,
-      "updated": null,
-      "cost": 0,
-      "url": null
+      "built": true,
+      "shot": true,
+      "updated": "2026-07-16T22:26:30Z",
+      "cost": 119269,
+      "url": "/projects/circuit-surge/"
     }
   ],
   "sessions": [
@@ -1718,26 +1720,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T73",
-    "current_action": "Echo Bloom polish: beat sync + combo",
+    "current_task": "T86",
+    "current_action": "building Circuit Surge v1",
     "agent": "autopilot",
-    "updated": "2026-07-16T22:21:45Z",
+    "updated": "2026-07-16T22:27:28Z",
     "log": [
-      {
-        "at": "2026-07-16T17:31:36Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
-      {
-        "at": "2026-07-16T17:31:36Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-16T17:33:50Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-16T17:33:50Z",
         "agent": "autopilot",
@@ -1782,6 +1769,21 @@
         "at": "2026-07-16T22:21:45Z",
         "agent": "autopilot",
         "msg": "verifying Echo Bloom beat-sync + combo via drive.py"
+      },
+      {
+        "at": "2026-07-16T22:23:51Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T22:25:17Z",
+        "agent": "autopilot",
+        "msg": "writing circuit-surge index.html"
+      },
+      {
+        "at": "2026-07-16T22:27:28Z",
+        "agent": "autopilot",
+        "msg": "verified: demo self-wins to GRID 5, no console errors"
       }
     ]
   },
