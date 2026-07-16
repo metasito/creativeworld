@@ -1012,9 +1012,12 @@
       "title": "Glyph Lock v1",
       "acceptance": "single index.html touch puzzle: drag concentric rune rings to rotate them and align a glowing path; 3 levels + win state; portrait layout, 44px targets, viewport meta; demo+solve hooks",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T08:15:02Z"
+      "status": "done",
+      "handoff": "Glyph Lock v1 - drag concentric rune rings to align the notches under the top marker; 3 levels, win state, demo self-wins to WIN III, solve/forceWin hooks",
+      "updated": "2026-07-16T08:25:56Z",
+      "claimed_by": "unknown",
+      "issue": "43",
+      "cost": 143774
     },
     {
       "id": "T77",

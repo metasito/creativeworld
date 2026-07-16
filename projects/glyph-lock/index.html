@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0a0713">
+<title>Glyph Lock</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; overflow:hidden; background:#0a0713;
+    font-family:-apple-system,Segoe UI,Roboto,sans-serif; color:#e8ddff; user-select:none; }
+  #wrap { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; touch-action:none; }
+  canvas { display:block; touch-action:none; }
+  #hud { position:fixed; top:0; left:0; right:0; display:flex; justify-content:space-between;
+    align-items:center; padding:14px 18px; font-size:15px; letter-spacing:.06em;
+    text-shadow:0 0 8px #7d4bff; pointer-events:none; }
+  #hud .lvl { color:#c8a6ff; } #hud .prog { color:#9be7ff; }
+  .overlay { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; text-align:center; gap:18px; padding:32px;
+    background:radial-gradient(ellipse at center,rgba(30,14,60,.72),rgba(10,7,19,.94));
+    backdrop-filter:blur(3px); z-index:10; }
+  .overlay h1 { font-size:34px; font-weight:700; letter-spacing:.14em;
+    background:linear-gradient(90deg,#b98bff,#6fe0ff); -webkit-background-clip:text;
+    background-clip:text; color:transparent; text-shadow:0 0 24px rgba(140,90,255,.5); }
+  .overlay p { max-width:20em; line-height:1.55; font-size:15px; color:#c3b6e0; }
+  .btn { min-width:180px; min-height:52px; padding:14px 30px; font-size:17px; letter-spacing:.08em;
+    border:1px solid rgba(160,120,255,.55); border-radius:40px; color:#eadfff;
+    background:linear-gradient(180deg,rgba(120,70,220,.42),rgba(70,40,140,.32));
+    box-shadow:0 0 22px rgba(120,70,255,.35),inset 0 0 14px rgba(160,120,255,.25);
+    cursor:pointer; touch-action:manipulation; }
+  .btn:active { transform:scale(.96); }
+  .hidden { display:none !important; }
+  .hint { font-size:13px; color:#8f83b4; letter-spacing:.05em; }
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c"></canvas></div>
+<div id="hud"><span class="lvl" id="lvl">GLYPH I</span><span class="prog" id="prog">0 / 0 locked</span></div>
+
+<div class="overlay" id="startOv">
+  <h1>GLYPH LOCK</h1>
+  <p>Drag each rune ring to spin it. Line every glowing notch up under the top marker to complete the sacred path and lock the glyph.</p>
+  <p class="hint">3 glyphs · one drag at a time</p>
+  <button class="btn" id="startBtn">BEGIN</button>
+</div>
+
+<div class="overlay hidden" id="winOv">
+  <h1 id="winTitle">LOCKED</h1>
+  <p id="winMsg">The path is sealed.</p>
+  <button class="btn" id="nextBtn">NEXT GLYPH</button>
+</div>
+
+<script>
+(function(){
+  const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  const lvlEl = document.getElementById('lvl'), progEl = document.getElementById('prog');
+  const startOv = document.getElementById('startOv'), winOv = document.getElementById('winOv');
+  const winTitle = document.getElementById('winTitle'), winMsg = document.getElementById('winMsg');
+  const ROMAN = ['I','II','III','IV','V'];
+  const DEMO = /[?&]demo=1/.test(location.search);
+
+  // level defs: number of rings + steps per ring (snap resolution)
+  const LEVELS = [
+    { rings:[6,6] },
+    { rings:[8,8,6] },
+    { rings:[12,10,8,6] },
+  ];
+
+  let W,H,CX,CY,R;        // canvas metrics
+  let level=0, rings=[], drag=null, won=false, t0=performance.now();
+
+  function fit(){
+    const wrap = document.getElementById('wrap');
+    W = wrap.clientWidth; H = wrap.clientHeight;
+    const dpr = Math.min(window.devicePixelRatio||1, 2);
+    cv.width = W*dpr; cv.height = H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    CX = W/2; CY = H/2;
+    R = Math.min(W,H)*0.5 - 22;      // outer radius
+  }
+  window.addEventListener('resize', ()=>{ fit(); });
+
+  function buildLevel(){
+    const def = LEVELS[level];
+    rings = def.rings.map((steps,i)=>{
+      const step = Math.PI*2/steps;
+      // start on a random non-zero step so it needs solving
+      let idx = 1 + Math.floor(Math.random()*(steps-1));
+      return { steps, step, rot: idx*step, i };
+    });
+    won = false;
+    lvlEl.textContent = 'GLYPH '+ROMAN[level];
+    updateHud();
+  }
+
+  // geometry: ring i occupies radial band [rInner, rOuter]
+  function band(i){
+    const n = rings.length;
+    const inner = R*0.30;                    // core radius
+    const w = (R-inner)/n;
+    const r0 = inner + w*i, r1 = inner + w*(i+1);
+    return { r0, r1, mid:(r0+r1)/2, inner };
+  }
+  function alignedIdx(ring){ return ((Math.round(ring.rot/ring.step)%ring.steps)+ring.steps)%ring.steps; }
+  function isAligned(ring){ return alignedIdx(ring)===0; }
+  function lockedCount(){ // consecutive from innermost
+    let c=0; for(const rg of rings){ if(isAligned(rg)) c++; else break; } return c;
+  }
+  function allAligned(){ return rings.every(isAligned); }
+
+  function updateHud(){
+    progEl.textContent = lockedCount()+' / '+rings.length+' locked';
+    const a = rings.filter(isAligned).length;
+    document.title = won ? ('WIN '+ROMAN[level]) : ('L'+(level+1)+' '+a+'/'+rings.length);
+  }
+
+  // ---- input ----
+  function pos(e){
+    const r = cv.getBoundingClientRect();
+    const p = e.touches ? e.touches[0] : e;
+    return { x:p.clientX-r.left, y:p.clientY-r.top };
+  }
+  function ringAt(x,y){
+    const dx=x-CX, dy=y-CY, d=Math.hypot(dx,dy);
+    for(let i=0;i<rings.length;i++){ const b=band(i); if(d>=b.r0-4 && d<=b.r1+4) return i; }
+    return -1;
+  }
+  function onDown(e){
+    if(won) return;
+    const {x,y}=pos(e); const i=ringAt(x,y);
+    if(i<0) return;
+    e.preventDefault();
+    drag = { i, ang:Math.atan2(y-CY,x-CX) };
+    if(navigator.vibrate) navigator.vibrate(6);
+  }
+  function onMove(e){
+    if(!drag) return; e.preventDefault();
+    const {x,y}=pos(e); const a=Math.atan2(y-CY,x-CX);
+    let d=a-drag.ang; while(d>Math.PI)d-=Math.PI*2; while(d<-Math.PI)d+=Math.PI*2;
+    rings[drag.i].rot += d; drag.ang=a; updateHud();
+  }
+  function onUp(){
+    if(!drag){ return; }
+    const rg=rings[drag.i];
+    rg.rot = Math.round(rg.rot/rg.step)*rg.step;   // snap
+    drag=null;
+    if(navigator.vibrate) navigator.vibrate(isAligned(rg)?[8,20,8]:4);
+    updateHud();
+    if(allAligned() && !won) win();
+  }
+  cv.addEventListener('pointerdown', onDown);
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointerup', onUp);
+  window.addEventListener('pointercancel', onUp);
+
+  function win(){
+    won=true; updateHud();
+    if(navigator.vibrate) navigator.vibrate([12,40,12,40,30]);
+    setTimeout(()=>{
+      const last = level>=LEVELS.length-1;
+      winTitle.textContent = last ? 'GLYPHS MASTERED' : 'GLYPH LOCKED';
+      winMsg.textContent = last ? 'Every sacred path is sealed. The lock is yours.'
+                                : 'The path is sealed. One glyph remains dark…';
+      document.getElementById('nextBtn').textContent = last ? 'PLAY AGAIN' : 'NEXT GLYPH';
+      winOv.classList.remove('hidden');
+    }, 620);
+  }
+
+  // ---- render ----
+  function draw(now){
+    const time = (now-t0)/1000;
+    ctx.clearRect(0,0,W,H);
+    // ambient
+    const bg = ctx.createRadialGradient(CX,CY,10,CX,CY,R*1.4);
+    bg.addColorStop(0,'rgba(40,20,80,.35)'); bg.addColorStop(1,'rgba(10,7,19,0)');
+    ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+    const locked = lockedCount();
+    const b0 = band(0);
+
+    // completed radial beam (core -> outward through locked rings)
+    if(locked>0){
+      const bTop = band(locked-1);
+      ctx.save();
+      ctx.translate(CX,CY); ctx.rotate(-Math.PI/2);
+      const pulse = 0.55+0.45*Math.sin(time*4);
+      const grd=ctx.createLinearGradient(b0.inner,0,bTop.r1,0);
+      grd.addColorStop(0,'rgba(150,230,255,'+(0.9*pulse)+')');
+      grd.addColorStop(1,'rgba(120,90,255,'+(0.5*pulse)+')');
+      ctx.strokeStyle=grd; ctx.lineWidth=8; ctx.lineCap='round';
+      ctx.shadowColor='#7de0ff'; ctx.shadowBlur=18;
+      ctx.beginPath(); ctx.moveTo(b0.inner*0.2,0); ctx.lineTo(bTop.r1,0); ctx.stroke();
+      ctx.restore();
+    }
+
+    // rings
+    for(let i=0;i<rings.length;i++){
+      const rg=rings[i], b=band(i), al=isAligned(rg);
+      const active = drag && drag.i===i;
+      // band ring
+      ctx.beginPath(); ctx.arc(CX,CY,b.mid,0,Math.PI*2);
+      ctx.lineWidth=b.r1-b.r0-6;
+      ctx.strokeStyle = al ? 'rgba(120,215,255,.32)' : (active?'rgba(150,110,240,.34)':'rgba(90,60,150,.22)');
+      ctx.stroke();
+      // tick marks
+      for(let s=0;s<rg.steps;s++){
+        const a=s*rg.step - Math.PI/2 + rg.rot;
+        const tx=CX+Math.cos(a)*b.r1, ty=CY+Math.sin(a)*b.r1;
+        const ix=CX+Math.cos(a)*(b.r1-5), iy=CY+Math.sin(a)*(b.r1-5);
+        ctx.beginPath(); ctx.moveTo(ix,iy); ctx.lineTo(tx,ty);
+        ctx.lineWidth=1.4; ctx.strokeStyle='rgba(150,120,210,.30)'; ctx.stroke();
+      }
+      // rune notch (the mark that must reach the top marker)
+      const na = -Math.PI/2 + rg.rot;
+      const nx=CX+Math.cos(na)*b.mid, ny=CY+Math.sin(na)*b.mid;
+      const glow = al?1:0.5;
+      ctx.save();
+      ctx.shadowColor = al?'#8ff0ff':'#b585ff'; ctx.shadowBlur = al?20:12;
+      ctx.fillStyle = al?'#bff4ff':'#d9c2ff';
+      ctx.beginPath(); ctx.arc(nx,ny,al?9:7,0,Math.PI*2); ctx.fill();
+      // small rune tick lines on the gem
+      ctx.strokeStyle='rgba(30,10,60,.7)'; ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.moveTo(nx-3,ny); ctx.lineTo(nx+3,ny); ctx.stroke();
+      ctx.restore();
+    }
+
+    // core
+    const cg=ctx.createRadialGradient(CX,CY,2,CX,CY,b0.inner);
+    const full = allAligned();
+    cg.addColorStop(0, full?'#eafcff':'#d7c4ff');
+    cg.addColorStop(1, full?'rgba(120,220,255,.15)':'rgba(90,50,160,.12)');
+    ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(CX,CY,b0.inner*0.72,0,Math.PI*2); ctx.fill();
+    ctx.lineWidth=2; ctx.strokeStyle=full?'rgba(150,240,255,.8)':'rgba(150,110,220,.5)';
+    ctx.shadowColor=full?'#8ff0ff':'#7d4bff'; ctx.shadowBlur=full?24:10;
+    ctx.beginPath(); ctx.arc(CX,CY,b0.inner*0.72,0,Math.PI*2); ctx.stroke();
+    ctx.shadowBlur=0;
+
+    // top alignment marker (the slot every notch must reach)
+    ctx.save();
+    ctx.translate(CX, CY-R-6);
+    ctx.fillStyle='#ffd76b'; ctx.shadowColor='#ffb347'; ctx.shadowBlur=14;
+    ctx.beginPath(); ctx.moveTo(0,14); ctx.lineTo(-9,0); ctx.lineTo(9,0); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    // faint slot guide line
+    ctx.beginPath(); ctx.moveTo(CX,CY-b0.inner); ctx.lineTo(CX,CY-R);
+    ctx.strokeStyle='rgba(255,215,120,.10)'; ctx.lineWidth=2; ctx.stroke();
+
+    requestAnimationFrame(draw);
+  }
+
+  // ---- demo autopilot ----
+  function stepDemo(){
+    if(won || winOv.classList.contains('hidden')===false) return;
+    // find innermost unaligned ring, rotate toward nearest index-0
+    const rg = rings.find(r=>!isAligned(r));
+    if(rg){
+      const target = Math.round(rg.rot/(Math.PI*2))*Math.PI*2;
+      let d = target - rg.rot;
+      const stepAmt = 0.18;
+      if(Math.abs(d) <= stepAmt){ rg.rot=target; } else { rg.rot += Math.sign(d)*stepAmt; }
+      updateHud();
+      if(allAligned() && !won) win();
+    }
+  }
+  function demoLoop(){
+    stepDemo();
+    if(won){
+      // advance to next level after brief pause, until final
+      setTimeout(()=>{
+        if(level < LEVELS.length-1){ nextLevel(); setTimeout(demoLoop,300); }
+        // else: stop, title stays WIN III
+      }, 780);  // > win() overlay delay (620) so the stale show is cleared by nextLevel
+      return;
+    }
+    setTimeout(demoLoop, 40);
+  }
+
+  // ---- flow ----
+  function nextLevel(){
+    if(level>=LEVELS.length-1){ level=0; } else { level++; }
+    buildLevel();
+    winOv.classList.add('hidden');
+  }
+  function startGame(){
+    startOv.classList.add('hidden');
+    fit(); buildLevel();
+    if(DEMO) setTimeout(demoLoop, 400);
+  }
+  document.getElementById('startBtn').addEventListener('click', startGame);
+  document.getElementById('nextBtn').addEventListener('click', ()=>{
+    if(level>=LEVELS.length-1 && won){ level=-1; } // play again -> loop to 0
+    nextLevel();
+  });
+
+  // expose hooks
+  window.__glyph = {
+    solve(){ rings.forEach(r=>{ r.rot = Math.round(r.rot/(Math.PI*2))*Math.PI*2; }); updateHud();
+             if(allAligned() && !won) win(); return true; },
+    forceWin(){ this.solve(); return won; },
+    state(){ return { level:level+1, locked:lockedCount(), total:rings.length, won }; }
+  };
+
+  fit();
+  buildLevel();
+  requestAnimationFrame(draw);
+  if(DEMO) startGame();  // auto-begin in demo mode
+})();
+</script>
+</body>
+</html>

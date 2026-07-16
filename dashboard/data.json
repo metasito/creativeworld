@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-16T08:20:11Z",
+  "generated_at": "2026-07-16T08:25:58Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 1343459,
-    "window_used": 1343459,
-    "rolling_used": 1343459,
+    "used": 1539890,
+    "window_used": 1539890,
+    "rolling_used": 1539890,
     "binding": "window",
     "budget": 4798485,
-    "pct": 28.0,
-    "rate_per_hour": 2535451,
-    "eta_hours": 1.4,
+    "pct": 32.1,
+    "rate_per_hour": 2457869,
+    "eta_hours": 1.3,
     "burn_spark": [
       0,
       0,
@@ -21,14 +21,14 @@
       0,
       0,
       0,
-      317845,
-      1025614
+      575832,
+      964057
     ],
     "window_started_at": "2026-07-16T05:22:33Z",
     "resets_at": "2026-07-16T10:22:33Z",
-    "seconds_to_reset": 7341,
+    "seconds_to_reset": 6994,
     "nap_until": "2026-07-16T10:22:33Z",
-    "nap_seconds": 7341,
+    "nap_seconds": 6994,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -253,7 +253,7 @@
       "status": "planned",
       "description": "drag concentric rune rings to align a glowing path, timed combination puzzle across levels",
       "slug": "glyph-lock",
-      "cost": 0
+      "cost": 143774
     },
     {
       "id": "E21",
@@ -1164,7 +1164,7 @@
       "claimed_by": "unknown",
       "issue": "42",
       "cost": 148963,
-      "commit": null
+      "commit": "cbec8d7"
     },
     {
       "id": "T75",
@@ -1183,9 +1183,12 @@
       "title": "Glyph Lock v1",
       "acceptance": "single index.html touch puzzle: drag concentric rune rings to rotate them and align a glowing path; 3 levels + win state; portrait layout, 44px targets, viewport meta; demo+solve hooks",
       "size": "M",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T08:15:02Z",
+      "status": "done",
+      "handoff": "Glyph Lock v1 - drag concentric rune rings to align the notches under the top marker; 3 levels, win state, demo self-wins to WIN III, solve/forceWin hooks",
+      "updated": "2026-07-16T08:25:56Z",
+      "claimed_by": "unknown",
+      "issue": "43",
+      "cost": 143774,
       "commit": null
     },
     {
@@ -1236,7 +1239,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T76",
       "T78",
       "T58",
       "T60",
@@ -1474,11 +1476,11 @@
       "status": "planned",
       "description": "drag concentric rune rings to align a glowing path, timed combination puzzle across levels",
       "slug": "glyph-lock",
-      "built": false,
-      "shot": false,
-      "updated": null,
-      "cost": 0,
-      "url": null
+      "built": true,
+      "shot": true,
+      "updated": "2026-07-16T08:24:35Z",
+      "cost": 143774,
+      "url": "/projects/glyph-lock/"
     },
     {
       "id": "E21",
@@ -1529,21 +1531,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T74",
-    "current_action": "Kite Weaver v1: scaffold touch game",
+    "current_task": "T76",
+    "current_action": "Building Glyph Lock v1 rune-ring puzzle",
     "agent": "autopilot",
-    "updated": "2026-07-16T08:17:28Z",
+    "updated": "2026-07-16T08:23:12Z",
     "log": [
-      {
-        "at": "2026-07-16T07:52:40Z",
-        "agent": "autopilot",
-        "msg": "T59 building projects/forge-tempo/index.html"
-      },
-      {
-        "at": "2026-07-16T07:55:13Z",
-        "agent": "autopilot",
-        "msg": "T59 verified: demo loop (heat 73% strikes 7) + win path (FORGED perfect:10) + gameplay/win screenshots"
-      },
       {
         "at": "2026-07-16T07:56:16Z",
         "agent": "autopilot",
@@ -1593,6 +1585,16 @@
         "at": "2026-07-16T08:17:28Z",
         "agent": "autopilot",
         "msg": "Kite Weaver v1 built; validating"
+      },
+      {
+        "at": "2026-07-16T08:20:43Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T08:23:12Z",
+        "agent": "autopilot",
+        "msg": "T76 glyph-lock index.html written; validating"
       }
     ]
   },
