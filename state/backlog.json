@@ -728,9 +728,12 @@
       "title": "Dashboard: trailing-5h burn sparkline + cap ETA on budget panel",
       "acceptance": "Budget panel shows a sparkline of trailing-5h weighted burn from tokens.json history plus estimated time-to-cap; verified via Chromium screenshot",
       "size": "S",
-      "status": "next",
+      "status": "in_progress",
       "handoff": "",
-      "updated": "2026-07-15T14:19:41Z"
+      "updated": "2026-07-15T19:48:45Z",
+      "claimed_by": "unknown",
+      "cost_start": 16556808,
+      "issue": "31"
     },
     {
       "id": "T57",
@@ -740,7 +743,7 @@
       "size": "M",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T19:30:37Z"
+      "updated": "2026-07-16T00:12:48Z"
     },
     {
       "id": "T58",
@@ -750,7 +753,7 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T19:48:36Z"
+      "updated": "2026-07-16T00:12:49Z"
     },
     {
       "id": "T59",
@@ -760,7 +763,7 @@
       "size": "M",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T19:30:37Z"
+      "updated": "2026-07-16T00:12:48Z"
     },
     {
       "id": "T60",
@@ -770,7 +773,7 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T19:48:36Z"
+      "updated": "2026-07-16T00:12:49Z"
     },
     {
       "id": "T61",
@@ -780,11 +783,51 @@
       "size": "S",
       "status": "next",
       "handoff": "",
-      "updated": "2026-07-15T19:30:38Z"
+      "updated": "2026-07-15T22:27:38Z"
+    },
+    {
+      "id": "T62",
+      "epic": "E1",
+      "title": "Plan tasks for a better dashbord, better queue , better priorisation better controll. add also button for start and stop. Start focusing on mobile game.",
+      "acceptance": "",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T22:25:04Z"
+    },
+    {
+      "id": "T63",
+      "epic": "E1",
+      "title": "token dashboard sucs window budged used is wrong, weighted tokens spent i dont know, window rest is rwong and also vergict is wrong, wrap and stoped is wrong",
+      "acceptance": "",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T22:26:48Z"
+    },
+    {
+      "id": "T64",
+      "epic": "E1",
+      "title": "token usage optimisation, get yourself more perfrmant and efficient",
+      "acceptance": "",
+      "size": "M",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-15T22:27:17Z"
+    },
+    {
+      "id": "T65",
+      "epic": "E2",
+      "title": "Dashboard: start/stop autopilot control button",
+      "acceptance": "Dashboard has a Start/Stop control that toggles the autopilot loop (writes a control flag autopilot reads); button reflects live running/stopped state; verified in Chromium",
+      "size": "S",
+      "status": "next",
+      "handoff": "",
+      "updated": "2026-07-16T00:12:49Z"
     }
   ],
   "next_ids": {
     "epic": 16,
-    "task": 62
+    "task": 66
   }
 }

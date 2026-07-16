@@ -1,12 +1,15 @@
 {
-  "in_progress": null,
+  "in_progress": "T56",
   "next": [
-    "T56",
+    "T64",
+    "T63",
+    "T62",
+    "T61",
     "T57",
     "T59",
-    "T61",
     "T58",
-    "T60"
+    "T60",
+    "T65"
   ],
   "note": "Order of `next` is priority. board.py keeps this in sync with backlog.json statuses."
 }
