@@ -1041,9 +1041,12 @@
       "title": "Kite Weaver polish: wind gust visuals + haptics",
       "acceptance": "add animated wind-streak particles, tapered ribbon trails, and vibration on ribbon/collision where supported",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T12:48:03Z"
+      "status": "done",
+      "handoff": "Kite Weaver polish: wind gusts (visual sweep + streak lean + haptic) and tapered woven ribbon trail; demo self-wins to alt:100",
+      "updated": "2026-07-16T22:34:54Z",
+      "claimed_by": "unknown",
+      "issue": "54",
+      "cost": 188492
     },
     {
       "id": "T76",

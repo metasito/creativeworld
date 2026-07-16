@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-16T22:27:38Z",
+  "generated_at": "2026-07-16T22:34:58Z",
   "repo_url": "https://github.com/metasito/creativeworld",
   "budget": {
-    "used": 419782,
-    "window_used": 341003,
-    "rolling_used": 419782,
+    "used": 681294,
+    "window_used": 594668,
+    "rolling_used": 681294,
     "binding": "trailing",
     "budget": 4798485,
-    "pct": 8.7,
-    "rate_per_hour": 84455,
-    "eta_hours": 51.8,
+    "pct": 14.2,
+    "rate_per_hour": 136729,
+    "eta_hours": 30.1,
     "burn_spark": [
       78779,
       0,
@@ -22,13 +22,13 @@
       0,
       0,
       0,
-      341002
+      602514
     ],
     "window_started_at": "2026-07-16T20:22:33Z",
     "resets_at": "2026-07-17T01:22:33Z",
-    "seconds_to_reset": 10494,
-    "nap_until": "2026-07-16T22:29:24Z",
-    "nap_seconds": 106,
+    "seconds_to_reset": 10054,
+    "nap_until": "2026-07-16T22:36:00Z",
+    "nap_seconds": 61,
     "wrap_up_pct": 85,
     "stop_pct": 95,
     "verdict": "CONTINUE",
@@ -259,7 +259,7 @@
       "status": "shipped",
       "description": "swipe-steer a kite through wind currents, collect ribbons, dodge storm cells",
       "slug": "kite-weaver",
-      "cost": 148963
+      "cost": 337455
     },
     {
       "id": "E20",
@@ -1229,9 +1229,12 @@
       "title": "Kite Weaver polish: wind gust visuals + haptics",
       "acceptance": "add animated wind-streak particles, tapered ribbon trails, and vibration on ribbon/collision where supported",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T12:48:03Z",
+      "status": "done",
+      "handoff": "Kite Weaver polish: wind gusts (visual sweep + streak lean + haptic) and tapered woven ribbon trail; demo self-wins to alt:100",
+      "updated": "2026-07-16T22:34:54Z",
+      "claimed_by": "unknown",
+      "issue": "54",
+      "cost": 188492,
       "commit": null
     },
     {
@@ -1370,7 +1373,7 @@
       "claimed_by": "unknown",
       "issue": "53",
       "cost": 119269,
-      "commit": null
+      "commit": "736ff30"
     },
     {
       "id": "T87",
@@ -1387,7 +1390,6 @@
   "queue": {
     "in_progress": null,
     "next": [
-      "T75",
       "T77",
       "T79",
       "T83",
@@ -1615,8 +1617,8 @@
       "slug": "kite-weaver",
       "built": true,
       "shot": true,
-      "updated": "2026-07-16T08:18:07Z",
-      "cost": 148963,
+      "updated": "2026-07-16T22:32:53Z",
+      "cost": 337455,
       "url": "/projects/kite-weaver/"
     },
     {
@@ -1720,21 +1722,11 @@
   ],
   "activity": {
     "engine_status": "working",
-    "current_task": "T86",
-    "current_action": "building Circuit Surge v1",
+    "current_task": "T75",
+    "current_action": "Kite Weaver polish: wind gusts + haptics",
     "agent": "autopilot",
-    "updated": "2026-07-16T22:27:28Z",
+    "updated": "2026-07-16T22:30:16Z",
     "log": [
-      {
-        "at": "2026-07-16T17:33:50Z",
-        "agent": "autopilot",
-        "msg": "agent error rc=1 \u2014 120s backoff"
-      },
-      {
-        "at": "2026-07-16T17:36:01Z",
-        "agent": "autopilot",
-        "msg": "agent cycle finished"
-      },
       {
         "at": "2026-07-16T17:36:01Z",
         "agent": "autopilot",
@@ -1784,6 +1776,16 @@
         "at": "2026-07-16T22:27:28Z",
         "agent": "autopilot",
         "msg": "verified: demo self-wins to GRID 5, no console errors"
+      },
+      {
+        "at": "2026-07-16T22:28:33Z",
+        "agent": "autopilot",
+        "msg": "agent cycle finished"
+      },
+      {
+        "at": "2026-07-16T22:30:16Z",
+        "agent": "autopilot",
+        "msg": "T75 already scaffolded as Kite Weaver; adding wind gusts + tapered ribbon trail + gust haptics"
       }
     ]
   },
