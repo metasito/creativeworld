@@ -34,6 +34,9 @@
     min-width:0; min-height:44px; height:44px; padding:0 18px; font-size:13px; letter-spacing:.1em; text-transform:uppercase;
     background:rgba(126,249,255,.12); color:var(--ui); box-shadow:none; border:1px solid rgba(126,249,255,.25);
     border-radius:22px; z-index:4; }
+  .pick { font-size:12px; letter-spacing:.14em; text-transform:uppercase; opacity:.6; margin:26px 0 14px; }
+  #levels { display:flex; gap:16px; }
+  .lvl { min-width:64px; width:64px; min-height:64px; height:64px; padding:0; font-size:24px; border-radius:18px; }
 </style>
 </head>
 <body>
@@ -46,8 +49,14 @@
 <div id="hint">Drag back from the comet to aim &amp; power — release to sling</div>
 <div id="overlay">
   <h1>Comet Sling</h1>
-  <p>Drag back from the comet and let go. Planets bend your path with gravity — thread the glowing star-gate in as few strokes as you can.</p>
+  <p>Drag back from the comet and let go. Planets bend your path with gravity, and pulsing supernovas vaporise you on contact — thread the glowing star-gate in as few strokes as you can.</p>
   <button id="start">Launch</button>
+  <div class="pick" id="pickLabel">Or pick a level</div>
+  <div id="levels">
+    <button class="lvl" data-lvl="1">1</button>
+    <button class="lvl" data-lvl="2">2</button>
+    <button class="lvl" data-lvl="3">3</button>
+  </div>
 </div>
 <script>
 (() => {
@@ -80,6 +89,7 @@ addEventListener('resize', ()=>{ resize(); if(level) layoutLevel(); });
 // ---- game state ----
 const LEVELS = 3;
 let level, comet, planets, gate, start, strokes, aiming, aim, trail, won, running, sunk;
+let supernovas, snDefs, snPhase = 0;
 let sinceTitle = 0;
 
 function seedForLevel(n){ rngState = hashStr(seedStr + ':' + n); }
@@ -120,17 +130,36 @@ function layoutLevel(){
     }
     defs._lvl = level;
     planetDefs = defs;
+    // supernovas: pulsing hazards that vaporise the comet on contact (1 per level)
+    const sn = [];
+    const snCount = level < 3 ? 1 : 2;
+    for(let i=0;i<snCount;i++){
+      let fx,fy,ok,tries=0;
+      do{
+        fx=rr(0.3,0.75); fy=rr(0.32,0.7); ok=true;
+        if(Math.hypot(fx-starts.fx,fy-starts.fy)<0.2) ok=false;
+        if(Math.hypot(fx-gates.fx,fy-gates.fy)<0.2) ok=false;
+        for(const d of defs) if(Math.hypot(fx-d.fx,fy-d.fy)<0.16) ok=false;
+        for(const s of sn) if(Math.hypot(fx-s.fx,fy-s.fy)<0.22) ok=false;
+      } while(!ok && ++tries<50);
+      sn.push({ fx, fy, fr: rr(0.032,0.046), spd: rr(2.2,3.4), off: rr(0,6.28) });
+    }
+    sn._lvl = level;
+    snDefs = sn;
   }
   start = { x:starts.fx*W, y:starts.fy*H };
   gate  = { x:gates.fx*W, y:gates.fy*H, r:Math.max(26, m*0.055), a:0 };
   planets = planetDefs.map(d=>({ x:d.fx*W, y:d.fy*H, r:d.fr*m, mass:d.fm*d.fr*m*260, hue:d.hue }));
+  supernovas = snDefs.map(d=>({ x:d.fx*W, y:d.fy*H, r:Math.max(18, d.fr*m), spd:d.spd, off:d.off }));
   if(comet && !comet.moving && !won){ comet.x=start.x; comet.y=start.y; }
 }
 
 // ---- physics ----
 const COMET_R = 8;
+function snKillR(s){ return s.r * (1 + 0.55*(0.5+0.5*Math.sin(snPhase*s.spd + s.off))); }
 function step(dt){
   if(gate) gate.a += dt*2;
+  snPhase += dt;
   if(!comet.moving) return;
   const sub = 4, h = dt/sub;
   for(let s=0;s<sub;s++){
@@ -149,6 +178,10 @@ function step(dt){
     for(const p of planets){
       if(Math.hypot(p.x-comet.x,p.y-comet.y) < p.r+COMET_R){ crash(); return; }
     }
+    // supernova = vaporised
+    for(const s of supernovas){
+      if(Math.hypot(s.x-comet.x,s.y-comet.y) < snKillR(s)+COMET_R){ crash('Vaporised by the supernova — re-aim'); return; }
+    }
     // gate = win
     if(Math.hypot(gate.x-comet.x,gate.y-comet.y) < gate.r*0.7){ sink(); return; }
   }
@@ -163,10 +196,10 @@ function step(dt){
   if(Math.hypot(comet.vx,comet.vy) < 6){ comet.moving=false; comet.vx=comet.vy=0; }
 }
 
-function crash(){
+function crash(msg){
   comet.moving=false; comet.vx=comet.vy=0;
   comet.x=start.x; comet.y=start.y; trail=[];
-  showHint('Crashed — line up another shot');
+  showHint(msg || 'Crashed — line up another shot');
 }
 function sink(){
   comet.moving=false; sunk=true;
@@ -231,6 +264,31 @@ function draw(t){
     ctx.fillStyle=g2; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill();
   }
 
+  // supernovas (pulsing hazards)
+  for(const s of supernovas){
+    const kr=snKillR(s), ph=0.5+0.5*Math.sin(snPhase*s.spd+s.off);
+    // outward shockwave ring
+    ctx.globalAlpha=0.5*(1-ph);
+    ctx.beginPath(); ctx.arc(s.x,s.y,kr+8+ph*s.r*1.4,0,7);
+    ctx.strokeStyle='#ff7b52'; ctx.lineWidth=2; ctx.stroke();
+    ctx.globalAlpha=1;
+    // danger halo
+    const hg=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,kr*1.9);
+    hg.addColorStop(0,'rgba(255,150,60,.55)'); hg.addColorStop(0.6,'rgba(255,80,40,.28)'); hg.addColorStop(1,'transparent');
+    ctx.fillStyle=hg; ctx.beginPath(); ctx.arc(s.x,s.y,kr*1.9,0,7); ctx.fill();
+    // hot core
+    const cg=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,kr);
+    cg.addColorStop(0,'#fff'); cg.addColorStop(0.35,'#ffe28a'); cg.addColorStop(0.75,'#ff7b3a'); cg.addColorStop(1,'rgba(255,60,30,.2)');
+    ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(s.x,s.y,kr,0,7); ctx.fill();
+    // flare spikes
+    ctx.save(); ctx.translate(s.x,s.y); ctx.rotate(snPhase*s.spd*0.3);
+    ctx.strokeStyle='rgba(255,200,120,'+(0.4+ph*0.4)+')'; ctx.lineWidth=1.5;
+    for(let i=0;i<8;i++){ const a=i/8*Math.PI*2; ctx.beginPath();
+      ctx.moveTo(Math.cos(a)*kr*0.9,Math.sin(a)*kr*0.9);
+      ctx.lineTo(Math.cos(a)*(kr*1.5+ph*s.r),Math.sin(a)*(kr*1.5+ph*s.r)); ctx.stroke(); }
+    ctx.restore();
+  }
+
   // gate (star-gate)
   const pulse=1+Math.sin(gate.a)*0.08;
   ctx.save(); ctx.translate(gate.x,gate.y);
@@ -284,6 +342,8 @@ function predictPath(dx,dy,mag){
     for(const p of planets){ const ex=p.x-x,ey=p.y-y; let d2=ex*ex+ey*ey; const mn=p.r*0.8;
       if(d2<mn*mn)d2=mn*mn; const d=Math.sqrt(d2),f=p.mass/d2; ax+=f*ex/d; ay+=f*ey/d;
       if(d<p.r+COMET_R) { i=999; break; } }
+    for(const s of supernovas){ if(Math.hypot(s.x-x,s.y-y)<snKillR(s)+COMET_R){ i=999; break; } }
+    if(i>=999) break;
     vx+=ax*h; vy+=ay*h; x+=vx*h; y+=vy*h;
     if(i%3===0) ctx.lineTo(x,y);
     if(x<-60||x>W+60||y<-60||y>H+60) break;
@@ -340,12 +400,15 @@ function demoStep(dt){
 }
 
 // ---- boot ----
-function startGame(){
+function startAt(n){
   $('overlay').classList.add('hidden');
-  buildLevel(1);
+  buildLevel(n);
   running=true; last=performance.now(); syncTitle();
 }
+function startGame(){ startAt(1); }
 $('start').addEventListener('click', startGame);
+document.querySelectorAll('.lvl').forEach(b=>
+  b.addEventListener('pointerup', ()=>startAt(Math.max(1,Math.min(LEVELS,+b.dataset.lvl||1)))));
 $('restart').addEventListener('click', ()=>{ buildLevel(level||1); running=true; });
 
 resize(); initStars(); buildLevel(1); running=false; draw(performance.now());

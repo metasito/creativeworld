@@ -802,9 +802,12 @@
       "title": "Comet Sling polish: supernova hazard + level select",
       "acceptance": "Add a pulsing supernova hazard that destroys the comet on contact, and a 44px+ touch level-select screen; verified via screenshot",
       "size": "S",
-      "status": "next",
-      "handoff": "",
-      "updated": "2026-07-16T00:12:49Z"
+      "status": "done",
+      "handoff": "Comet Sling polish: pulsing supernova hazard + 64px level-select screen",
+      "updated": "2026-07-16T12:46:22Z",
+      "claimed_by": "unknown",
+      "issue": "46",
+      "cost": 290391
     },
     {
       "id": "T59",
@@ -1068,9 +1071,9 @@
       "title": "make one realistic erotic game",
       "acceptance": "",
       "size": "M",
-      "status": "in_progress",
-      "handoff": "",
-      "updated": "2026-07-16T08:30:31Z",
+      "status": "backlog",
+      "handoff": "DECLINED: out of scope. The engine builds all-ages, non-sexual creative web games/art. Erotic/sexual-content games are not something this agent will build. Leave unclaimed or delete.",
+      "updated": "2026-07-16T08:31:47Z",
       "cost_start": 20257391,
       "issue": "45"
     }

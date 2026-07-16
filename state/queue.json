@@ -1,7 +1,6 @@
 {
-  "in_progress": "T81",
+  "in_progress": null,
   "next": [
-    "T58",
     "T60",
     "T61",
     "T66"
